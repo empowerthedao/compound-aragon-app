@@ -1,0 +1,69 @@
+#!/usr/bin/env yarn run repl -s
+-- Deploys the Comptroller and cTokens
+
+Gate ($close_factor) (Throw "Must set var close_factor") -- close_factor=0.5
+Gate ($max_assets) (Throw "Must set var max_assets") -- max_assets=20
+Gate ($liquidation_incentive) (Throw "Must set var liquidation_incentive") -- liquidation_incentive=1.05
+Gate ($reserve_factor) (Throw "Must set var reserve_factor") -- reserve_factor=0.10
+
+Gate (PriceOracle Address) (Throw "Price Oracle Must Previously Be Set")
+
+-- Next: Deploy the Unitroller, Comptroller Implementation, and Set as Unitroller's Implementation
+Gate (Unitroller Address) (Unitroller Deploy)
+Gate (ComptrollerImpl StdComptroller Address) (ComptrollerImpl Deploy Standard StdComptroller)
+Gate (Comptroller Address) (Unitroller SetPendingImpl StdComptroller)
+Gate (Comptroller Address) (ComptrollerImpl StdComptroller Become (PriceOracle Address) $close_factor $max_assets)
+Gate (Equal (Comptroller LiquidationIncentive) $liquidation_incentive) (Comptroller LiquidationIncentive $liquidation_incentive)
+
+-- Next: Deploy the Interest Rate Models
+Gate (InterestRateModel Base500bps_Slope1200bps Address) (InterestRateModel Deploy WhitePaper Base500bps_Slope1200bps 0.05 0.12)
+Gate (InterestRateModel Base0bps_Slope2000bps Address) (InterestRateModel Deploy WhitePaper Base0bps_Slope2000bps 0.00 0.20)
+Gate (InterestRateModel Base200bps_Slope3000bps Address) (InterestRateModel Deploy WhitePaper Base200bps_Slope3000bps 0.02 0.30)
+
+-- Ensure underlying tokens exist in our config
+Gate (Erc20 ZRX Address) (Throw "Missing ZRX Underlying Token")
+Gate (Erc20 BAT Address) (Throw "Missing BAT Underlying Token")
+Gate (Erc20 DAI Address) (Throw "Missing DAI Underlying Token")
+Gate (Erc20 REP Address) (Throw "Missing REP Underlying Token")
+Gate (Erc20 USDC Address) (Throw "Missing USDC Underlying Token")
+
+-- Now, deploy our cTokens!
+Gate (CToken cZRX Address) (CToken Deploy CErc20 cZRX "Compound 0x" (Erc20 ZRX Address) (Comptroller Address) (InterestRateModel Base200bps_Slope3000bps Address) 0.2e9 8)
+Gate (CToken cBAT Address) (CToken Deploy CErc20 cBAT "Compound Basic Attention Token" (Erc20 BAT Address) (Comptroller Address) (InterestRateModel Base200bps_Slope3000bps Address) 0.2e9 8)
+Gate (CToken cDAI Address) (CToken Deploy CErc20 cDAI "Compound Dai" (Erc20 DAI Address) (Comptroller Address) (InterestRateModel Base500bps_Slope1200bps Address) 0.2e9 8)
+Gate (CToken cREP Address) (CToken Deploy CErc20 cREP "Compound Augur" (Erc20 REP Address) (Comptroller Address) (InterestRateModel Base200bps_Slope3000bps Address) 0.2e9 8)
+Gate (CToken cETH Address) (CToken Deploy CEther cETH "Compound Ether" (Comptroller Address) (InterestRateModel Base0bps_Slope2000bps Address) 0.2e9 8)
+Gate (CToken cUSDC Address) (CToken Deploy CErc20 cUSDC "Compound USD Coin" (Erc20 USDC Address) (Comptroller Address) (InterestRateModel Base0bps_Slope2000bps Address) 2e-4 8)
+
+-- Set Reserve Factors
+Gate (Equal (CToken cZRX ReserveFactor) $reserve_factor) (CToken cZRX SetReserveFactor $reserve_factor)
+Gate (Equal (CToken cBAT ReserveFactor) $reserve_factor) (CToken cBAT SetReserveFactor $reserve_factor)
+Gate (Equal (CToken cDAI ReserveFactor) $reserve_factor) (CToken cDAI SetReserveFactor $reserve_factor)
+Gate (Equal (CToken cREP ReserveFactor) $reserve_factor) (CToken cREP SetReserveFactor $reserve_factor)
+Gate (Equal (CToken cETH ReserveFactor) $reserve_factor) (CToken cETH SetReserveFactor $reserve_factor)
+Gate (Equal (CToken cUSDC ReserveFactor) $reserve_factor) (CToken cUSDC SetReserveFactor $reserve_factor)
+
+-- Then, Deploy Maximillion
+Gate (Maximillion Address) (Maximillion Deploy cETH)
+
+-- Ensure all cTokens are listed in the Comptroller
+Gate (Comptroller CheckListed cZRX) (Comptroller SupportMarket cZRX)
+Gate (Comptroller CheckListed cBAT) (Comptroller SupportMarket cBAT)
+Gate (Comptroller CheckListed cDAI) (Comptroller SupportMarket cDAI)
+Gate (Comptroller CheckListed cREP) (Comptroller SupportMarket cREP)
+Gate (Comptroller CheckListed cETH) (Comptroller SupportMarket cETH)
+-- Gate (Comptroller CheckListed cUSDC) (Comptroller SupportMarket cUSDC)
+
+-- Deploy Price Oracle Proxy
+Gate (PriceOracleProxy Address) (PriceOracleProxy Deploy (Unitroller Address) (PriceOracle Address) (Address cETH))
+Gate (Equal (Comptroller PriceOracle) (PriceOracleProxy Address)) (Comptroller SetPriceOracle (PriceOracleProxy Address))
+
+-- Finally, mark as collateral, if given
+Given ($zrx_cf) (Comptroller SetCollateralFactor cZRX $zrx_cf)
+Given ($bat_cf) (Comptroller SetCollateralFactor cBAT $bat_cf)
+Given ($dai_cf) (Comptroller SetCollateralFactor cDAI $dai_cf)
+Given ($rep_cf) (Comptroller SetCollateralFactor cREP $rep_cf)
+Given ($eth_cf) (Comptroller SetCollateralFactor cETH $eth_cf)
+-- Given ($usdc_cf) (Comptroller SetCollateralFactor cUSDC $usdc_cf)
+
+Print "Succesfully deployed Comptroller and cTokens"

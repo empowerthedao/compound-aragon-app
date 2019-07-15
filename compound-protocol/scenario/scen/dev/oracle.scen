@@ -1,0 +1,4 @@
+#!/usr/bin/env yarn run repl -s
+-- Deploys dev price oracle
+
+Gate (PriceOracle Address) (PriceOracle Deploy Simple)

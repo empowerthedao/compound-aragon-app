@@ -1,0 +1,13 @@
+#!/usr/bin/env yarn run repl -s
+
+-- Performs a bunch of accrue interest events in a row
+CToken (Default $ctoken (Address cZRX)) AccrueInterest
+CToken (Default $ctoken (Address cZRX)) AccrueInterest
+CToken (Default $ctoken (Address cZRX)) AccrueInterest
+CToken (Default $ctoken (Address cZRX)) AccrueInterest
+CToken (Default $ctoken (Address cZRX)) AccrueInterest
+CToken (Default $ctoken (Address cZRX)) AccrueInterest
+CToken (Default $ctoken (Address cZRX)) AccrueInterest
+CToken (Default $ctoken (Address cZRX)) AccrueInterest
+CToken (Default $ctoken (Address cZRX)) AccrueInterest
+CToken (Default $ctoken (Address cZRX)) AccrueInterest

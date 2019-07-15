@@ -1,0 +1,19 @@
+#!/bin/bash
+# two patches to make mocha testing faster
+# include SKIP_SOLIDITY=true scripts/test
+# if you change solidity files, you must rm .tmp ( where the compiled solidity cache lives )
+# before --
+# time { scripts/test; }
+# ...
+# real	1m46.113s
+# user	2m2.104s
+# sys	0m5.769s
+# after --
+# time { SKIP_SOLIDITY=true scripts/test; }
+# ...
+# real	0m15.301s
+# user	0m16.168s
+# sys	0m1.945s
+#
+patch -p0 < "scripts/utility/truffle-cli.patch"
+patch -p0 < "scripts/utility/solidity_skip.patch"

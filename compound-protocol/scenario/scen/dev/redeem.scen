@@ -1,0 +1,4 @@
+#!/usr/bin/env yarn run repl -s
+
+-- Performs a simple development redeem call
+CToken (Default $ctoken (Address cZRX)) Redeem (Default $amount 1e9)

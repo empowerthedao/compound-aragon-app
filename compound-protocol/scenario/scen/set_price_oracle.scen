@@ -1,0 +1,7 @@
+#!/usr/bin/env yarn run repl -s
+-- Sets the price oracle to given
+
+Gate ($price_oracle) (Throw "price_oracle argument required but not given")
+PriceOracle Set Standard $price_oracle "Rinkeby Price Oracle"
+PriceOracleProxy Deploy (Unitroller Address) (PriceOracle Address) (Address cETH)
+Comptroller SetPriceOracle (PriceOracleProxy Address)

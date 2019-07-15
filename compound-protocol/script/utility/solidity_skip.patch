@@ -1,0 +1,20 @@
+--- node_modules/truffle/build/cli.bundled.js	2019-01-25 11:51:01.000000000 -0800
++++ node_modules/truffle/build/cli.bundled_patched.js	2019-01-25 16:23:18.000000000 -0800
+@@ -579995,10 +579995,13 @@
+     }).then(function(paths) {
+       dependency_paths = paths;
+ 
+-      testContracts = sol_tests.map(function(test_file_path) {
+-        var built_name = "./" + path.basename(test_file_path);
+-        return test_resolver.require(built_name);
+-      });
++      if (!process.env.SKIP_SOLIDITY) {
++        console.log("preparing solidity tests")
++        testContracts = sol_tests.map(function(test_file_path) {
++          var built_name = "./" + path.basename(test_file_path);
++          return test_resolver.require(built_name);
++        });
++      }  
+ 
+       runner = new TestRunner(config);
+ 

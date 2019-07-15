@@ -1,0 +1,8 @@
+#!/usr/bin/env yarn run repl -s
+-- Deploys Underlying Tokens
+
+Gate (Erc20 ZRX Address) (Erc20 Deploy Standard ZRX "0x")
+Gate (Erc20 BAT Address) (Erc20 Deploy NonStandard BAT "Basic Attention Token")
+Gate (Erc20 DAI Address) (Erc20 Deploy Standard DAI "Dai")
+Gate (Erc20 REP Address) (Erc20 Deploy Standard REP "Augur")
+Gate (Erc20 USDC Address) (Erc20 Deploy Standard USDC "USD Coin" 6)

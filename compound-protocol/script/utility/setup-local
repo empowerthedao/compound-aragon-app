@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Simple script to set-up development, makes plenty of assumptions, so use
+# with caution.
+
+set -eo pipefail
+
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+proj_root="$script_dir/../.."
+
+environment="development"
+copy_dirs="$1"
+
+IFS=';' read -ra copy_dirs_arr <<< "$copy_dirs"
+for copy_dir_rel in "${copy_dirs_arr[@]}"; do
+	copy_dir=$proj_root/../$copy_dir_rel
+	[ ! -d "$copy_dir" ] && (echo "cannot find directory: $copy_dir" && exit 1)
+done
+
+[ -f "networks/$environment.json" ] && rm "networks/$environment.json"
+[ -f "networks/$environment-abi.json" ] && rm "networks/$environment-abi.json"
+
+scripts/blockchain/deploy-tokens "$environment" # deploys some basic faucet tokens
+scripts/blockchain/oracle-deploy "$environment" # deploys a price oracle
+scripts/blockchain/oracle-set-token-prices "$environment" # sets configured prices
+scripts/blockchain/deploy "$environment" # deploys money market to local ganache
+scripts/blockchain/set-oracle "$environment" # sets oracle
+scripts/blockchain/support-markets "$environment" # adds money market support for the tokens added above
+
+for copy_dir_rel in "${copy_dirs_arr[@]}"; do
+	copy_dir=$proj_root/../$copy_dir_rel
+	cp $proj_root/networks/"$environment"* "$copy_dir/networks"
+done

@@ -1,0 +1,4 @@
+#!/usr/bin/env yarn run repl -s
+-- Deploys the Zero-checking Comptroller
+
+Gate (ComptrollerImpl ZeroComptroller Address) (ComptrollerImpl Deploy Standard ZeroComptroller)

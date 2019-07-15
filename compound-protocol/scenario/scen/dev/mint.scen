@@ -1,0 +1,4 @@
+#!/usr/bin/env yarn run repl -s
+
+-- Performs a simple development mint call
+QuickMint (Default $amount 10.0e18) (Default $ctoken (Address cZRX)) (User default Address)

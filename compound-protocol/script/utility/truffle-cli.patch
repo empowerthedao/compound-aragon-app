@@ -1,0 +1,39 @@
+--- node_modules/truffle/build/cli.bundled.js	2019-01-25 12:07:21.000000000 -0800
++++ node_modules/truffle/build/cli.bundled_patched.js	2019-01-25 11:51:01.000000000 -0800
+@@ -579247,6 +579247,7 @@
+     var OS = __webpack_require__(27);
+     var dir = __webpack_require__(1136);
+     var temp = __webpack_require__(2056);
++    var path = __webpack_require__(1);
+     var Config = __webpack_require__(48);
+     var Artifactor = __webpack_require__(1147);
+     var Develop = __webpack_require__(2103);
+@@ -579291,7 +579292,27 @@
+         return file.match(config.test_file_extension_regexp) != null;
+       });
+ 
+-      temp.mkdir("test-", function(err, temporaryDirectory) {
++    function getTestTempDir(cb) {
++      console.log('using cache');
++      var tempDir = path.join(config.working_directory, '.tmp');
++      var testDir = path.join(tempDir, 'test');
++
++       try {
++        if (!fs.existsSync(tempDir)) {
++          fs.mkdirSync(tempDir);
++        }
++
++         if (!fs.existsSync(testDir)) {
++          fs.mkdirSync(testDir);
++        }
++
++         cb(null, testDir);
++      } catch (err) {
++        cb(err);
++      }
++    }
++
++      getTestTempDir(function(err, temporaryDirectory) {
+         if (err) return done(err);
+ 
+         function cleanup() {

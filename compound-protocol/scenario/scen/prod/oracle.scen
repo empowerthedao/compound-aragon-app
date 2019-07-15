@@ -1,0 +1,6 @@
+#!/usr/bin/env yarn run repl -s
+-- Deploys anchored price oracle with no readers
+
+Gate ($poster) (Throw "Must set var poster")
+
+Gate (PriceOracle Address) (PriceOracle Deploy Anchor $poster)

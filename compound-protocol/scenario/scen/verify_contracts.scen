@@ -1,0 +1,15 @@
+#!/usr/bin/env yarn run repl -s
+
+Unitroller Verify "$api_key"
+ComptrollerImpl StdComptroller Verify "$api_key"
+CToken cZRX Verify "$api_key"
+CToken cBAT Verify "$api_key"
+CToken cDAI Verify "$api_key"
+CToken cREP Verify "$api_key"
+CToken cETH Verify "$api_key"
+CToken cUSDC Verify "$api_key"
+InterestRateModel Base0bps_Slope2000bps Verify "$api_key"
+InterestRateModel Base500bps_Slope1200bps Verify "$api_key"
+InterestRateModel Base200bps_Slope3000bps Verify "$api_key"
+PriceOracleProxy Verify "$api_key"
+Maximillion Verify "$api_key"

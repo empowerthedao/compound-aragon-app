@@ -1,0 +1,4 @@
+#!/usr/bin/env yarn run repl -s
+-- ZeroComptroller recomes Comptroller (becomes without re-initializing)
+
+ComptrollerImpl ZeroComptroller Recome
