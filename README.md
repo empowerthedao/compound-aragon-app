@@ -1,3 +1,7 @@
+# Compound Aragon App
+
+Aragon app for a DAO to interact with Compound's protocol.
+
 To deploy Compound protocol, requires node v10 and recent version of `ganache-cli` (can probably replace `yarn` wth `npm`:
 
 Install dependencies:
