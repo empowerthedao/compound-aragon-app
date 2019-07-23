@@ -4,8 +4,9 @@ import {Main, TabBar, SidePanel, SyncIndicator} from '@aragon/ui'
 
 import AppLayout from "./components/app-layout/AppLayout"
 import Settings from "./components/settings/Settings"
-import Lend from "./components/Lend";
+import Lend from "./components/lend/Lend";
 import {useSidePanels} from "./app-side-panels";
+import Account from "./components/account/Account";
 
 function App() {
 
@@ -26,6 +27,13 @@ function App() {
             tabName: "Lend",
             tabComponent: (
                 <Lend appState={appState}/>
+            )
+        },
+        {
+            tabName: 'Account',
+            tabComponent: (
+                <Account appState={appState}
+                handleTransferEthOut={() => openSidePanelActions.withdrawEth()}/>
             )
         },
         {

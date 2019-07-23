@@ -15,12 +15,12 @@ const Settings = ({handleNewAgent, appState}) => {
     return (
         <SettingsContainer>
             <div>
-                <DetailButtonContainer label="Agent Address"
+                <DetailButtonContainer label={"Agent Address"}
                                        detail={agentAddress}
-                                       buttonLabel="Change Agent"
+                                       buttonLabel={"Change Agent"}
                                        buttonOnClick={handleNewAgent}/>
 
-                <DetailContainer label="Aragon App Address"
+                <DetailContainer label={"Aragon App Address"}
                                  detail={appAddress}/>
             </div>
 

@@ -4,6 +4,11 @@
       "name": "Set the agent address",
       "id": "SET_AGENT_ROLE",
       "params": []
+    },
+    {
+      "name": "Transfer Agent Tokens",
+      "id": "TRANSFER_ROLE",
+      "params": []
     }
   ],
   "environments": {
