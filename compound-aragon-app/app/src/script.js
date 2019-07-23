@@ -2,9 +2,7 @@ import '@babel/polyfill'
 import Aragon, {events} from '@aragon/api'
 import retryEvery from "./lib/retryEvery"
 import {agentAddress$, agentApp$} from "./web3/ExternalContracts";
-import {zip, of} from 'rxjs'
-import {catchError, flatMap, mergeMap} from "rxjs/operators";
-import {ETHER_TOKEN_FAKE_ADDRESS} from "./SharedConstants";
+import {agentEthBalance$, agentInitializationBlock$} from "./web3/ExternalContractsData";
 
 const DEBUG = true; // set to false to disable debug messages.
 const debugLog = message => {
@@ -15,13 +13,13 @@ const debugLog = message => {
 
 const api = new Aragon()
 
-// Wait until we can get the agent contract (demonstrating we are connected to the app) before initializing the store.
+// Wait until we can get the agent address (demonstrating we are connected to the app) before initializing the store.
 retryEvery(retry => {
-    agentApp$(api).subscribe(
-        agentApp => initialize(agentApp),
+    agentAddress$(api).subscribe(
+        () => initialize(),
         error => {
             console.error(
-                'Could not start background script execution due to the contract not loading the contracts:',
+                'Could not start background script execution due to the contract not loading the agent address:',
                 error
             )
             retry()
@@ -29,11 +27,14 @@ retryEvery(retry => {
     )
 })
 
-const initialize = (agentApp) => {
+async function initialize() {
     api.store(onNewEventCatchError, {
         init: initialState,
         externals: [
-            {contract: agentApp} // TODO: Probably specify initializationBlock
+            {
+                contract: await agentApp$(api).toPromise(),
+                initializationBlock: await agentInitializationBlock$(api).toPromise()
+            }
         ]
     })
 }
@@ -43,7 +44,7 @@ const initialState = async (state) => {
         ...state,
         isSyncing: true,
         agentAddress: await agentAddress$(api).toPromise(),
-        agentEthBalance: await agentEthBalance$().toPromise(),
+        agentEthBalance: await agentEthBalance$(api).toPromise(),
 
     }
 }
@@ -91,20 +92,9 @@ const onNewEvent = async (state, storeEvent) => {
             debugLog("AGENT TRANSFER")
             return {
                 ...state,
-                agentEthBalance: await agentEthBalance$().toPromise()
+                agentEthBalance: await agentEthBalance$(api).toPromise()
             }
         default:
             return state
     }
 }
-
-const onErrorReturnDefault = (errorContext, defaultReturnValue) =>
-    catchError(error => {
-        console.error(`Script error fetching ${errorContext}: ${error}`)
-        return of(defaultReturnValue)
-    })
-
-const agentEthBalance$ = () =>
-    agentApp$(api).pipe(
-        mergeMap(agentApp => agentApp.balance(ETHER_TOKEN_FAKE_ADDRESS)),
-        onErrorReturnDefault('agentEthBalance', 0))

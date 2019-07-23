@@ -3,7 +3,6 @@ pragma solidity ^0.4.24;
 import "@aragon/os/contracts/apps/AragonApp.sol";
 import "@aragon/apps-agent/contracts/Agent.sol";
 
-// TODO: Remove hardcoded decimals in radspec strings.
 contract CompoundApp is AragonApp {
 
     bytes32 public constant SET_AGENT_ROLE = keccak256("SET_AGENT_ROLE");
@@ -36,7 +35,7 @@ contract CompoundApp is AragonApp {
     }
 
     /**
-    * @notice Transfer `@tokenAmount(_token, _value)` `_token` from the Compound Agent to `_to`
+    * @notice Transfer `@tokenAmount(_token, _value, true, 18)` `_token` from the Compound Agent to `_to`
     * @param _token Address of the token being transferred
     * @param _to Address of the recipient of tokens
     * @param _value Amount of tokens being transferred
