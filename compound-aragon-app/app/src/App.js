@@ -33,7 +33,9 @@ function App() {
             tabName: 'Account',
             tabComponent: (
                 <Account appState={appState}
-                handleTransferEthOut={() => openSidePanelActions.withdrawEth()}/>
+                         handleTransferEthOut={() => openSidePanelActions.withdrawEth()}
+                         handleDepositEth={() => openSidePanelActions.depositEth()}
+                />
             )
         },
         {

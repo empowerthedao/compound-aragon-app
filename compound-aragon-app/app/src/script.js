@@ -2,11 +2,11 @@ import '@babel/polyfill'
 import Aragon, {events} from '@aragon/api'
 import retryEvery from "./lib/retryEvery"
 import {agentAddress$, agentApp$} from "./web3/ExternalContracts";
-import {agentEthBalance$, agentInitializationBlock$} from "./web3/ExternalContractsData";
+import {agentEthBalance$, agentInitializationBlock$} from "./web3/ExternalData";
 
-const DEBUG = true; // set to false to disable debug messages.
+const DEBUG_LOGS = true;
 const debugLog = message => {
-    if (DEBUG) {
+    if (DEBUG_LOGS) {
         console.log(message)
     }
 }
@@ -61,6 +61,9 @@ const onNewEvent = async (state, storeEvent) => {
 
     const {event: eventName, address: eventAddress} = storeEvent
 
+    console.log("STORE EVENT:")
+    console.log(storeEvent)
+
     switch (eventName) {
         case events.SYNC_STATUS_SYNCING:
             debugLog("APP SYNCING")
@@ -87,6 +90,7 @@ const onNewEvent = async (state, storeEvent) => {
                 ...state,
                 agentAddress: await agentAddress$(api).toPromise()
             }
+        case 'AgentDeposit':
         case 'VaultTransfer':
         case 'VaultDeposit':
             debugLog("AGENT TRANSFER")

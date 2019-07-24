@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import GenericInputPanel from "./components/side-panel-input/GenericInputPanel";
-import {setAgent, withdrawEth} from "./web3/CompoundAppContract";
+import {depositEth, setAgent, withdrawEth} from "./web3/CompoundAppContract";
 
 const useSidePanelActions = (api, closeSidePanel) => {
 
@@ -14,6 +14,11 @@ const useSidePanelActions = (api, closeSidePanel) => {
         withdrawEth: (sendTo, amount) => {
             closeSidePanel()
             withdrawEth(api, sendTo, amount)
+        },
+
+        depositEth: (amount) => {
+            closeSidePanel()
+            depositEth(api, amount)
         }
 
     }
@@ -41,22 +46,36 @@ const useSidePanels = (api) => {
             )
         },
         TRANSFER_ETH_OUT: {
-            title: 'Transfer Ethereum From App',
+            title: 'Withdraw Ethereum From App',
             sidePanelComponent: (
                 <GenericInputPanel actionTitle={'Transfer Action'}
                                    actionDescription={`This action will transfer the specified amount of Ethereum (ETH)
-                                   from the Compound App to the address specified.`}
+                                   from the Compound App's Agent to the address specified.`}
                                    inputFieldList={[
                                        {id: 1, label: 'address', type: 'text'},
                                        {id: 2, label: 'amount', type: 'number'}]}
-                                   submitLabel={'Transfer Out'}
+                                   submitLabel={'Withdraw'}
                                    handleSubmit={sidePanelActions.withdrawEth}/>
             )
-        },}
+        },
+        TRANSFER_ETH_IN: {
+            title: 'Deposit Ethereum To App',
+            sidePanelComponent: (
+                <GenericInputPanel actionTitle={'Transfer Action'}
+                                   actionDescription={`This action will transfer the specified amount of Ethereum (ETH)
+                                   to the Compound App's Agent from your wallet.`}
+                                   inputFieldList={[
+                                       {id: 1, label: 'amount', type: 'number'}]}
+                                   submitLabel={'Deposit'}
+                                   handleSubmit={sidePanelActions.depositEth}/>
+            )
+        },
+    }
 
     const openSidePanelActions = {
         changeAgent: () => setSidePanel(sidePanels.CHANGE_AGENT),
-        withdrawEth: () => setSidePanel(sidePanels.TRANSFER_ETH_OUT)
+        withdrawEth: () => setSidePanel(sidePanels.TRANSFER_ETH_OUT),
+        depositEth: () => setSidePanel(sidePanels.TRANSFER_ETH_IN)
     }
 
     return {

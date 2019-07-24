@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from "styled-components";
-import DetailButtonContainer from "../common/DetailButtonContainer";
+import DetailTwoButtonContainer from "../common/DetailTwoButtonContainer";
 
 const AccountContainer = styled.div`
     display: flex;
@@ -8,17 +8,19 @@ const AccountContainer = styled.div`
     align-items: flex-start;
 `
 
-const Account = ({appState, handleTransferEthOut}) => {
+const Account = ({appState, handleTransferEthOut, handleDepositEth}) => {
 
     const {agentEthBalance} = appState
 
     return (
         <AccountContainer>
             <div>
-                <DetailButtonContainer label={"ETH Balance"}
-                                       detail={agentEthBalance}
-                                       buttonLabel={"Withdraw ETH"}
-                                       buttonOnClick={handleTransferEthOut}/>
+                <DetailTwoButtonContainer label={"Agents ETH Balance"}
+                                          detail={agentEthBalance}
+                                          leftButtonLabel={"Withdraw ETH"}
+                                          leftButtonOnClick={handleTransferEthOut}
+                                          rightButtonLabel={"Deposit ETH"}
+                                          rightButtonOnClick={handleDepositEth}/>
             </div>
         </AccountContainer>
     )

@@ -2,16 +2,26 @@ pragma solidity ^0.4.24;
 
 import "@aragon/os/contracts/apps/AragonApp.sol";
 import "@aragon/apps-agent/contracts/Agent.sol";
+import "@aragon/os/contracts/common/SafeERC20.sol";
+import "@aragon/os/contracts/lib/token/ERC20.sol";
 
 contract CompoundApp is AragonApp {
+
+    using SafeERC20 for ERC20;
 
     bytes32 public constant SET_AGENT_ROLE = keccak256("SET_AGENT_ROLE");
     bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
+    string private constant ERROR_VALUE_MISMATCH = "COMPOUND_VALUE_MISMATCH";
+    string private constant ERROR_SEND_REVERTED = "COMPOUND_SEND_REVERTED";
+    string private constant ERROR_TOKEN_TRANSFER_FROM_REVERTED = "COMPOUND_TOKEN_TRANSFER_FROM_REVERTED";
+    string private constant ERROR_TOKEN_APPROVE_REVERTED = "COMPOUND_TOKEN_APPROVE_REVERTED";
+
     Agent public agent;
 
     event AppInitialized();
-    event NewAgentSet(address agent);
+    event NewAgentSet();
+    event AgentDeposit();
 
     /**
     * @notice Initialize the Compound App
@@ -19,9 +29,7 @@ contract CompoundApp is AragonApp {
     */
     function initialize(address _agent) public {
         initialized();
-
         agent = Agent(_agent);
-
         emit AppInitialized();
     }
 
@@ -31,7 +39,7 @@ contract CompoundApp is AragonApp {
     */
     function setAgent(address _agent) external auth(SET_AGENT_ROLE) {
         agent = Agent(_agent);
-        emit NewAgentSet(_agent);
+        emit NewAgentSet();
     }
 
     /**
@@ -45,4 +53,23 @@ contract CompoundApp is AragonApp {
         agent.transfer(_token, _to, _value);
     }
 
+    /**
+    * @notice Deposit `@tokenAmount(_token, _value, true, 18)` `_token` tokens to the Livepeer App
+    * @param _token Address of the token being transferred
+    * @param _value Amount of tokens being transferred
+    */
+    function deposit(address _token, uint256 _value) external payable {
+
+        if (_token == ETH) {
+            require(agent.send(_value), ERROR_SEND_REVERTED);
+        } else {
+            require(ERC20(_token).safeTransferFrom(msg.sender, address(this), _value), ERROR_TOKEN_TRANSFER_FROM_REVERTED);
+            require(ERC20(_token).safeApprove(address(agent), _value), ERROR_TOKEN_APPROVE_REVERTED);
+            agent.deposit(_token, _value);
+        }
+
+        // TODO: There seems to be an issue receiving the VaultDeposit event when emitted from a fallback function.
+        // Emitting a separate event here is the current workaround, requires more investigation.
+        emit AgentDeposit();
+    }
 }
