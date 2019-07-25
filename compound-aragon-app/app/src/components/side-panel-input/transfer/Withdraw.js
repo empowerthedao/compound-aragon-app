@@ -34,6 +34,15 @@ const StyledTextBlock = styled(Text.Block).attrs({
   ${unselectable()};
   display: flex;
 `
+const StyledAsterisk = styled.span.attrs({
+    children: '*',
+    title: 'Required',
+})`
+  color: ${theme.accent};
+  margin-left: auto;
+  padding-top: 3px;
+  font-size: 12px;
+`
 
 const Withdraw = ({appState, handleWithdraw}) => {
 
@@ -62,6 +71,7 @@ const Withdraw = ({appState, handleWithdraw}) => {
                 <label>
                     <StyledTextBlock>
                         Amount
+                        <StyledAsterisk/>
                     </StyledTextBlock>
                 </label>
                 <CombinedInput>

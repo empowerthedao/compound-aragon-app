@@ -47,7 +47,7 @@ const useSidePanels = (api, appState) => {
             )
         },
         TRANSFER: {
-            title: 'New Transfer',
+            title: 'New Agent Transfer',
             sidePanelComponent: (
                 <TransferPanel appState={appState}
                                handleDeposit={sidePanelActions.deposit}

@@ -58,7 +58,6 @@ contract CompoundApp is AragonApp {
     * @param _value Amount of tokens being transferred
     */
     function deposit(address _token, uint256 _value) external payable {
-
         if (_token == ETH) {
             require(agent.send(_value), ERROR_SEND_REVERTED);
         } else {
