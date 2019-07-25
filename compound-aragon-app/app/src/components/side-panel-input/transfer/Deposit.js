@@ -28,25 +28,32 @@ const Deposit = ({appState, handleDeposit}) => {
     const getSelectedTokenDecimals = () => tokens[tokenSelected].decimals
 
     return (
-        <DepositContainer>
+        <form onSubmit={() => handleDeposit(getSelectedTokenAddress(), amount, getSelectedTokenDecimals())}>
+            <DepositContainer>
 
-            <FieldStyled label="Token">
-                <DropDown items={tokensAvailable} active={tokenSelected} onChange={setTokenSelected} wide/>
-            </FieldStyled>
+                <FieldStyled label="Token">
+                    <DropDown items={tokensAvailable} active={tokenSelected} onChange={setTokenSelected} wide/>
+                </FieldStyled>
 
-            <FieldStyled label="Amount">
-                <TextInput type="number" wide onChange={event => setAmount(event.target.value)}/>
-            </FieldStyled>
+                <FieldStyled label="Amount">
+                    <TextInput type="number"
+                               wide
+                               required
+                               min={0}
+                               step="any"
+                               onChange={event => setAmount(event.target.value)}/>
+                </FieldStyled>
 
-            <ButtonStyled wide mode="strong"
-                          onClick={() => handleDeposit(getSelectedTokenAddress(), amount, getSelectedTokenDecimals())}>
-                Submit Deposit
-            </ButtonStyled>
+                <ButtonStyled wide mode="strong"
+                              type="submit">
+                    Submit Deposit
+                </ButtonStyled>
 
-            <Info.Action title="Deposit action">
-                This action will deposit the specified amount of Tokens or Ether to the Compound App's Agent.
-            </Info.Action>
-        </DepositContainer>
+                <Info.Action title="Deposit action">
+                    This action will deposit the specified amount of Tokens or Ether to the Compound App's Agent.
+                </Info.Action>
+            </DepositContainer>
+        </form>
     )
 }
 

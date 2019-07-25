@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Info, DropDown, Field, TextInput, Button} from '@aragon/ui'
+import {Info, DropDown, Field, TextInput, Button, Text, theme, unselectable} from '@aragon/ui'
 import styled from "styled-components";
 
 const WithdrawContainer = styled.div`
@@ -14,7 +14,28 @@ const ButtonStyled = styled(Button)`
     margin-bottom: 30px;
 `
 
-const Deposit = ({appState, handleWithdraw}) => {
+const CombinedInput = styled.div`
+  display: flex;
+  margin-bottom: 20px;
+  input[type='text'] {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: 0;
+  }
+  input[type='text'] + div > div:first-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+`
+const StyledTextBlock = styled(Text.Block).attrs({
+    color: theme.textSecondary,
+    smallcaps: true,
+})`
+  ${unselectable()};
+  display: flex;
+`
+
+const Withdraw = ({appState, handleWithdraw}) => {
 
     const [recipient, setRecipient] = useState("")
     const [amount, setAmount] = useState(0)
@@ -22,36 +43,54 @@ const Deposit = ({appState, handleWithdraw}) => {
 
     const {tokens} = appState
 
-    const tokensAvailable = tokens.map(token => token.name)
+    const tokenSymbols = tokens.map(token => token.symbol)
 
     const getSelectedTokenAddress = () => tokens[selectedCurrency].address
     const getSelectedTokenDecimals = () => tokens[selectedCurrency].decimals
 
     return (
-        <WithdrawContainer>
+        <form onSubmit={() => handleWithdraw(getSelectedTokenAddress(), recipient, amount, getSelectedTokenDecimals())}>
+            <WithdrawContainer>
 
-            <FieldStyled label="Recipient">
-                <TextInput type="text" wide onChange={event => setRecipient(event.target.value)}/>
-            </FieldStyled>
+                <FieldStyled label="Recipient">
+                    <TextInput type="text"
+                               wide
+                               required
+                               onChange={event => setRecipient(event.target.value)}/>
+                </FieldStyled>
 
-            <FieldStyled label="Amount">
-                <TextInput type="number" wide onChange={event => setAmount(event.target.value)}/>
-            </FieldStyled>
+                <label>
+                    <StyledTextBlock>
+                        Amount
+                    </StyledTextBlock>
+                </label>
+                <CombinedInput>
+                    <TextInput
+                        type="number"
+                        onChange={event => setAmount(event.target.value)}
+                        min={0}
+                        step="any"
+                        required
+                        wide
+                    />
+                    <DropDown
+                        items={tokenSymbols}
+                        active={selectedCurrency}
+                        onChange={event => setSelectedCurrency(event.target.value)}
+                    />
+                </CombinedInput>
 
-            <FieldStyled label="Token">
-                <DropDown items={tokensAvailable} active={selectedCurrency} onChange={setSelectedCurrency} wide/>
-            </FieldStyled>
+                <ButtonStyled wide mode="strong"
+                              type="submit">
+                    Submit Withdrawal
+                </ButtonStyled>
 
-            <ButtonStyled wide mode="strong"
-                          onClick={() => handleWithdraw(getSelectedTokenAddress(), recipient, amount, getSelectedTokenDecimals())}>
-                Submit Wtihdrawal
-            </ButtonStyled>
-
-            <Info.Action title="Deposit action">
-                This action will withdraw the specified amount of Tokens or Ether from the Compound App's Agent.
-            </Info.Action>
-        </WithdrawContainer>
+                <Info.Action title="Deposit action">
+                    This action will withdraw the specified amount of Tokens or Ether from the Compound App's Agent.
+                </Info.Action>
+            </WithdrawContainer>
+        </form>
     )
 }
 
-export default Deposit
+export default Withdraw
