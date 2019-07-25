@@ -1,5 +1,5 @@
 import {toDecimals} from "../lib/math-utils";
-import {ETH_DECIMALS, ETHER_TOKEN_FAKE_ADDRESS} from "../lib/shared-constants";
+import {ETHER_TOKEN_FAKE_ADDRESS} from "../lib/shared-constants";
 
 const setAgent = (api, address) => {
     api.setAgent(address)
@@ -12,16 +12,21 @@ const withdraw = (api, token, recipient, amount, decimals) => {
         .subscribe()
 }
 
-const deposit = (api, token, amount, decimals) => {
+const deposit = (api, tokenAddress, amount, decimals) => {
     const adjustedAmount = toDecimals(amount, decimals)
-    let ethValue = 0
 
-    if (token === ETHER_TOKEN_FAKE_ADDRESS) {
-        ethValue = adjustedAmount
+    if (tokenAddress === ETHER_TOKEN_FAKE_ADDRESS) {
+        api.deposit(tokenAddress, adjustedAmount, {value: adjustedAmount})
+            .subscribe()
+    } else {
+        api.deposit(tokenAddress, adjustedAmount, {
+            token: {
+                address: tokenAddress,
+                value: adjustedAmount
+            }
+        })
+            .subscribe()
     }
-
-    api.deposit(token, adjustedAmount, {value: ethValue})
-        .subscribe()
 }
 
 export {

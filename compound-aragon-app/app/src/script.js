@@ -2,7 +2,7 @@ import '@babel/polyfill'
 import Aragon, {events} from '@aragon/api'
 import retryEvery from "./lib/retry-every"
 import {agentAddress$, agentApp$} from "./web3/ExternalContracts";
-import {agentInitializationBlock$, balances$} from "./web3/ExternalData";
+import {agentInitializationBlock$, balances$, network$} from "./web3/ExternalData";
 
 const DEBUG_LOGS = true;
 const debugLog = message => {
@@ -40,12 +40,16 @@ async function initialize() {
 }
 
 const initialState = async (state) => {
-    return {
-        ...state,
-        isSyncing: true,
-        agentAddress: await agentAddress$(api).toPromise(),
-        balances: await balances$(api).toPromise()
-
+    try {
+        return {
+            ...state,
+            isSyncing: true,
+            agentAddress: await agentAddress$(api).toPromise(),
+            balances: await balances$(api).toPromise()
+        }
+    } catch (e) {
+        console.error(e)
+        return state
     }
 }
 

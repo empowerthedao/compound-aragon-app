@@ -101,10 +101,14 @@ const EmptyListItem = () => (
 )
 
 const AddTokenButton = (wide, mode, onClick) => (
-    <Button wide={wide} mode={mode} onClick={() => onClick()}>
+    <ButtonStyled wide={wide} mode={mode} onClick={() => onClick()}>
         {"Transfer"}
-    </Button>
+    </ButtonStyled>
 )
+
+const ButtonStyled = styled(Button)`
+    margin-left: 20px;
+`
 
 const ScrollView = styled.div`
   /*

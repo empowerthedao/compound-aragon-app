@@ -16,22 +16,22 @@ const ButtonStyled = styled(Button)`
 
 const Deposit = ({appState, handleDeposit}) => {
 
-    const [activeItem, setActiveItem] = useState(0)
+    const [tokenSelected, setTokenSelected] = useState(0)
     const [amount, setAmount] = useState(0)
 
     const {tokens} = appState
 
     const tokensAvailable = tokens.map(token => token.name)
 
-    const getSelectedTokenAddress = () => tokens[activeItem].address
+    const getSelectedTokenAddress = () => tokens[tokenSelected].address
 
-    const getSelectedTokenDecimals = () => tokens[activeItem].decimals
+    const getSelectedTokenDecimals = () => tokens[tokenSelected].decimals
 
     return (
         <DepositContainer>
 
             <FieldStyled label="Token">
-                <DropDown items={tokensAvailable} active={activeItem} onChange={setActiveItem} wide/>
+                <DropDown items={tokensAvailable} active={tokenSelected} onChange={setTokenSelected} wide/>
             </FieldStyled>
 
             <FieldStyled label="Amount">
