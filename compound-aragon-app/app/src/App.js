@@ -26,7 +26,8 @@ function App() {
             tabName: "Lend",
             tabComponent: (
                 <Lend appState={appState} handleTransfer={() => openSidePanelActions.transfer()}/>
-            )
+            ),
+            smallViewPadding: 0
         },
         {
             tabName: 'Settings',
@@ -34,12 +35,14 @@ function App() {
                 <Settings appState={appState}
                           handleNewAgent={() => openSidePanelActions.changeAgent()}
                 />
-            )
+            ),
+            smallViewPadding: 30
         }
     ]
 
     const tabsNames = tabs.map(tab => tab.tabName)
     const selectedTabComponent = tabs[tabBarSelected].tabComponent
+    const getSmallViewPadding = () => tabs[tabBarSelected].smallViewPadding
 
     return (
         <div css="min-width: 320px">
@@ -50,7 +53,7 @@ function App() {
                                items={tabsNames}
                                selected={tabBarSelected}
                                onChange={setTabBarSelected}/>)}
-                           smallViewPadding={0}>
+                           smallViewPadding={getSmallViewPadding()}>
 
                     {selectedTabComponent}
 

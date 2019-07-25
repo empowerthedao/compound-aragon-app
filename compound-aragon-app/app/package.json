@@ -9,6 +9,7 @@
     "@babel/polyfill": "^7.2.5",
     "bn.js": "^5.0.0",
     "lodash.throttle": "^4.1.1",
+    "prop-types": "^15.7.2",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "rxjs": "^6.2.1",
