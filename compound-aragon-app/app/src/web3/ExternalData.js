@@ -8,27 +8,23 @@ const agentInitializationBlock$ = (api) =>
         mergeMap(agent => agent.getInitializationBlock())
     )
 
-const agentEthBalance$ = api =>
-    agentApp$(api).pipe(
+const agentEthBalance$ = api => {
+
+    const balanceObject = (balance) => ({
+        decimals: ETH_DECIMALS,
+        name: "Ether",
+        symbol: "ETH",
+        address: ETHER_TOKEN_FAKE_ADDRESS,
+        amount: balance,
+        verified: true,
+    })
+
+    return agentApp$(api).pipe(
         mergeMap(agentApp => agentApp.balance(ETHER_TOKEN_FAKE_ADDRESS)),
-        tap(balance => console.log("BALANCE: " + balance)),
-        map(balance => ({
-            decimals: ETH_DECIMALS,
-            name: "ETHER",
-            symbol: "ETH",
-            address: ETHER_TOKEN_FAKE_ADDRESS,
-            amount: balance,
-            verified: true,
-        }),
-            onErrorReturnDefault('agentEthBalance', {
-                decimals: ETH_DECIMALS,
-                name: "ETHER",
-                symbol: "ETH",
-                address: ETHER_TOKEN_FAKE_ADDRESS,
-                amount: 0,
-                verified: true,
-            }))
+        map(balance => balanceObject(balance)),
+        onErrorReturnDefault('agentEthBalance', balanceObject(0))
     )
+}
 
 const balances$ = api =>
     agentEthBalance$(api).pipe(

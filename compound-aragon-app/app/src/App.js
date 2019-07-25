@@ -6,7 +6,6 @@ import AppLayout from "./components/app-layout/AppLayout"
 import Settings from "./components/settings/Settings"
 import Lend from "./components/lend/Lend";
 import {useSidePanels} from "./app-side-panels";
-import Account from "./components/account/Account";
 
 function App() {
 
@@ -20,22 +19,13 @@ function App() {
         openSidePanel,
         openSidePanelActions,
         closeSidePanel
-    } = useSidePanels(api)
+    } = useSidePanels(api, appState)
 
     const tabs = [
         {
             tabName: "Lend",
             tabComponent: (
-                <Lend appState={appState}/>
-            )
-        },
-        {
-            tabName: 'Account',
-            tabComponent: (
-                <Account appState={appState}
-                         handleTransferEthOut={() => openSidePanelActions.withdrawEth()}
-                         handleDepositEth={() => openSidePanelActions.depositEth()}
-                />
+                <Lend appState={appState} handleTransfer={() => openSidePanelActions.transfer()}/>
             )
         },
         {

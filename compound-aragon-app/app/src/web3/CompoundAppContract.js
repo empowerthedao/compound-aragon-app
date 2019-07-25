@@ -6,20 +6,26 @@ const setAgent = (api, address) => {
         .subscribe()
 }
 
-const withdrawEth = (api, sendToAddress, amount) => {
-    const adjustedAmount = toDecimals(amount, ETH_DECIMALS)
-    api.transfer(ETHER_TOKEN_FAKE_ADDRESS, sendToAddress, adjustedAmount)
+const withdraw = (api, token, recipient, amount, decimals) => {
+    const adjustedAmount = toDecimals(amount, decimals)
+    api.transfer(token, recipient, adjustedAmount)
         .subscribe()
 }
 
-const depositEth = (api, amount) => {
-    const adjustedAmount = toDecimals(amount, ETH_DECIMALS)
-    api.deposit(ETHER_TOKEN_FAKE_ADDRESS, adjustedAmount, {value: adjustedAmount})
+const deposit = (api, token, amount, decimals) => {
+    const adjustedAmount = toDecimals(amount, decimals)
+    let ethValue = 0
+
+    if (token === ETHER_TOKEN_FAKE_ADDRESS) {
+        ethValue = adjustedAmount
+    }
+
+    api.deposit(token, adjustedAmount, {value: ethValue})
         .subscribe()
 }
 
 export {
     setAgent,
-    withdrawEth,
-    depositEth
+    withdraw,
+    deposit
 }

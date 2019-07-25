@@ -17,14 +17,9 @@ const reducer = state => {
         balances
     } = state
 
-    const balancesBn = balances
+    const convertedBalances = balances
         ? balances
-            .map(balance => {
-
-                console.log("BALANCE AMOUNT")
-                console.log(balance.amount)
-
-                return {
+            .map(balance => ({
                     ...balance,
                     amount: new BN(balance.amount),
                     decimals: new BN(balance.decimals),
@@ -35,13 +30,25 @@ const reducer = state => {
                         amount: parseInt(balance.amount, 10),
                         decimals: parseInt(balance.decimals, 10),
                     },
-                }
-            })
+                })
+            )
         : []
+
+    const tokens = convertedBalances.map(
+        ({ address, name, symbol, numData: { amount, decimals }, verified }) => ({
+            address,
+            amount,
+            decimals,
+            name,
+            symbol,
+            verified,
+        })
+    )
 
     return {
         ...state,
-        balances: balancesBn
+        balances: convertedBalances,
+        tokens
     }
 }
 
