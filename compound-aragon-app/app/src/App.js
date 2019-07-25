@@ -59,7 +59,8 @@ function App() {
                            tabs={(<TabBar
                                items={tabsNames}
                                selected={tabBarSelected}
-                               onChange={setTabBarSelected}/>)}>
+                               onChange={setTabBarSelected}/>)}
+                           smallViewPadding={0}>
 
                     {selectedTabComponent}
 

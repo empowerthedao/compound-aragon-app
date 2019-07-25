@@ -1,5 +1,5 @@
 import {toDecimals} from "../lib/math-utils";
-import {ETH_DECIMALS, ETHER_TOKEN_FAKE_ADDRESS} from "../SharedConstants";
+import {ETH_DECIMALS, ETHER_TOKEN_FAKE_ADDRESS} from "../lib/shared-constants";
 
 const setAgent = (api, address) => {
     api.setAgent(address)

@@ -7,6 +7,8 @@
     "@aragon/api-react": "^2.0.0-beta.1",
     "@aragon/ui": "^0.40.1",
     "@babel/polyfill": "^7.2.5",
+    "bn.js": "^5.0.0",
+    "lodash.throttle": "^4.1.1",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "rxjs": "^6.2.1",

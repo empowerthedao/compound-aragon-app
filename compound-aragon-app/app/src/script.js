@@ -1,8 +1,8 @@
 import '@babel/polyfill'
 import Aragon, {events} from '@aragon/api'
-import retryEvery from "./lib/retryEvery"
+import retryEvery from "./lib/retry-every"
 import {agentAddress$, agentApp$} from "./web3/ExternalContracts";
-import {agentEthBalance$, agentInitializationBlock$} from "./web3/ExternalData";
+import {agentInitializationBlock$, balances$} from "./web3/ExternalData";
 
 const DEBUG_LOGS = true;
 const debugLog = message => {
@@ -44,7 +44,7 @@ const initialState = async (state) => {
         ...state,
         isSyncing: true,
         agentAddress: await agentAddress$(api).toPromise(),
-        agentEthBalance: await agentEthBalance$(api).toPromise(),
+        balances: await balances$(api).toPromise()
 
     }
 }
@@ -93,7 +93,7 @@ const onNewEvent = async (state, storeEvent) => {
             debugLog("AGENT TRANSFER")
             return {
                 ...state,
-                agentEthBalance: await agentEthBalance$(api).toPromise()
+                balances: await balances$(api).toPromise()
             }
         default:
             return state
