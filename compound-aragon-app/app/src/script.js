@@ -61,9 +61,6 @@ const onNewEvent = async (state, storeEvent) => {
 
     const {event: eventName, address: eventAddress} = storeEvent
 
-    console.log("STORE EVENT:")
-    console.log(storeEvent)
-
     switch (eventName) {
         case events.SYNC_STATUS_SYNCING:
             debugLog("APP SYNCING")
@@ -90,7 +87,7 @@ const onNewEvent = async (state, storeEvent) => {
                 ...state,
                 agentAddress: await agentAddress$(api).toPromise()
             }
-        case 'AgentDeposit':
+        case 'ProxyDeposit':
         case 'VaultTransfer':
         case 'VaultDeposit':
             debugLog("AGENT TRANSFER")

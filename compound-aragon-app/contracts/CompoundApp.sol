@@ -21,7 +21,6 @@ contract CompoundApp is AragonApp {
 
     event AppInitialized();
     event NewAgentSet();
-    event AgentDeposit();
 
     /**
     * @notice Initialize the Compound App
@@ -54,7 +53,7 @@ contract CompoundApp is AragonApp {
     }
 
     /**
-    * @notice Deposit `@tokenAmount(_token, _value, true, 18)` `_token` tokens to the Livepeer App
+    * @notice Deposit `@tokenAmount(_token, _value, true, 18)` `_token` tokens to the Compound App
     * @param _token Address of the token being transferred
     * @param _value Amount of tokens being transferred
     */
@@ -67,9 +66,5 @@ contract CompoundApp is AragonApp {
             require(ERC20(_token).safeApprove(address(agent), _value), ERROR_TOKEN_APPROVE_REVERTED);
             agent.deposit(_token, _value);
         }
-
-        // TODO: There seems to be an issue receiving the VaultDeposit event when emitted from a fallback function.
-        // Emitting a separate event here is the current workaround, requires more investigation.
-        emit AgentDeposit();
     }
 }
