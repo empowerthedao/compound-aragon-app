@@ -4,6 +4,7 @@ import throttle from 'lodash.throttle'
 import {theme, breakpoint, Viewport, Button} from '@aragon/ui'
 import BalanceToken from './BalanceToken'
 import {round} from '../../lib/math-utils'
+import AbortController from 'abort-controller'
 
 const CONVERT_API_BASE = 'https://min-api.cryptocompare.com/data'
 const CONVERT_THROTTLE_TIME = 5000
@@ -12,6 +13,8 @@ const convertApiUrl = symbols =>
     `${CONVERT_API_BASE}/price?fsym=USD&tsyms=${symbols.join(',')}`
 
 class Balances extends React.Component {
+    controller = new AbortController()
+
     state = {
         convertRates: {},
     }
@@ -25,6 +28,7 @@ class Balances extends React.Component {
     }
 
     updateConvertedRates = throttle(async ({balances}) => {
+
         const verifiedSymbols = balances
             .filter(({verified}) => verified)
             .map(({symbol}) => symbol)
@@ -33,10 +37,16 @@ class Balances extends React.Component {
             return
         }
 
-        const res = await fetch(convertApiUrl(verifiedSymbols))
+        const res = await fetch(convertApiUrl(verifiedSymbols), {
+            signal: this.controller.signal
+        })
         const convertRates = await res.json()
         this.setState({convertRates})
     }, CONVERT_THROTTLE_TIME)
+
+    componentWillUnmount() {
+        this.controller.abort()
+    }
 
     render() {
         const {balances, handleTransfer} = this.props
@@ -81,11 +91,11 @@ class Balances extends React.Component {
                                 <EmptyListItem/>
                             )}
                             {!below('medium') &&
-                            AddTokenButton(false, 'outline', handleTransfer)}
+                            AddTokenButton(false, 'outline', handleTransfer, 20)}
                         </List>
                     </ScrollView>
                     {below('medium') && (
-                        <Wrapper>{AddTokenButton(true, 'strong', handleTransfer)}</Wrapper>
+                        <Wrapper>{AddTokenButton(true, 'strong', handleTransfer, 0)}</Wrapper>
                     )}
                 </section>
                 )}
@@ -100,15 +110,12 @@ const EmptyListItem = () => (
     </ListItem>
 )
 
-const AddTokenButton = (wide, mode, onClick) => (
-    <ButtonStyled wide={wide} mode={mode} onClick={() => onClick()}>
+const AddTokenButton = (wide, mode, onClick, marginLeft) => (
+    <Button style={{marginLeft: marginLeft}} wide={wide} mode={mode} onClick={() => onClick()}>
         {"Transfer"}
-    </ButtonStyled>
+    </Button>
 )
 
-const ButtonStyled = styled(Button)`
-    margin-left: 20px;
-`
 
 const ScrollView = styled.div`
   /*

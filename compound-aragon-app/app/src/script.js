@@ -65,6 +65,9 @@ const onNewEvent = async (state, storeEvent) => {
 
     const {event: eventName, address: eventAddress} = storeEvent
 
+    // console.log("Store Event:")
+    // console.log(storeEvent)
+
     switch (eventName) {
         case events.SYNC_STATUS_SYNCING:
             debugLog("APP SYNCING")

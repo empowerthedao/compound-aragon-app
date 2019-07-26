@@ -1,7 +1,7 @@
 import React from "react"
 import styled from 'styled-components'
 import Option from "./Option";
-import {Button, Text, Card} from "@aragon/ui";
+import {Button, IdentityBadge} from "@aragon/ui";
 
 const SettingsContainer = styled.div`
     display: flex;
@@ -10,14 +10,8 @@ const SettingsContainer = styled.div`
     max-width: 400px;
 
 `
-const DetailCard = styled(Card)`
-    padding: 10px;
-    height: auto;
-    margin-top: 10px;
-    margin-bottom: 15px;
-    width: auto;
-`
 const ButtonContainer = styled.div`
+    margin-top: 20px;
     display: flex;
 `
 
@@ -28,9 +22,10 @@ const Settings = ({handleNewAgent, appState}) => {
         <SettingsContainer>
 
             <Option name="Agent Address" text="The contract that represents an EOA and acts on behalf of the Compound app. Funds can be sent to this address.">
-                <DetailCard>
-                    <Text.Block size="normal">{agentAddress}</Text.Block>
-                </DetailCard>
+                <IdentityBadge
+                    entity={agentAddress}
+                    shorten={false}
+                />
 
                 <ButtonContainer>
                     <Button mode="outline" onClick={() => handleNewAgent()}>
@@ -40,9 +35,10 @@ const Settings = ({handleNewAgent, appState}) => {
             </Option>
 
             <Option name="Compound App Address" text="The contract address of this app. Do not send funds to this address.">
-                <DetailCard>
-                    <Text.Block size="normal">{appAddress}</Text.Block>
-                </DetailCard>
+                <IdentityBadge
+                    entity={appAddress}
+                    shorten={false}
+                />
             </Option>
 
         </SettingsContainer>

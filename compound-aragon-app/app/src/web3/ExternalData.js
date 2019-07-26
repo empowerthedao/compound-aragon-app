@@ -65,7 +65,7 @@ const balances$ = api =>
     agentEthBalance$(api).pipe(
         // Add whatever tokens you want to see in the app by repeating the merge function below with the correct token address
         // Maybe pass in all the tokens that have been seen in agent vault events...
-        // merge(agentTokenBalance$(api, "0x4AB5f04234c2b853655E1468D9732AaaCc826480")),
+        merge(agentTokenBalance$(api, "0x4AB5f04234c2b853655E1468D9732AaaCc826480")),
         toArray(),
         onErrorReturnDefault('agentBalances', [])
     )
