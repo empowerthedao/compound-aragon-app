@@ -1,4 +1,4 @@
-import {zip} from 'rxjs'
+import {zip, from} from 'rxjs'
 import {mergeMap, map, tap, merge, toArray, first} from "rxjs/operators";
 import {agentAddress$, agentApp$, tokenContract$} from "./ExternalContracts";
 import {ETHER_TOKEN_FAKE_ADDRESS, ETH_DECIMALS} from "../lib/shared-constants";
@@ -61,17 +61,17 @@ const agentTokenBalance$ = (api, tokenAddress) => {
     )
 }
 
-const balances$ = api =>
-    agentEthBalance$(api).pipe(
-        // Add whatever tokens you want to see in the app by repeating the merge function below with the correct token address
-        // Maybe pass in all the tokens that have been seen in agent vault events...
-        merge(agentTokenBalance$(api, "0x4AB5f04234c2b853655E1468D9732AaaCc826480")),
+const agentTokenBalances$ = (api, tokenAddresses) =>
+    from(tokenAddresses).pipe(
+        mergeMap(tokenAddress => agentTokenBalance$(api, tokenAddress)))
+
+const agentBalances$ = (api, tokenAddresses) => agentEthBalance$(api).pipe(
+        merge(agentTokenBalances$(api, tokenAddresses)),
         toArray(),
-        onErrorReturnDefault('agentBalances', [])
-    )
+        onErrorReturnDefault('agentBalances', []))
 
 export {
     agentInitializationBlock$,
     network$,
-    balances$,
+    agentBalances$,
 }

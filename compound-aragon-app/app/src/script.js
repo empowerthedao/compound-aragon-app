@@ -2,7 +2,7 @@ import '@babel/polyfill'
 import Aragon, {events} from '@aragon/api'
 import retryEvery from "./lib/retry-every"
 import {agentAddress$, agentApp$} from "./web3/ExternalContracts";
-import {agentInitializationBlock$, balances$} from "./web3/ExternalData";
+import {agentInitializationBlock$, agentBalances$} from "./web3/ExternalData";
 
 const DEBUG_LOGS = true;
 const debugLog = message => {
@@ -10,6 +10,9 @@ const debugLog = message => {
         console.log(message)
     }
 }
+
+const agentTokens = new Set([]) // Add any default displayed tokens here. Eth is always fetched.
+const agentTokensArray = () => Array.from(agentTokens)
 
 const api = new Aragon()
 
@@ -45,7 +48,7 @@ const initialState = async (state) => {
             ...state,
             isSyncing: true,
             agentAddress: await agentAddress$(api).toPromise(),
-            balances: await balances$(api).toPromise()
+            balances: await agentBalances$(api, agentTokensArray()).toPromise(),
         }
     } catch (e) {
         console.error(e)
@@ -65,8 +68,8 @@ const onNewEvent = async (state, storeEvent) => {
 
     const {event: eventName, address: eventAddress} = storeEvent
 
-    // console.log("Store Event:")
-    // console.log(storeEvent)
+    console.log("Store Event:")
+    console.log(storeEvent)
 
     switch (eventName) {
         case events.SYNC_STATUS_SYNCING:
@@ -94,13 +97,19 @@ const onNewEvent = async (state, storeEvent) => {
                 ...state,
                 agentAddress: await agentAddress$(api).toPromise()
             }
-        case 'ProxyDeposit':
         case 'VaultTransfer':
         case 'VaultDeposit':
             debugLog("AGENT TRANSFER")
+            agentTokens.add(storeEvent.returnValues.token)
             return {
                 ...state,
-                balances: await balances$(api).toPromise()
+                balances: await agentBalances$(api, agentTokensArray()).toPromise()
+            }
+        case 'ProxyDeposit':
+            debugLog("ETH DEPOSIT")
+            return {
+                ...state,
+                balances: await agentBalances$(api, agentTokensArray()).toPromise()
             }
         default:
             return state
