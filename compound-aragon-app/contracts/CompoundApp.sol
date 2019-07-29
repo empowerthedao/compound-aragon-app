@@ -42,17 +42,6 @@ contract CompoundApp is AragonApp {
     }
 
     /**
-    * @notice Transfer `@tokenAmount(_token, _value, true, 18)` `_token` from the Compound Agent to `_to`
-    * @param _token Address of the token being transferred
-    * @param _to Address of the recipient of tokens
-    * @param _value Amount of tokens being transferred
-    */
-    /* solium-disable-next-line function-order */
-    function transfer(address _token, address _to, uint256 _value) external auth(TRANSFER_ROLE) {
-        agent.transfer(_token, _to, _value);
-    }
-
-    /**
     * @notice Deposit `@tokenAmount(_token, _value, true, 18)` `_token` tokens to the Compound App
     * @param _token Address of the token being transferred
     * @param _value Amount of tokens being transferred
@@ -65,5 +54,16 @@ contract CompoundApp is AragonApp {
             require(ERC20(_token).safeApprove(address(agent), _value), ERROR_TOKEN_APPROVE_REVERTED);
             agent.deposit(_token, _value);
         }
+    }
+
+    /**
+    * @notice Transfer `@tokenAmount(_token, _value, true, 18)` `_token` from the Compound Agent to `_to`
+    * @param _token Address of the token being transferred
+    * @param _to Address of the recipient of tokens
+    * @param _value Amount of tokens being transferred
+    */
+    /* solium-disable-next-line function-order */
+    function transfer(address _token, address _to, uint256 _value) external auth(TRANSFER_ROLE) {
+        agent.transfer(_token, _to, _value);
     }
 }
