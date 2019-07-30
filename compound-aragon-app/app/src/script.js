@@ -3,16 +3,16 @@ import Aragon, {events} from '@aragon/api'
 import retryEvery from "./lib/retry-every"
 import {agentAddress$, agentApp$} from "./web3/ExternalContracts";
 import {agentInitializationBlock$, agentBalances$} from "./web3/ExternalData";
+import {first} from 'rxjs/operators'
 
 const DEBUG_LOGS = true;
 const debugLog = message => {
     if (DEBUG_LOGS) {
-        console.log(message)
+        console.debug(message)
     }
 }
 
-const agentTokens = new Set([]) // Add any default displayed tokens here. Eth is always fetched.
-const agentTokensArray = () => Array.from(agentTokens)
+const activeTokens = state => state ? state.activeTokens ? state.activeTokens : [] : []
 
 const api = new Aragon()
 
@@ -42,13 +42,14 @@ async function initialize() {
     })
 }
 
-const initialState = async (state) => {
+const initialState = async (cachedInitState) => {
     try {
+        const cachedState = await api.state().pipe(first()).toPromise()
         return {
-            ...state,
+            ...cachedState,
             isSyncing: true,
             agentAddress: await agentAddress$(api).toPromise(),
-            balances: await agentBalances$(api, agentTokensArray()).toPromise(),
+            balances: await agentBalances$(api, activeTokens(cachedState)).toPromise()
         }
     } catch (e) {
         console.error(e)
@@ -68,8 +69,11 @@ const onNewEvent = async (state, storeEvent) => {
 
     const {event: eventName, address: eventAddress} = storeEvent
 
-    console.log("Store Event:")
-    console.log(storeEvent)
+    // console.log("Store Event:")
+    // console.log(storeEvent)
+
+    // console.log("Current state:")
+    // console.log(state)
 
     switch (eventName) {
         case events.SYNC_STATUS_SYNCING:
@@ -100,16 +104,19 @@ const onNewEvent = async (state, storeEvent) => {
         case 'VaultTransfer':
         case 'VaultDeposit':
             debugLog("AGENT TRANSFER")
-            agentTokens.add(storeEvent.returnValues.token)
+            let newActiveTokens = [...state.activeTokens ? state.activeTokens : []]
+            newActiveTokens.push(storeEvent.returnValues.token)
+            newActiveTokens = [...new Set(newActiveTokens)]
             return {
                 ...state,
-                balances: await agentBalances$(api, agentTokensArray()).toPromise()
+                balances: await agentBalances$(api, newActiveTokens).toPromise(),
+                activeTokens: newActiveTokens
             }
         case 'ProxyDeposit':
             debugLog("ETH DEPOSIT")
             return {
                 ...state,
-                balances: await agentBalances$(api, agentTokensArray()).toPromise()
+                balances: await agentBalances$(api, activeTokens(state)).toPromise()
             }
         default:
             return state

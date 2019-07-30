@@ -20,8 +20,8 @@ const Settings = ({handleNewAgent, appState}) => {
 
     return (
         <SettingsContainer>
-
-            <Option name="Agent Address" text="The contract that represents an EOA and acts on behalf of the Compound app. Funds can be sent to this address.">
+            <Option name="Agent Address"
+                    text="The contract that represents an EOA and acts on behalf of the Compound app. Funds can be sent to this address.">
                 <IdentityBadge
                     entity={agentAddress}
                     shorten={false}
@@ -34,7 +34,8 @@ const Settings = ({handleNewAgent, appState}) => {
                 </ButtonContainer>
             </Option>
 
-            <Option name="Compound App Address" text="The contract address of this app. Do not send funds to this address.">
+            <Option name="Compound App Address"
+                    text="The contract address of this app. Do not send funds to this address.">
                 <IdentityBadge
                     entity={appAddress}
                     shorten={false}

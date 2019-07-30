@@ -16,16 +16,19 @@ const ButtonStyled = styled(Button)`
 
 const Deposit = ({appState, handleDeposit}) => {
 
-    const [tokenSelected, setTokenSelected] = useState(0)
-    const [amount, setAmount] = useState(0)
-
     const {tokens} = appState
 
+    const [tokenSelected, setTokenSelected] = useState(0)
+    const [customToken, setCustomToken] = useState("")
+    const [amount, setAmount] = useState(0)
+
     const tokensAvailable = tokens.map(token => token.name)
+    tokensAvailable.push("Other...")
 
-    const getSelectedTokenAddress = () => tokens[tokenSelected].address
+    const showCustomToken = tokenSelected === tokensAvailable.length - 1
 
-    const getSelectedTokenDecimals = () => tokens[tokenSelected].decimals
+    const getSelectedTokenAddress = () => showCustomToken ? customToken : tokens[tokenSelected].address
+    const getSelectedTokenDecimals = () => showCustomToken ? -1 : tokens[tokenSelected].decimals
 
     return (
         <form onSubmit={() => handleDeposit(getSelectedTokenAddress(), amount, getSelectedTokenDecimals())}>
@@ -34,6 +37,15 @@ const Deposit = ({appState, handleDeposit}) => {
                 <FieldStyled label="Token">
                     <DropDown items={tokensAvailable} required active={tokenSelected} onChange={setTokenSelected} wide/>
                 </FieldStyled>
+
+                {showCustomToken && (
+                    <FieldStyled label="Token Address">
+                        <TextInput type="text"
+                                   wide
+                                   required={showCustomToken}
+                                   onChange={event => setCustomToken(event.target.value)}/>
+                    </FieldStyled>
+                )}
 
                 <FieldStyled label="Amount">
                     <TextInput type="number"

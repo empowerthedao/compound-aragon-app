@@ -1,5 +1,7 @@
 import {toDecimals} from "../lib/math-utils";
 import {ETHER_TOKEN_FAKE_ADDRESS} from "../lib/shared-constants";
+import {tokenContract$} from "./ExternalContracts";
+import {mergeMap} from 'rxjs/operators'
 
 const setAgent = (api, address) => {
     api.setAgent(address)
@@ -12,7 +14,14 @@ const withdraw = (api, token, recipient, amount, decimals) => {
         .subscribe()
 }
 
-const deposit = (api, tokenAddress, amount, decimals) => {
+async function deposit(api, tokenAddress, amount, decimals) {
+
+    if (decimals === -1) {
+        decimals = await tokenContract$(api, tokenAddress).pipe(
+            mergeMap(token => token.decimals())).toPromise()
+        decimals = parseInt(decimals)
+    }
+
     const adjustedAmount = toDecimals(amount, decimals)
 
     if (tokenAddress === ETHER_TOKEN_FAKE_ADDRESS) {
