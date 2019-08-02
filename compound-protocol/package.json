@@ -30,6 +30,7 @@
     "web3": "1.0.0-beta.37"
   },
   "dependencies": {
+    "bluebird": "^3.5.5",
     "ethlint": "^1.2.2",
     "truffle-core": "5.0.4",
     "truffle-hdwallet-provider": "1.0.5"
