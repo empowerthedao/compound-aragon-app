@@ -1,6 +1,13 @@
 # Compound Protocol Local Deployment
 
-To locally deploy the Compound protocol requires node v10 and a recent version of `ganache-cli` (errors may occur when using an older version) or the `aragon devchain`. Execute the following within the `compound-protocol` directory:
+Instructions are for OSX, other OS's may require additional steps.
+
+Pre-requisite dependencies:
+- [NPM from Node v10](https://nodejs.org/en/download/)
+- [Ganache CLI](https://github.com/trufflesuite/ganache-cli) or [Aragon CLI](https://github.com/aragon/aragon-cli)
+- [Truffle](https://github.com/trufflesuite/truffle)
+
+To locally deploy the Compound protocol requires Node v10 (errors may occur when using a newer version) and the most recent version of `ganache-cli` (errors may occur when using an older version) or the `aragon devchain`. Execute the following within the `compound-aragon-app/compound-protocol` directory:
 
 Install dependencies:
 ```
@@ -12,9 +19,9 @@ Run `ganache-cli` or `aragon devchain` in a separate terminal:
 $ ganache-cli
 ```
 
-Deploy Compound protocol:
+Deploy Compound protocol (If previously deployed run: `rm networks/development*` first)
+
 ```
-$ rm networks/development*
 $ scenario/scen/deploy.scen -e dai_price=0.1,dai_cf=0.5,eth_cf=0.5
 ```
 
