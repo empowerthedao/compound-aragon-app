@@ -19,10 +19,9 @@ Run `ganache-cli` or `aragon devchain` in a separate terminal:
 $ ganache-cli
 ```
 
-Deploy Compound protocol (If previously deployed run: `rm networks/development*` first)
-
+Deploy Compound protocol (If previously deployed run `rm networks/development*` first)
 ```
-$ scenario/scen/deploy.scen -e dai_price=0.1,dai_cf=0.5,eth_cf=0.5
+$ npm run deploy
 ```
 
 To test basic functionality required by the Compound Aragon app:  
@@ -31,7 +30,7 @@ To test basic functionality required by the Compound Aragon app:
 ```
 $ truffle compile
 ```
-- Delete the `compound-protocol/contracts/test` directory (as it prevents re-deployment of the Compound protocol using the instructions above)
+- Delete the `compound-protocol/contracts/test` directory (as it can prevent re-deployment of the Compound protocol using the instructions above)
 - Execute the basicUsage script:
 ```
 $ truffle exec aragon-app-scripts/basicUsage.js
