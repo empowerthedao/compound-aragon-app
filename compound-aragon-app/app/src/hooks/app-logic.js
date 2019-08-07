@@ -1,7 +1,7 @@
 import {deposit, setAgent, withdraw} from "../web3/CompoundAppContract";
 import {useApi, useAppState} from "@aragon/api-react";
 import {useCallback} from 'react'
-import {useSidePanel} from "./side-panels";
+import {useSidePanel} from "./side-panel";
 
 const useSetAgentAddress = (onDone) => {
     const api = useApi()
