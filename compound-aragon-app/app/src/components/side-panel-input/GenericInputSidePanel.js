@@ -1,5 +1,5 @@
 import React, {useState} from "react"
-import {Info, TextInput, Button, Field} from "@aragon/ui"
+import {Info, TextInput, Button, Field, SidePanel} from "@aragon/ui"
 import styled from 'styled-components'
 
 const PanelContainer = styled.div`
@@ -9,6 +9,24 @@ const PanelContainer = styled.div`
 const InfoContainer = styled(Info.Action)`
     margin-bottom: 20px;
 `
+
+const GenericInputSidePanel = ({panelState, sidePanelTitle, actionTitle, actionDescription,
+                                   inputFieldList, submitLabel, handleSubmit}) => {
+    return (
+        <SidePanel
+            title={sidePanelTitle}
+            opened={panelState.visible}
+            onClose={panelState.requestClose}
+            onTransitionEnd={panelState.onTransitionEnd}
+        >
+            <GenericInputPanel actionTitle={actionTitle}
+                               actionDescription={actionDescription}
+                               inputFieldList={inputFieldList}
+                               submitLabel={submitLabel}
+                               handleSubmit={handleSubmit}/>
+        </SidePanel>
+    )
+}
 
 const InputField = ({id, inputFieldLabel, inputFieldType, onChange}) => {
 
@@ -66,4 +84,4 @@ const GenericInputPanel = ({actionTitle, actionDescription, inputFieldList, subm
     )
 }
 
-export default GenericInputPanel
+export default GenericInputSidePanel

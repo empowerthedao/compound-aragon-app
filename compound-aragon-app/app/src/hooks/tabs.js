@@ -1,9 +1,8 @@
 import React, {useState} from 'react'
 import {useCallback} from 'react'
 
-export function useSidePanel() {
-    const [visible, setVisible] = useState(false)
-    const [opened, setOpened] = useState(false)
+export function useTabs() {
+    const [tabBarSelected, setTabBarSelected] = useState(0)
 
     const requestOpen = useCallback(() => {
         setVisible(true)
@@ -28,4 +27,3 @@ export function useSidePanel() {
 
     return { opened, visible, requestOpen, endTransition, requestClose }
 }
-
