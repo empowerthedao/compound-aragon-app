@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { theme, breakpoint } from '@aragon/ui'
-import { formatTokenAmount } from '../../lib/utils'
+import { formatTokenAmount } from '../../lib/format-utils'
 
 const splitAmount = amount => {
   const [integer, fractional] = formatTokenAmount(amount).split('.')

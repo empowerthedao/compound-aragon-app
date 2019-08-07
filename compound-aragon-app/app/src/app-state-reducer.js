@@ -53,7 +53,7 @@ const reducer = state => {
 }
 
 const fromDecimalsDefaultIfNull = (value, decimals, defaultValue) => {
-    return value ? fromDecimals(value.toString(), decimals) : defaultValue
+    return value ? fromDecimals(value ? value.toString() : "0", decimals) : defaultValue
 }
 
 export default reducer

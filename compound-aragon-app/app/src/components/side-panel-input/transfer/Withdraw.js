@@ -57,8 +57,13 @@ const Withdraw = ({appState, handleWithdraw}) => {
     const getSelectedTokenAddress = () => tokens[selectedCurrency].address
     const getSelectedTokenDecimals = () => tokens[selectedCurrency].decimals
 
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        handleWithdraw(getSelectedTokenAddress(), recipient, amount, getSelectedTokenDecimals())
+    }
+
     return (
-        <form onSubmit={() => handleWithdraw(getSelectedTokenAddress(), recipient, amount, getSelectedTokenDecimals())}>
+        <form onSubmit={handleSubmit}>
             <WithdrawContainer>
 
                 <FieldStyled label="Recipient">

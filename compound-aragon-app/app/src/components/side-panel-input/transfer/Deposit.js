@@ -30,12 +30,18 @@ const Deposit = ({appState, handleDeposit}) => {
     const getSelectedTokenAddress = () => showCustomToken ? customToken : tokens[tokenSelected].address
     const getSelectedTokenDecimals = () => showCustomToken ? -1 : tokens[tokenSelected].decimals
 
+    const handleSubmit = (event) => {
+        event.preventDefault()
+        handleDeposit(getSelectedTokenAddress(), amount, getSelectedTokenDecimals())
+    }
+
     return (
-        <form onSubmit={() => handleDeposit(getSelectedTokenAddress(), amount, getSelectedTokenDecimals())}>
+        <form onSubmit={handleSubmit}>
             <DepositContainer>
 
                 <FieldStyled label="Token">
-                    <DropDown items={tokensAvailable} required active={tokenSelected} onChange={setTokenSelected} wide/>
+                    <DropDown items={tokensAvailable} required active={tokenSelected} onChange={setTokenSelected}
+                              wide/>
                 </FieldStyled>
 
                 {showCustomToken && (

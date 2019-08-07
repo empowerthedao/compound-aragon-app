@@ -295,7 +295,7 @@ contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGu
         /* We emit a Transfer event */
         emit Transfer(src, dst, tokens);
 
-        /* We call the defense hook (which checks for under-collateralization) */
+        /* We call the defense hooks (which checks for under-collateralization) */
         comptroller.transferVerify(address(this), src, dst, tokens);
 
         return uint(Error.NO_ERROR);
@@ -765,7 +765,7 @@ contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGu
         emit Mint(minter, mintAmount, vars.mintTokens);
         emit Transfer(address(this), minter, vars.mintTokens);
 
-        /* We call the defense hook */
+        /* We call the defense hooks */
         comptroller.mintVerify(address(this), minter, mintAmount, vars.mintTokens);
 
         return uint(Error.NO_ERROR);
@@ -913,7 +913,7 @@ contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGu
         emit Transfer(redeemer, address(this), vars.redeemTokens);
         emit Redeem(redeemer, vars.redeemAmount, vars.redeemTokens);
 
-        /* We call the defense hook */
+        /* We call the defense hooks */
         comptroller.redeemVerify(address(this), redeemer, vars.redeemAmount, vars.redeemTokens);
 
         return uint(Error.NO_ERROR);
@@ -1008,7 +1008,7 @@ contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGu
         /* We emit a Borrow event */
         emit Borrow(borrower, borrowAmount, vars.accountBorrowsNew, vars.totalBorrowsNew);
 
-        /* We call the defense hook */
+        /* We call the defense hooks */
         comptroller.borrowVerify(address(this), borrower, borrowAmount);
 
         return uint(Error.NO_ERROR);
@@ -1135,7 +1135,7 @@ contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGu
         /* We emit a RepayBorrow event */
         emit RepayBorrow(payer, borrower, vars.repayAmount, vars.accountBorrowsNew, vars.totalBorrowsNew);
 
-        /* We call the defense hook */
+        /* We call the defense hooks */
         comptroller.repayBorrowVerify(address(this), payer, borrower, vars.repayAmount, vars.borrowerIndex);
 
         return uint(Error.NO_ERROR);
@@ -1231,7 +1231,7 @@ contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGu
         /* We emit a LiquidateBorrow event */
         emit LiquidateBorrow(liquidator, borrower, repayAmount, address(cTokenCollateral), seizeTokens);
 
-        /* We call the defense hook */
+        /* We call the defense hooks */
         comptroller.liquidateBorrowVerify(address(this), address(cTokenCollateral), liquidator, borrower, repayAmount, seizeTokens);
 
         return uint(Error.NO_ERROR);
@@ -1288,7 +1288,7 @@ contract CToken is EIP20Interface, Exponential, TokenErrorReporter, ReentrancyGu
         /* Emit a Transfer event */
         emit Transfer(borrower, liquidator, seizeTokens);
 
-        /* We call the defense hook */
+        /* We call the defense hooks */
         comptroller.seizeVerify(address(this), msg.sender, liquidator, borrower, seizeTokens);
 
         return uint(Error.NO_ERROR);

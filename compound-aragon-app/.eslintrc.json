@@ -17,7 +17,7 @@
     },
     "sourceType": "module"
   },
-  "plugins": ["prettier", "react"],
+  "plugins": ["prettier", "react", "react-hooks"],
   "rules": {
     "valid-jsdoc": "error",
     "react/prop-types": 0,
@@ -31,6 +31,8 @@
         "jsxBracketSameLine": false
       }
     ],
-    "linebreak-style": ["error", "unix"]
+    "linebreak-style": ["error", "unix"],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   }
 }

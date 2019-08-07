@@ -21,7 +21,7 @@ const Settings = ({handleNewAgent, appState}) => {
     return (
         <SettingsContainer>
             <Option name="Agent Address"
-                    text="The contract that represents an EOA and acts on behalf of the Compound app. Funds can be sent to this address.">
+                    text="The contract that represents an EOA and acts on behalf of the Compound app. Only send funds to this address via the transfer process provided.">
                 <IdentityBadge
                     entity={agentAddress}
                     shorten={false}
