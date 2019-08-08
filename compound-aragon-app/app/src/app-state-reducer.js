@@ -1,41 +1,39 @@
-import {fromDecimals} from "./lib/math-utils";
 import BN from 'bn.js'
+import {ETHER_TOKEN_FAKE_ADDRESS} from "./lib/shared-constants";
 
-let defaultState = {
-    isSyncing: true,
-    appAddress: '0x0000000000000000000000000000000000000000',
-    agentAddress: '0x0000000000000000000000000000000000000000',
+const compareBalancesByEthAndSymbol = (tokenA, tokenB) => {
+    if (tokenA.address === ETHER_TOKEN_FAKE_ADDRESS) {
+        return -1
+    }
+    if (tokenB.address === ETHER_TOKEN_FAKE_ADDRESS) {
+        return 1
+    }
+    return tokenA.symbol.localeCompare(tokenB.symbol)
 }
 
 const reducer = state => {
 
-    if (state === null) {
-        state = defaultState
-    }
-
-    const {
-        balances
-    } = state
+    const {balances} = state || {}
 
     const convertedBalances = balances
         ? balances
             .map(balance => ({
-                    ...balance,
-                    amount: new BN(balance.amount),
-                    decimals: new BN(balance.decimals),
+                ...balance,
+                amount: new BN(balance.amount),
+                decimals: new BN(balance.decimals),
 
-                    // Note that numbers in `numData` are not safe for accurate
-                    // computations (but are useful for making divisions easier).
-                    numData: {
-                        amount: parseInt(balance.amount, 10),
-                        decimals: parseInt(balance.decimals, 10),
-                    },
-                })
-            )
+                // Note that numbers in `numData` are not safe for accurate
+                // computations (but are useful for making divisions easier).
+                numData: {
+                    amount: parseInt(balance.amount, 10),
+                    decimals: parseInt(balance.decimals, 10),
+                },
+            }))
+            .sort(compareBalancesByEthAndSymbol)
         : []
 
     const tokens = convertedBalances.map(
-        ({ address, name, symbol, numData: { amount, decimals }, verified }) => ({
+        ({address, name, symbol, numData: {amount, decimals}, verified}) => ({
             address,
             amount,
             decimals,
@@ -48,12 +46,9 @@ const reducer = state => {
     return {
         ...state,
         balances: convertedBalances,
+        // balances: convertedBalances.filter(balance => !balance.amount.isZero()),
         tokens
     }
-}
-
-const fromDecimalsDefaultIfNull = (value, decimals, defaultValue) => {
-    return value ? fromDecimals(value ? value.toString() : "0", decimals) : defaultValue
 }
 
 export default reducer
