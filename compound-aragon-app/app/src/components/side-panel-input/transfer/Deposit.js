@@ -40,7 +40,9 @@ const Deposit = ({appState, handleDeposit}) => {
             <DepositContainer>
 
                 <FieldStyled label="Token">
-                    <DropDown items={tokensAvailable} required active={tokenSelected} onChange={setTokenSelected}
+                    <DropDown items={tokensAvailable}
+                              required active={tokenSelected}
+                              onChange={selectedTokenIndex => setTokenSelected(selectedTokenIndex)}
                               wide/>
                 </FieldStyled>
 

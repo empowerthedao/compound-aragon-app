@@ -18,6 +18,7 @@ export function useSidePanels() {
                 setOpened(true)
             } else {
                 setOpened(false)
+                setCurrentSidePanel({title: ""})
             }
         },
         [setOpened]
