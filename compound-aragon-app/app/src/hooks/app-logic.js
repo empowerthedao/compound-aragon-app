@@ -1,7 +1,8 @@
 import {deposit, setAgent, withdraw} from "../web3/CompoundAppContract";
-import {useApi} from "@aragon/api-react";
+import {useApi, useAppState} from "@aragon/api-react";
 import {useCallback} from 'react'
-import {useSidePanels} from "./side-panels";
+import {useSidePanel} from "./side-panels";
+import {useTabs} from "./tabs";
 
 const useSetAgentAddress = (onDone) => {
     const api = useApi()
@@ -31,16 +32,23 @@ const useWithdraw = (onDone) => {
 }
 
 export function useAppLogic() {
-    const sidePanelState = useSidePanels()
+    const appState = useAppState()
+    const {isSyncing} = appState
+
+    const sidePanel = useSidePanel()
+    const tabs = useTabs()
 
     const actions = {
-        setAgentAddress: useSetAgentAddress(sidePanelState.requestClose),
-        deposit: useDeposit(sidePanelState.requestClose),
-        withdraw: useWithdraw(sidePanelState.requestClose)
+        setAgentAddress: useSetAgentAddress(sidePanel.requestClose),
+        deposit: useDeposit(sidePanel.requestClose),
+        withdraw: useWithdraw(sidePanel.requestClose)
     }
 
     return {
+        appState,
+        isSyncing,
         actions,
-        sidePanelState
+        sidePanel,
+        tabs
     }
 }

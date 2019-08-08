@@ -1,16 +1,31 @@
 import React, {useState} from 'react'
 import {useCallback} from 'react'
 
-export function useSidePanels() {
-    const [currentSidePanel, setCurrentSidePanel] = useState({title: ""})
+export function useSidePanel() {
+
+    const defaultSidePanel = {id: "", title: ""}
+
+    const [currentSidePanel, setCurrentSidePanel] = useState(defaultSidePanel)
     const [visible, setVisible] = useState(false)
     const [opened, setOpened] = useState(false)
+
+    const sidePanels = {
+        DEFAULT: defaultSidePanel,
+        TRANSFER: {
+            id: 'TRANSFER',
+            title: 'New Agent Transfer'
+        },
+        CHANGE_AGENT: {
+            id: 'CHANGE_AGENT',
+            title: 'Change the Agent'
+        }
+    }
 
     const requestOpen = useCallback((sidePanel) => {
         setCurrentSidePanel(sidePanel)
         setVisible(true)
         setOpened(false)
-    }, [setVisible, setOpened])
+    }, [setVisible, setOpened, currentSidePanel])
 
     const endTransition = useCallback(
         opened => {
@@ -18,10 +33,10 @@ export function useSidePanels() {
                 setOpened(true)
             } else {
                 setOpened(false)
-                setCurrentSidePanel({title: ""})
+                setCurrentSidePanel(sidePanels.DEFAULT)
             }
         },
-        [setOpened]
+        [setOpened, currentSidePanel]
     )
 
     const requestClose = useCallback(() => {
@@ -29,6 +44,11 @@ export function useSidePanels() {
         setOpened(false)
     }, [setVisible, setOpened])
 
-    return { currentSidePanel, opened, visible, requestOpen, endTransition, requestClose }
+    const openPanelActions = {
+        transfer: () => requestOpen(sidePanels.TRANSFER),
+        changeAgent: () => requestOpen(sidePanels.CHANGE_AGENT)
+    }
+
+    return { currentSidePanel, opened, visible, openPanelActions, requestOpen, endTransition, requestClose }
 }
 

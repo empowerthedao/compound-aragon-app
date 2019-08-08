@@ -1,5 +1,4 @@
-import React, {useState} from 'react'
-import {useAppState} from '@aragon/api-react'
+import React from 'react'
 import {Main, TabBar, SidePanel, SyncIndicator} from '@aragon/ui'
 
 import AppLayout from "./components/app-layout/AppLayout"
@@ -11,66 +10,42 @@ import {useAppLogic} from "./hooks/app-logic";
 
 function App() {
 
-    const appState = useAppState()
-
-    const {isSyncing} = appState
-    const [tabBarSelected, setTabBarSelected] = useState(0)
-
     const {
+        appState,
+        isSyncing,
         actions,
-        sidePanelState
+        sidePanel,
+        tabs
     } = useAppLogic()
 
-    const sidePanels = {
-        TRANSFER: {
-            name: 'TRANSFER',
-            title: 'New Agent Transfer'
-        },
-        CHANGE_AGENT: {
-            name: 'CHANGE_AGENT',
-            title: 'Change the Agent'
+    const selectedTabComponent = () => {
+        switch (tabs.tabBarSelected.id) {
+            case 'LEND':
+                return  <Lend appState={appState} handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
+            case 'SETTINGS':
+                return <Settings appState={appState}
+                          handleNewAgent={() => sidePanel.openPanelActions.changeAgent()}/>
+            default:
+                return <div/>
         }
     }
 
-    const tabs = [
-        {
-            tabName: "Lend",
-            tabComponent: (
-                <Lend appState={appState} handleTransfer={() => sidePanelState.requestOpen(sidePanels.TRANSFER)}/>
-            ),
-            smallViewPadding: 0
-        },
-        {
-            tabName: 'Settings',
-            tabComponent: (
-                <Settings appState={appState}
-                          handleNewAgent={() => sidePanelState.requestOpen(sidePanels.CHANGE_AGENT)}
-                />
-            ),
-            smallViewPadding: 30
-        }
-    ]
-
-    const tabsNames = tabs.map(tab => tab.tabName)
-    const selectedTabComponent = tabs[tabBarSelected].tabComponent
-    const getSmallViewPadding = () => tabs[tabBarSelected].smallViewPadding
-
     const currentSidePanel = () => {
-        switch (sidePanelState.currentSidePanel.name) {
+        switch (sidePanel.currentSidePanel.id) {
             case 'CHANGE_AGENT':
-                return (<GenericInputPanel actionTitle={'Compound Action'}
+                return <GenericInputPanel actionTitle={'Compound Action'}
                                            actionDescription={`This action will change the Agent which represents an Externally
                                         Owned Account (EOA) and is responsible for interacting with the Compound protocol.`}
                                            inputFieldList={[
                                                {id: 1, label: 'address', type: 'text'}]}
                                            submitLabel={'Change agent'}
-                                           handleSubmit={actions.setAgentAddress}/>)
+                                           handleSubmit={actions.setAgentAddress}/>
             case 'TRANSFER':
-                return (<TransferPanel appState={appState}
+                return <TransferPanel appState={appState}
                                        handleDeposit={actions.deposit}
-                                       handleWithdraw={actions.withdraw}/>)
+                                       handleWithdraw={actions.withdraw}/>
             default:
-                return (<div/>)
+                return <div/>
         }
     }
 
@@ -78,22 +53,23 @@ function App() {
         <div css="min-width: 320px">
             <Main>
                 <SyncIndicator visible={isSyncing}/>
+
                 <AppLayout title='Compound'
                            tabs={(<TabBar
-                               items={tabsNames}
-                               selected={tabBarSelected}
-                               onChange={setTabBarSelected}/>)}
-                           smallViewPadding={getSmallViewPadding()}>
+                               items={tabs.names}
+                               selected={tabs.selected}
+                               onChange={tabs.selectTab}/>)}
+                           smallViewPadding={tabs.tabBarSelected.smallViewPadding}>
 
-                    {selectedTabComponent}
+                    {selectedTabComponent()}
 
                 </AppLayout>
 
                 <SidePanel
-                    title={sidePanelState.currentSidePanel.title}
-                    opened={sidePanelState.visible}
-                    onClose={sidePanelState.requestClose}
-                    onTransitionEnd={sidePanelState.endTransition}
+                    title={sidePanel.currentSidePanel.title}
+                    opened={sidePanel.visible}
+                    onClose={sidePanel.requestClose}
+                    onTransitionEnd={sidePanel.endTransition}
                 >
                     {currentSidePanel()}
                 </SidePanel>
