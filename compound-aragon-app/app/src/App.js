@@ -1,32 +1,42 @@
 import React, {useState} from 'react'
 import {useAppState} from '@aragon/api-react'
-import {Main, TabBar, SyncIndicator} from '@aragon/ui'
+import {Main, TabBar, SidePanel, SyncIndicator} from '@aragon/ui'
 
 import AppLayout from "./components/app-layout/AppLayout"
 import Settings from "./components/settings/Settings"
 import Lend from "./components/lend/Lend";
-import GenericInputSidePanel from "./components/side-panel-input/GenericInputSidePanel";
-import TransferSidePanel from "./components/side-panel-input/transfer/TransferSidePanel";
+import GenericInputPanel from "./components/side-panel-input/GenericInputPanel";
+import TransferPanel from "./components/side-panel-input/transfer/TransferPanel";
 import {useAppLogic} from "./hooks/app-logic";
 
 function App() {
 
     const appState = useAppState()
 
+    const {isSyncing} = appState
     const [tabBarSelected, setTabBarSelected] = useState(0)
 
     const {
-        isSyncing,
         actions,
-        transferSidePanelState,
-        changeAgentSidePanelState
+        sidePanelState
     } = useAppLogic()
+
+    const sidePanels = {
+        TRANSFER: {
+            name: 'TRANSFER',
+            title: 'New Agent Transfer'
+        },
+        CHANGE_AGENT: {
+            name: 'CHANGE_AGENT',
+            title: 'Change the Agent'
+        }
+    }
 
     const tabs = [
         {
             tabName: "Lend",
             tabComponent: (
-                <Lend appState={appState} handleTransfer={() => transferSidePanelState.requestOpen()}/>
+                <Lend appState={appState} handleTransfer={() => sidePanelState.requestOpen(sidePanels.TRANSFER)}/>
             ),
             smallViewPadding: 0
         },
@@ -34,7 +44,7 @@ function App() {
             tabName: 'Settings',
             tabComponent: (
                 <Settings appState={appState}
-                          handleNewAgent={() => changeAgentSidePanelState.requestOpen()}
+                          handleNewAgent={() => sidePanelState.requestOpen(sidePanels.CHANGE_AGENT)}
                 />
             ),
             smallViewPadding: 30
@@ -44,6 +54,25 @@ function App() {
     const tabsNames = tabs.map(tab => tab.tabName)
     const selectedTabComponent = tabs[tabBarSelected].tabComponent
     const getSmallViewPadding = () => tabs[tabBarSelected].smallViewPadding
+
+    const currentSidePanel = () => {
+        switch (sidePanelState.currentSidePanel.name) {
+            case 'CHANGE_AGENT':
+                return (<GenericInputPanel actionTitle={'Compound Action'}
+                                           actionDescription={`This action will change the Agent which represents an Externally
+                                        Owned Account (EOA) and is responsible for interacting with the Compound protocol.`}
+                                           inputFieldList={[
+                                               {id: 1, label: 'address', type: 'text'}]}
+                                           submitLabel={'Change agent'}
+                                           handleSubmit={actions.setAgentAddress}/>)
+            case 'TRANSFER':
+                return (<TransferPanel appState={appState}
+                                       handleDeposit={actions.deposit}
+                                       handleWithdraw={actions.withdraw}/>)
+            default:
+                return (<div/>)
+        }
+    }
 
     return (
         <div css="min-width: 320px">
@@ -60,21 +89,14 @@ function App() {
 
                 </AppLayout>
 
-                <TransferSidePanel appState={appState}
-                                   panelState={transferSidePanelState}
-                                   onDeposit={actions.deposit}
-                                   onWithdraw={actions.withdraw}
-                />
-
-                <GenericInputSidePanel panelState={changeAgentSidePanelState}
-                                       sidePanelTitle={'Change the Agent'}
-                                       actionTitle={'Compound Action'}
-                                       actionDescription={`This action will change the Agent which represents an Externally
-                                        Owned Account (EOA) and is responsible for interacting with the Compound protocol.`}
-                                       inputFieldList={[
-                                           {id: 1, label: 'address', type: 'text'}]}
-                                       submitLabel={'Change agent'}
-                                       handleSubmit={actions.setAgentAddress}/>
+                <SidePanel
+                    title={sidePanelState.currentSidePanel.title}
+                    opened={sidePanelState.visible}
+                    onClose={sidePanelState.requestClose}
+                    onTransitionEnd={sidePanelState.endTransition}
+                >
+                    {currentSidePanel()}
+                </SidePanel>
 
 
             </Main>

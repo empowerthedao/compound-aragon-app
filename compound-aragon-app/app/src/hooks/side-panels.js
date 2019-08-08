@@ -1,11 +1,13 @@
 import React, {useState} from 'react'
 import {useCallback} from 'react'
 
-export function useSidePanel() {
+export function useSidePanels() {
+    const [currentSidePanel, setCurrentSidePanel] = useState({title: ""})
     const [visible, setVisible] = useState(false)
     const [opened, setOpened] = useState(false)
 
-    const requestOpen = useCallback(() => {
+    const requestOpen = useCallback((sidePanel) => {
+        setCurrentSidePanel(sidePanel)
         setVisible(true)
         setOpened(false)
     }, [setVisible, setOpened])
@@ -26,6 +28,6 @@ export function useSidePanel() {
         setOpened(false)
     }, [setVisible, setOpened])
 
-    return { opened, visible, requestOpen, endTransition, requestClose }
+    return { currentSidePanel, opened, visible, requestOpen, endTransition, requestClose }
 }
 

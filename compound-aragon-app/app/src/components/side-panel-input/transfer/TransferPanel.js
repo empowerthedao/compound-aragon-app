@@ -1,23 +1,9 @@
 import React from 'react'
 import styled from 'styled-components'
-import {SidePanel, TabBar} from '@aragon/ui'
+import {TabBar} from '@aragon/ui'
+
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
-
-const TransferSidePanel = ({appState, panelState, onDeposit, onWithdraw}) => {
-    return (
-        <SidePanel
-            title="New Agent Transfer"
-            opened={panelState.visible}
-            onClose={panelState.requestClose}
-            onTransitionEnd={panelState.onTransitionEnd}
-        >
-            <TransferPanel appState={appState}
-                               handleDeposit={onDeposit}
-                               handleWithdraw={onWithdraw}/>
-        </SidePanel>
-    )
-}
 
 const initialState = {
     screenIndex: 0,
@@ -79,4 +65,4 @@ const TabBarWrapper = styled.div`
   margin: 0 -30px 30px;
 `
 
-export default TransferSidePanel
+export default TransferPanel
