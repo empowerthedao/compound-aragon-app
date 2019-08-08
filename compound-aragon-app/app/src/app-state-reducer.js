@@ -13,6 +13,8 @@ const compareBalancesByEthAndSymbol = (tokenA, tokenB) => {
 
 const reducer = state => {
 
+    const ready = Object.keys(state || {}).includes('appAddress')
+
     const {balances} = state || {}
 
     const convertedBalances = balances
@@ -45,6 +47,7 @@ const reducer = state => {
 
     return {
         ...state,
+        ready,
         balances: convertedBalances,
         // balances: convertedBalances.filter(balance => !balance.amount.isZero()),
         tokens

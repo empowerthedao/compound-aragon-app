@@ -13,6 +13,7 @@ function App() {
     const {
         appState,
         isSyncing,
+        ready,
         actions,
         sidePanel,
         tabs
@@ -52,7 +53,7 @@ function App() {
     return (
         <div css="min-width: 320px">
             <Main>
-                <SyncIndicator visible={isSyncing}/>
+                <SyncIndicator visible={isSyncing || !ready}/>
 
                 <AppLayout title='Compound'
                            tabs={(<TabBar
@@ -61,7 +62,7 @@ function App() {
                                onChange={tabs.selectTab}/>)}
                            smallViewPadding={tabs.tabBarSelected.smallViewPadding}>
 
-                    {selectedTabComponent()}
+                    {ready && selectedTabComponent()}
 
                 </AppLayout>
 
@@ -69,9 +70,10 @@ function App() {
                     title={sidePanel.currentSidePanel.title}
                     opened={sidePanel.visible}
                     onClose={sidePanel.requestClose}
-                    onTransitionEnd={sidePanel.endTransition}
-                >
+                    onTransitionEnd={sidePanel.endTransition}>
+
                     {currentSidePanel()}
+
                 </SidePanel>
 
 

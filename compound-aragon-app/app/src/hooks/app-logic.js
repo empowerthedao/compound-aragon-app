@@ -33,7 +33,7 @@ const useWithdraw = (onDone) => {
 
 export function useAppLogic() {
     const appState = useAppState()
-    const {isSyncing} = appState
+    const {isSyncing, ready} = appState
 
     const sidePanel = useSidePanel()
     const tabs = useTabs()
@@ -47,6 +47,7 @@ export function useAppLogic() {
     return {
         appState,
         isSyncing,
+        ready,
         actions,
         sidePanel,
         tabs

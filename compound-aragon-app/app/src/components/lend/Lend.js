@@ -11,7 +11,8 @@ const SpacedBlock = styled.div`
 
 const Lend = ({appState, handleTransfer}) => {
 
-    const {balances} = appState
+    let {balances} = appState
+    balances = balances ? balances : []
 
     return (
         <>
