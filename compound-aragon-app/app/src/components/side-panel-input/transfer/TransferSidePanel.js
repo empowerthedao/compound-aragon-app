@@ -10,13 +10,11 @@ const TransferSidePanel = ({appState, panelState, onDeposit, onWithdraw}) => {
             title="New Agent Transfer"
             opened={panelState.visible}
             onClose={panelState.requestClose}
-            onTransitionEnd={panelState.endTransition}
+            onTransitionEnd={panelState.onTransitionEnd}
         >
-            <TransferPanel
-                panelOpened={panelState.opened}
-                appState={appState}
-                handleDeposit={onDeposit}
-                handleWithdraw={onWithdraw}/>
+            <TransferPanel appState={appState}
+                               handleDeposit={onDeposit}
+                               handleWithdraw={onWithdraw}/>
         </SidePanel>
     )
 }
@@ -27,6 +25,10 @@ const initialState = {
 
 class TransferPanel extends React.Component {
     static defaultProps = {
+        onWithdraw: () => {
+        },
+        onDeposit: () => {
+        },
         proxyAddress: null,
     }
 
@@ -47,7 +49,7 @@ class TransferPanel extends React.Component {
 
     render() {
         const {screenIndex} = this.state
-        const {appState, panelOpened, handleDeposit, handleWithdraw} = this.props
+        const {appState, handleDeposit, handleWithdraw} = this.props
         return (
             <div>
                 <TabBarWrapper>
@@ -60,12 +62,12 @@ class TransferPanel extends React.Component {
 
                 {screenIndex === 0 && (
                     <Deposit
-                        appState={appState} panelOpened={panelOpened} handleDeposit={handleDeposit}
+                        appState={appState} handleDeposit={handleDeposit}
                     />
                 )}
                 {screenIndex === 1 && (
                     <Withdraw
-                        appState={appState} panelOpened={panelOpened} handleWithdraw={handleWithdraw}
+                        appState={appState} handleWithdraw={handleWithdraw}
                     />
                 )}
             </div>
