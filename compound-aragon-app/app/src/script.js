@@ -4,6 +4,7 @@ import retryEvery from "./lib/retry-every"
 import {agentAddress$, agentApp$} from "./web3/ExternalContracts";
 import {agentInitializationBlock$, agentBalances$} from "./web3/ExternalData";
 import {first} from 'rxjs/operators'
+import {ETHER_TOKEN_FAKE_ADDRESS} from "./lib/shared-constants";
 
 const DEBUG_LOGS = true;
 const debugLog = message => {
@@ -46,10 +47,10 @@ const initialState = async (cachedInitState) => {
     try {
         const cachedState = await api.state().pipe(first()).toPromise()
         return {
-            ...cachedState,
+            ...cachedInitState,
             isSyncing: true,
             agentAddress: await agentAddress$(api).toPromise(),
-            balances: await agentBalances$(api, activeTokens(cachedState)).toPromise()
+            balances: await agentBalances$(api, activeTokens(cachedInitState)).toPromise()
         }
     } catch (e) {
         console.error(e)
@@ -105,7 +106,9 @@ const onNewEvent = async (state, storeEvent) => {
         case 'VaultDeposit':
             debugLog("AGENT TRANSFER")
             let newActiveTokens = [...state.activeTokens ? state.activeTokens : []]
-            newActiveTokens.push(storeEvent.returnValues.token)
+            if (storeEvent.returnValues.token !== ETHER_TOKEN_FAKE_ADDRESS) {
+                newActiveTokens.push(storeEvent.returnValues.token)
+            }
             newActiveTokens = [...new Set(newActiveTokens)]
             return {
                 ...state,
