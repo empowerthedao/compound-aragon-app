@@ -3,20 +3,8 @@ import styled from 'styled-components'
 import Option from "./Option";
 import {Button, IdentityBadge} from "@aragon/ui";
 
-const SettingsContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    max-width: 400px;
-
-`
-const ButtonContainer = styled.div`
-    margin-top: 20px;
-    display: flex;
-`
-
-const Settings = ({handleNewAgent, appState}) => {
-    let {appAddress, agentAddress} = appState
+const Settings = ({handleNewAgent, settings}) => {
+    let {appAddress, agentAddress} = settings
 
     return (
         <SettingsContainer>
@@ -45,5 +33,17 @@ const Settings = ({handleNewAgent, appState}) => {
         </SettingsContainer>
     )
 }
+
+const SettingsContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    max-width: 400px;
+
+`
+const ButtonContainer = styled.div`
+    margin-top: 20px;
+    display: flex;
+`
 
 export default Settings

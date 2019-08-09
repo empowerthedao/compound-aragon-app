@@ -3,7 +3,7 @@ import {Main, TabBar, SidePanel, SyncIndicator} from '@aragon/ui'
 
 import AppLayout from "./components/app-layout/AppLayout"
 import Settings from "./components/settings/Settings"
-import Lend from "./components/lend/Lend";
+import Lend from "./components/lend/lend";
 import GenericInputPanel from "./components/side-panel-input/GenericInputPanel";
 import TransferPanel from "./components/side-panel-input/transfer/TransferPanel";
 import {useAppLogic} from "./hooks/app-logic";
@@ -11,8 +11,10 @@ import {useAppLogic} from "./hooks/app-logic";
 function App() {
 
     const {
-        appState,
         isSyncing,
+        lendState,
+        tokens,
+        settings,
         actions,
         sidePanel,
         tabs
@@ -21,10 +23,10 @@ function App() {
     const selectedTabComponent = () => {
         switch (tabs.tabBarSelected.id) {
             case 'LEND':
-                return  <Lend appState={appState} handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
+                return <Lend lendState={lendState} handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
             case 'SETTINGS':
-                return <Settings appState={appState}
-                          handleNewAgent={() => sidePanel.openPanelActions.changeAgent()}/>
+                return <Settings settings={settings}
+                                 handleNewAgent={() => sidePanel.openPanelActions.changeAgent()}/>
             default:
                 return <div/>
         }
@@ -34,16 +36,17 @@ function App() {
         switch (sidePanel.currentSidePanel.id) {
             case 'CHANGE_AGENT':
                 return <GenericInputPanel actionTitle={'Compound Action'}
-                                           actionDescription={`This action will change the Agent which represents an Externally
+                                          actionDescription={`This action will change the Agent which represents an Externally
                                         Owned Account (EOA) and is responsible for interacting with the Compound protocol.`}
-                                           inputFieldList={[
-                                               {id: 1, label: 'address', type: 'text'}]}
-                                           submitLabel={'Change agent'}
-                                           handleSubmit={actions.setAgentAddress}/>
+                                          inputFieldList={[
+                                              {id: 1, label: 'address', type: 'text'}]}
+                                          submitLabel={'Change agent'}
+                                          handleSubmit={actions.setAgentAddress}/>
             case 'TRANSFER':
-                return <TransferPanel appState={appState}
-                                       handleDeposit={actions.deposit}
-                                       handleWithdraw={actions.withdraw}/>
+                return <TransferPanel tokens={tokens}
+                                      opened={sidePanel.opened}
+                                      handleDeposit={actions.deposit}
+                                      handleWithdraw={actions.withdraw}/>
             default:
                 return <div/>
         }

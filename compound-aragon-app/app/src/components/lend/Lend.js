@@ -9,14 +9,14 @@ const SpacedBlock = styled.div`
   }
 `
 
-const Lend = ({appState, handleTransfer}) => {
+const Lend = ({lendState, handleTransfer}) => {
 
-    const {balances} = appState
+    const {balances} = lendState
 
     return (
         <>
             <SpacedBlock>
-                {balances.length > 0 && <Balances balances={balances} handleTransfer={handleTransfer}/>}
+                <Balances balances={balances} handleTransfer={handleTransfer}/>
             </SpacedBlock>
         </>
     )
