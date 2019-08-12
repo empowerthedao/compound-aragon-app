@@ -66,7 +66,7 @@ module.exports = async () => {
         await dai.approve(cDai.address, threeHundredDai)
         await cDai.mint(threeHundredDai)
 
-        console.log(`Lender 1 Dai balance after lending: ${(await dai.balanceOf(lender)).toString()}`)
+        console.log(`Lender 1 Dai balance after lending: ${(await dai.balanceOf(lender)).toString()}\n`)
 
 
         // Lender 2 Lend DAI
@@ -77,7 +77,7 @@ module.exports = async () => {
         await dai.approve(cDai.address, threeHundredDai, {from: lender2})
         await cDai.mint(threeHundredDai, {from: lender2})
 
-        console.log(`Lender 2 Dai balance after lending 2: ${(await dai.balanceOf(lender2)).toString()}`)
+        console.log(`Lender 2 Dai balance after lending 2: ${(await dai.balanceOf(lender2)).toString()}\n`)
 
 
         // Borrower Lend ETH
@@ -92,7 +92,7 @@ module.exports = async () => {
         // console.log(receipt.logs)
         console.log(`Borrower Dai balance after borrowing: ${(await dai.balanceOf(borrower)).toString()}`)
 
-        console.log(`cDai Dai available after borrowing: ${(await cDai.getCash()).toString()}`)
+        console.log(`cDai Dai available after borrowing: ${(await cDai.getCash()).toString()}\n`)
 
 
         // Borrower Repay DAI
@@ -109,7 +109,7 @@ module.exports = async () => {
         // console.log(receipt.logs)
 
         // console.log(`Borrower Dai balance after repayed: ${(await dai.balanceOf(borrower)).toString()}`)
-        console.log(`cDai Dai available after borrower repayed: ${(await cDai.getCash()).toString()}`)
+        console.log(`cDai Dai available after borrower repayed: ${(await cDai.getCash()).toString()}\n`)
 
 
         // Lender Redeem Underlying

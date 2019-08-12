@@ -9,6 +9,21 @@
       "name": "Transfer agent tokens",
       "id": "TRANSFER_ROLE",
       "params": []
+    },
+    {
+      "name": "Change CTokens",
+      "id": "MODIFY_CTOKENS",
+      "params": []
+    },
+    {
+      "name": "Lend tokens",
+      "id": "LEND_ROLE",
+      "params": []
+    },
+    {
+      "name": "Redeem tokens",
+      "id": "REDEEM_ROLE",
+      "params": []
     }
   ],
   "environments": {

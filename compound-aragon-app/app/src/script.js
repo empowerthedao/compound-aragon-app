@@ -121,6 +121,13 @@ const onNewEvent = async (state, storeEvent) => {
                 ...state,
                 balances: await agentBalances$(api, activeTokens(state)).toPromise()
             }
+        case 'Lend':
+        case 'Redeem':
+            debugLog("LEND/REDEEM")
+            return {
+                ...state,
+                balances: await agentBalances$(api, activeTokens(state)).toPromise()
+            }
         default:
             return state
     }

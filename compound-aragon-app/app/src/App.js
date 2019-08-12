@@ -1,5 +1,5 @@
 import React from 'react'
-import {Main, TabBar, SidePanel, SyncIndicator} from '@aragon/ui'
+import {Main, TabBar, SidePanel, SyncIndicator, Button} from '@aragon/ui'
 
 import AppLayout from "./components/app-layout/AppLayout"
 import Settings from "./components/settings/Settings"
@@ -65,6 +65,10 @@ function App() {
                            smallViewPadding={tabs.tabBarSelected.smallViewPadding}>
 
                     {selectedTabComponent()}
+
+                    <Button onClick={() => actions.lend('50')}>LEND</Button>
+
+                    <Button onClick={() => actions.redeem('50')}>REDEEM</Button>
 
                 </AppLayout>
 

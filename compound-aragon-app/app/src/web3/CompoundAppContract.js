@@ -1,16 +1,10 @@
 import {toDecimals} from "../lib/math-utils";
 import {ETHER_TOKEN_FAKE_ADDRESS} from "../lib/shared-constants";
 import {tokenContract$} from "./ExternalContracts";
-import {mergeMap} from 'rxjs/operators'
+import {mergeMap, tap} from 'rxjs/operators'
 
 const setAgent = (api, address) => {
     api.setAgent(address)
-        .subscribe()
-}
-
-const withdraw = (api, token, recipient, amount, decimals) => {
-    const adjustedAmount = toDecimals(amount, decimals)
-    api.transfer(token, recipient, adjustedAmount)
         .subscribe()
 }
 
@@ -38,8 +32,32 @@ async function deposit(api, tokenAddress, amount, decimals) {
     }
 }
 
+const withdraw = (api, token, recipient, amount, decimals) => {
+    const adjustedAmount = toDecimals(amount, decimals)
+    api.transfer(token, recipient, adjustedAmount)
+        .subscribe()
+}
+
+const lendToken = (api, amount) => {
+    const adjustedAmount = toDecimals(amount, 18)
+
+    api.call('cTokens', 0).pipe(
+        mergeMap(cToken => api.lendToken(adjustedAmount, cToken)))
+        .subscribe()
+}
+
+const redeemToken = (api, amount) => {
+    const adjustedAmount = toDecimals(amount, 18)
+
+    api.call('cTokens', 0).pipe(
+        mergeMap(cToken => api.redeemToken(adjustedAmount, cToken)))
+        .subscribe()
+}
+
 export {
     setAgent,
+    deposit,
     withdraw,
-    deposit
+    lendToken,
+    redeemToken
 }

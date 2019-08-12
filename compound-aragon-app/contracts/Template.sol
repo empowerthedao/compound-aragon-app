@@ -54,12 +54,15 @@ contract TemplateBase is APMNamehash {
 
 contract Template is TemplateBase {
     MiniMeTokenFactory tokenFactory;
+    address daiCToken;
+    address[] cTokensArray; // Can't put in newInstance() function due to stack too deep error.
 
     uint64 constant PCT = 10 ** 16;
     address constant ANY_ENTITY = address(-1);
 
-    constructor(ENS ens) TemplateBase(DAOFactory(0), ens) public {
+    constructor(ENS _ens, address _daiCToken) TemplateBase(DAOFactory(0), _ens) public {
         tokenFactory = new MiniMeTokenFactory();
+        daiCToken = _daiCToken;
     }
 
     function newInstance() public {
@@ -82,7 +85,8 @@ contract Template is TemplateBase {
         token.changeController(tokenManager);
 
         // Initialize apps
-        app.initialize(address(agent));
+        cTokensArray.push(address(daiCToken));
+        app.initialize(address(agent), cTokensArray);
         tokenManager.initialize(token, true, 0);
         voting.initialize(token, 50 * PCT, 20 * PCT, 1 days);
         agent.initialize();
@@ -90,6 +94,9 @@ contract Template is TemplateBase {
         // Create apps permissions
         acl.createPermission(ANY_ENTITY, app, app.SET_AGENT_ROLE(), root);
         acl.createPermission(ANY_ENTITY, app, app.TRANSFER_ROLE(), root);
+        acl.createPermission(ANY_ENTITY, app, app.LEND_ROLE(), root);
+        acl.createPermission(ANY_ENTITY, app, app.REDEEM_ROLE(), root);
+        acl.createPermission(ANY_ENTITY, app, app.MODIFY_CTOKENS(), root);
 
         acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), this);
         acl.grantPermission(voting, tokenManager, tokenManager.MINT_ROLE());
