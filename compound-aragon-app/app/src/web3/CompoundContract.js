@@ -38,11 +38,11 @@ const withdraw = (api, token, recipient, amount, decimals) => {
         .subscribe()
 }
 
-const lendToken = (api, amount) => {
+const supplyToken = (api, amount) => {
     const adjustedAmount = toDecimals(amount, 18)
 
     api.call('cTokens', 0).pipe(
-        mergeMap(cToken => api.lendToken(adjustedAmount, cToken)))
+        mergeMap(cToken => api.supplyToken(adjustedAmount, cToken)))
         .subscribe()
 }
 
@@ -58,6 +58,6 @@ export {
     setAgent,
     deposit,
     withdraw,
-    lendToken,
+    supplyToken,
     redeemToken
 }

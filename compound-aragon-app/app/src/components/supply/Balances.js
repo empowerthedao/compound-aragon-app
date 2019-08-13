@@ -100,6 +100,10 @@ class Balances extends React.Component {
                 </section>
                 )}
             </Viewport>
+
+
+
+
         )
     }
 }

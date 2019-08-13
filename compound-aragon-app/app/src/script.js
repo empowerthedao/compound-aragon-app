@@ -2,7 +2,7 @@ import '@babel/polyfill'
 import Aragon, {events} from '@aragon/api'
 import retryEvery from "./lib/retry-every"
 import {agentAddress$, agentApp$} from "./web3/ExternalContracts";
-import {agentInitializationBlock$, agentBalances$} from "./web3/AgentData";
+import {agentInitializationBlock$, agentBalances$, network$} from "./web3/AgentData";
 import {ETHER_TOKEN_FAKE_ADDRESS} from "./lib/shared-constants";
 import {compoundTokensDetails$} from "./web3/CompoundData";
 
@@ -51,6 +51,7 @@ const initialState = async (cachedInitState) => {
             agentAddress: await agentAddress$(api).toPromise(),
             balances: await agentBalances$(api, activeTokens(cachedInitState)).toPromise(),
             compoundTokens: await compoundTokensDetails$(api).toPromise(),
+            network: await network$(api).toPromise()
         }
     } catch (e) {
         console.error(e)
@@ -121,9 +122,9 @@ const onNewEvent = async (state, storeEvent) => {
                 ...state,
                 balances: await agentBalances$(api, activeTokens(state)).toPromise()
             }
-        case 'Lend':
+        case 'Supply':
         case 'Redeem':
-            debugLog("LEND/REDEEM")
+            debugLog("SUPPLY/REDEEM")
             return {
                 ...state,
                 balances: await agentBalances$(api, activeTokens(state)).toPromise()

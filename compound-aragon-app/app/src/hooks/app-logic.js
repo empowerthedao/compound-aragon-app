@@ -1,9 +1,9 @@
-import {deposit, lendToken, redeemToken, setAgent, withdraw} from "../web3/CompoundContract";
+import {deposit, supplyToken, redeemToken, setAgent, withdraw} from "../web3/CompoundContract";
 import {useApi, useAppState} from "@aragon/api-react";
 import {useCallback} from 'react'
 import {useSidePanel} from "./side-panels";
 import {useTabs} from "./tabs";
-import {useLendState} from "./lend";
+import {useSupplyState} from "./supply";
 
 const useSetAgentAddress = (onDone) => {
     const api = useApi()
@@ -32,11 +32,11 @@ const useWithdraw = (onDone) => {
     }, [api, onDone])
 }
 
-const useLend = () => {
+const useSupply = () => {
     const api = useApi()
 
     return useCallback((amount) => {
-        lendToken(api, amount)
+        supplyToken(api, amount)
     }, [api])
 }
 
@@ -56,7 +56,7 @@ export function useAppLogic() {
         agentAddress,
     } = useAppState()
 
-    const lendState = useLendState()
+    const supplyState = useSupplyState()
     const settings = {appAddress, agentAddress}
 
     const sidePanel = useSidePanel()
@@ -66,13 +66,13 @@ export function useAppLogic() {
         setAgentAddress: useSetAgentAddress(sidePanel.requestClose),
         deposit: useDeposit(sidePanel.requestClose),
         withdraw: useWithdraw(sidePanel.requestClose),
-        lend: useLend(),
+        supply: useSupply(),
         redeem: useRedeem()
     }
 
     return {
         isSyncing,
-        lendState,
+        supplyState,
         tokens,
         settings,
         actions,

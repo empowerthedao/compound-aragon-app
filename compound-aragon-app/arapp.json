@@ -16,8 +16,8 @@
       "params": []
     },
     {
-      "name": "Lend tokens",
-      "id": "LEND_ROLE",
+      "name": "Supply tokens",
+      "id": "SUPPLY_ROLE",
       "params": []
     },
     {
@@ -44,5 +44,5 @@
       "network": "mainnet"
     }
   },
-  "path": "contracts/CompoundApp.sol"
+  "path": "contracts/Compound.sol"
 }

@@ -8,7 +8,7 @@ import "@ensdomains/buffer/contracts/Buffer.sol";
 import "./CTokenInterface.sol";
 import "./lib/AddressArrayUtils.sol";
 
-contract CompoundApp is AragonApp {
+contract Compound is AragonApp {
 
     using SafeERC20 for ERC20;
     using Buffer for Buffer.buffer;
@@ -17,7 +17,7 @@ contract CompoundApp is AragonApp {
     bytes32 public constant SET_AGENT_ROLE = keccak256("SET_AGENT_ROLE");
     bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
     bytes32 public constant MODIFY_CTOKENS = keccak256("MODIFY_CTOKENS");
-    bytes32 public constant LEND_ROLE = keccak256("LEND_ROLE");
+    bytes32 public constant SUPPLY_ROLE = keccak256("SUPPLY_ROLE");
     bytes32 public constant REDEEM_ROLE = keccak256("REDEEM_ROLE");
 
     string private constant ERROR_VALUE_MISMATCH = "COMPOUND_VALUE_MISMATCH";
@@ -33,7 +33,7 @@ contract CompoundApp is AragonApp {
     event NewAgentSet();
     event AddCToken();
     event RemoveCToken();
-    event Lend();
+    event Supply();
     event Redeem();
 
     /**
@@ -110,11 +110,11 @@ contract CompoundApp is AragonApp {
     }
 
     /**
-    * @notice Lend `@tokenAmount(self.getUnderlyingToken(_cToken): address, _amount, true, 18)` to Compound
-    * @param _amount Amount to lend
-    * @param _cToken cToken to lend to
+    * @notice Supply `@tokenAmount(self.getUnderlyingToken(_cToken): address, _amount, true, 18)` to Compound
+    * @param _amount Amount to supply
+    * @param _cToken cToken to supply to
     */
-    function lendToken(uint256 _amount, address _cToken) external auth(LEND_ROLE) {
+    function supplyToken(uint256 _amount, address _cToken) external auth(SUPPLY_ROLE) {
         require(cTokens.contains(_cToken), ERROR_INVALID_CTOKEN);
 
         bytes memory spec1 = hex"00000001";
@@ -123,14 +123,14 @@ contract CompoundApp is AragonApp {
         address token = cToken.underlying();
 
         bytes memory approveFunctionCall = abi.encodeWithSignature("approve(address,uint256)", address(cToken), _amount);
-        bytes memory lendFunctionCall = abi.encodeWithSignature("mint(uint256)", _amount);
+        bytes memory supplyFunctionCall = abi.encodeWithSignature("mint(uint256)", _amount);
 
         byteBuffer.init(182);
         byteBuffer.append(spec1);
         _appendForwarderScript(byteBuffer, token, approveFunctionCall);
-        _appendForwarderScript(byteBuffer, cToken, lendFunctionCall);
+        _appendForwarderScript(byteBuffer, cToken, supplyFunctionCall);
 
-        emit Lend();
+        emit Supply();
 
         agent.forward(byteBuffer.buf);
     }

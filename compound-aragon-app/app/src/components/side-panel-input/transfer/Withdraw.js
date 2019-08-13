@@ -46,7 +46,7 @@ const Withdraw = ({tokens, handleWithdraw}) => {
                     />
                     <DropDown
                         items={tokenSymbols}
-                        active={selectedCurrency}
+                        selected={selectedCurrency}
                         onChange={selectedTokenIndex => setSelectedCurrency(selectedTokenIndex)}
                     />
                 </CombinedInput>

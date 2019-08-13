@@ -1,18 +1,17 @@
 import React from 'react'
 import {Main, TabBar, SidePanel, SyncIndicator, Button} from '@aragon/ui'
-
 import AppLayout from "./components/app-layout/AppLayout"
 import Settings from "./components/settings/Settings"
-import Lend from "./components/lend/lend";
 import GenericInputPanel from "./components/side-panel-input/GenericInputPanel";
 import TransferPanel from "./components/side-panel-input/transfer/TransferPanel";
 import {useAppLogic} from "./hooks/app-logic";
+import Supply from "./components/supply/Supply";
 
 function App() {
 
     const {
         isSyncing,
-        lendState,
+        supplyState,
         tokens,
         settings,
         actions,
@@ -22,8 +21,8 @@ function App() {
 
     const selectedTabComponent = () => {
         switch (tabs.tabBarSelected.id) {
-            case 'LEND':
-                return <Lend lendState={lendState} handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
+            case 'SUPPLY':
+                return <Supply supplyState={supplyState} handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
             case 'SETTINGS':
                 return <Settings settings={settings}
                                  handleNewAgent={() => sidePanel.openPanelActions.changeAgent()}/>
@@ -66,9 +65,9 @@ function App() {
 
                     {selectedTabComponent()}
 
-                    <Button onClick={() => actions.lend('50')}>LEND</Button>
+                    <Button css={`margin-top: 30px;`} onClick={() => actions.supply('50')}>SUPPLY</Button>
 
-                    <Button onClick={() => actions.redeem('50')}>REDEEM</Button>
+                    <Button css={`margin-top: 30px;`} onClick={() => actions.redeem('50')}>REDEEM</Button>
 
                 </AppLayout>
 

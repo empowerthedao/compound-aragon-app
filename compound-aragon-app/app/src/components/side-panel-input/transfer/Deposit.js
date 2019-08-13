@@ -29,8 +29,9 @@ const Deposit = ({tokens, handleDeposit}) => {
 
                 <FieldStyled label="Token">
                     <DropDown items={tokensAvailable}
-                              required active={tokenSelected}
+                              required
                               onChange={selectedTokenIndex => setTokenSelected(selectedTokenIndex)}
+                              selected={tokenSelected}
                               wide/>
                 </FieldStyled>
 

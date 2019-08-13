@@ -21,7 +21,7 @@ import "@aragon/apps-token-manager/contracts/TokenManager.sol";
 import "@aragon/apps-shared-minime/contracts/MiniMeToken.sol";
 import "@aragon/apps-agent/contracts/Agent.sol";
 
-import "./CompoundApp.sol";
+import "./Compound.sol";
 
 
 contract TemplateBase is APMNamehash {
@@ -76,7 +76,7 @@ contract Template is TemplateBase {
         bytes32 tokenManagerAppId = apmNamehash("token-manager");
         bytes32 agentAppId = apmNamehash("agent");
 
-        CompoundApp app = CompoundApp(dao.newAppInstance(appId, latestVersionAppBase(appId)));
+        Compound app = Compound(dao.newAppInstance(appId, latestVersionAppBase(appId)));
         Voting voting = Voting(dao.newAppInstance(votingAppId, latestVersionAppBase(votingAppId)));
         TokenManager tokenManager = TokenManager(dao.newAppInstance(tokenManagerAppId, latestVersionAppBase(tokenManagerAppId)));
         Agent agent = Agent(dao.newAppInstance(agentAppId, latestVersionAppBase(agentAppId)));
@@ -94,7 +94,7 @@ contract Template is TemplateBase {
         // Create apps permissions
         acl.createPermission(ANY_ENTITY, app, app.SET_AGENT_ROLE(), root);
         acl.createPermission(ANY_ENTITY, app, app.TRANSFER_ROLE(), root);
-        acl.createPermission(ANY_ENTITY, app, app.LEND_ROLE(), root);
+        acl.createPermission(ANY_ENTITY, app, app.SUPPLY_ROLE(), root);
         acl.createPermission(ANY_ENTITY, app, app.REDEEM_ROLE(), root);
         acl.createPermission(ANY_ENTITY, app, app.MODIFY_CTOKENS(), root);
 

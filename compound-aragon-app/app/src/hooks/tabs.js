@@ -1,5 +1,4 @@
 import {useState, useCallback} from 'react'
-import Lend from "../components/lend/Lend";
 import Settings from "../components/settings/Settings";
 
 export function useTabs() {
@@ -7,8 +6,8 @@ export function useTabs() {
     const tabs = [
         {
             index: 0,
-            id: 'LEND',
-            tabName: 'Lend',
+            id: 'SUPPLY',
+            tabName: 'Supply',
             smallViewPadding: 0
         },
         {
