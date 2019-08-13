@@ -77,6 +77,13 @@ contract CompoundApp is AragonApp {
     }
 
     /**
+    * @notice Get all currently available cTokens
+    */
+    function getCTokens() external view returns (address[]) {
+        return cTokens;
+    }
+
+    /**
     * @notice Deposit `@tokenAmount(_token, _value, true, 18)` tokens to the Compound App's Agent
     * @param _token Address of the token being transferred
     * @param _value Amount of tokens being transferred

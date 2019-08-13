@@ -72,6 +72,5 @@ const agentBalances$ = (api, tokenAddresses) => agentEthBalance$(api).pipe(
 
 export {
     agentInitializationBlock$,
-    network$,
     agentBalances$,
 }
