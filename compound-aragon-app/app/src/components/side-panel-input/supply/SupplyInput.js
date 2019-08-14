@@ -30,7 +30,7 @@ const SupplyInput = ({handleSupply}) => {
                 </ButtonStyled>
 
                 <Info.Action title="Compound action">
-                    This action will supply the specified amount of Tokens to the Compound App. It will earn interest over time.
+                    This action will supply the specified amount of Tokens to the Compound App. They will earn interest over time.
                 </Info.Action>
             </DepositContainer>
         </form>

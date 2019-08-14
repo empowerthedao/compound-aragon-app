@@ -51,7 +51,6 @@ const initialState = async (cachedInitState) => {
             agentAddress: await agentAddress$(api).toPromise(),
             balances: await agentBalances$(api, activeTokens(cachedInitState)).toPromise(),
             compoundTokens: await compoundTokensDetails$(api).toPromise(),
-            network: await network$(api).toPromise()
         }
     } catch (e) {
         console.error(e)

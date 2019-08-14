@@ -1,12 +1,12 @@
 import React from 'react'
-import {TabBar, SidePanel, SyncIndicator, useViewport} from '@aragon/ui'
+import {TabBar, SidePanel, SyncIndicator, useViewport, Layout} from '@aragon/ui'
 import AppLayout from "./components/app-layout/AppLayout"
 import Settings from "./components/settings/Settings"
 import GenericInputPanel from "./components/side-panel-input/GenericInputPanel";
 import TransferPanel from "./components/side-panel-input/transfer/TransferPanel";
 import {useAppLogic} from "./hooks/app-logic";
 import Supply from "./components/supply/Supply";
-import CoinIcon from "./assets/coin.svg"
+import SupplyIcon from "./assets/supply-icon.svg"
 import SupplyPanel from "./components/side-panel-input/supply/TransferPanel";
 
 function App({compactMode}) {
@@ -59,7 +59,7 @@ function App({compactMode}) {
     }
 
     return (
-        <div css="min-width: 320px">
+        <>
             <SyncIndicator visible={isSyncing}/>
 
             <AppLayout title='Compound'
@@ -67,14 +67,21 @@ function App({compactMode}) {
                            items={tabs.names}
                            selected={tabs.selected}
                            onChange={tabs.selectTab}/>)}
-                       smallViewPadding={30}
+                       smallViewPadding={0}
                        mainButton={tabs.tabBarSelected.id === 'SUPPLY' ? {
                            label: "Supply",
-                           icon: <img src={CoinIcon} height="30px" alt="" />,
-                           onClick: () => {sidePanel.openPanelActions.supply()}} : undefined }
+                           icon: <img src={SupplyIcon} height="30px" alt=""/>,
+                           onClick: () => {
+                               sidePanel.openPanelActions.supply()
+                           }
+                       } : undefined}
             >
 
-                {selectedTabComponent()}
+                <Layout>
+
+                    {selectedTabComponent()}
+
+                </Layout>
 
             </AppLayout>
 
@@ -88,7 +95,7 @@ function App({compactMode}) {
             </SidePanel>
 
 
-        </div>
+        </>
     )
 }
 

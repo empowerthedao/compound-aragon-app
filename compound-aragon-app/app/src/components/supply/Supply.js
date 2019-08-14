@@ -1,17 +1,13 @@
 import React from "react"
 import Balances from "./Balances";
 import styled from "styled-components";
-import {Text, TokenBadge, Box, theme} from '@aragon/ui'
+import SupplyDetails from "./SupplyDetails";
 
-// TODO: Get network type.
 const Supply = ({supplyState, handleTransfer, compactMode}) => {
 
-    const {balances, compoundTokens, network} = supplyState
+    const {balances, compoundTokens, tokens} = supplyState
 
-    const {tokenAddress, tokenName, tokenSymbol, supplyRatePerBlock, balanceOfUnderlying} =
-        compoundTokens && compoundTokens.length > 0 ? compoundTokens[0] : {}
-
-    const yearlySupplyEstimate = () => supplyRatePerBlock * 60/15 * 60 * 24 * 365 // Blocks/minute * minutes in hour * hours in day * days in year
+    const compoundToken = compoundTokens && compoundTokens.length > 0 ? compoundTokens[0] : {}
 
     return (
         <Container>
@@ -19,39 +15,10 @@ const Supply = ({supplyState, handleTransfer, compactMode}) => {
                 <Balances compactMode={compactMode} balances={balances} handleTransfer={handleTransfer}/>
             </SpacedBlock>
 
-            <SupplyBox heading={"Supply tokens"}>
-                <ul>
-                    <TopInfoRow>
-                        <Text>Supply Rate Per Block</Text>
-                        <Text>{supplyRatePerBlock}</Text>
-                    </TopInfoRow>
-                    <InfoRow>
-                        <Text>Supply Rate Yearly</Text>
-                        <Text>{yearlySupplyEstimate().toString()}</Text>
-                    </InfoRow>
-                    <InfoRow>
-                        <Text>Supply Balance</Text>
-                        <Text>{balanceOfUnderlying}</Text>
-                    </InfoRow>
-                    <InfoRow>
-                        <Text>Token</Text>
-                        {network && tokenSymbol && <TokenBadge
-                            address={tokenAddress}
-                            name={tokenName}
-                            symbol={tokenSymbol}
-                            networkType={network.type}
-                        />}
-                    </InfoRow>
-                </ul>
-            </SupplyBox>
+            <SupplyDetails compoundToken={compoundToken} tokens={tokens} />
         </Container>
     )
-
 }
-
-const SupplyBox = styled(Box)`
-    margin-top: 30px;
-`
 
 const Container = styled.div`
     display: flex;
@@ -62,29 +29,6 @@ const SpacedBlock = styled.div`
   margin-top: 30px;
   &:first-child {
     margin-top: 0;
-  }
-`
-
-const TopInfoRow = styled.li`
-  display: flex;
-  justify-content: space-between;
-  list-style: none;
-
-  > span:nth-child(1) {
-    font-weight: 400;
-    color: ${theme.textSecondary};
-  }
-`
-
-const InfoRow = styled.li`
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-  list-style: none;
-
-  > span:nth-child(1) {
-    font-weight: 400;
-    color: ${theme.textSecondary};
   }
 `
 
