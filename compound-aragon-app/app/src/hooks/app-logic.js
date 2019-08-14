@@ -32,19 +32,21 @@ const useWithdraw = (onDone) => {
     }, [api, onDone])
 }
 
-const useSupply = () => {
+const useSupply = (onDone) => {
     const api = useApi()
 
     return useCallback((amount) => {
         supplyToken(api, amount)
+        onDone()
     }, [api])
 }
 
-const useRedeem = () => {
+const useRedeem = (onDone) => {
     const api = useApi()
 
     return useCallback((amount) => {
         redeemToken(api, amount)
+        onDone()
     }, [api])
 }
 
@@ -66,8 +68,8 @@ export function useAppLogic() {
         setAgentAddress: useSetAgentAddress(sidePanel.requestClose),
         deposit: useDeposit(sidePanel.requestClose),
         withdraw: useWithdraw(sidePanel.requestClose),
-        supply: useSupply(),
-        redeem: useRedeem()
+        supply: useSupply(sidePanel.requestClose),
+        redeem: useRedeem(sidePanel.requestClose)
     }
 
     return {

@@ -68,7 +68,7 @@ class Balances extends React.Component {
             }
         )
         return (
-            <Box heading={"Agent Balances"} padding={0}>
+            <Box heading={"Agent Balances"} padding={!compactMode}>
                 <div css={`
                     /*
                     * translate3d() fixes an issue on recent Firefox versions where the
@@ -90,7 +90,7 @@ class Balances extends React.Component {
                         {balanceItems.length > 0 ? (
                             balanceItems.map(
                                 ({address, amount, convertedAmount, symbol, verified}) => (
-                                    <ListItem>
+                                    <ListItem key={address}>
                                         <BalanceToken
                                             amount={amount}
                                             convertedAmount={convertedAmount}

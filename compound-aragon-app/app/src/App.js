@@ -1,11 +1,13 @@
 import React from 'react'
-import {Main, TabBar, SidePanel, SyncIndicator, Button, useViewport} from '@aragon/ui'
+import {TabBar, SidePanel, SyncIndicator, useViewport} from '@aragon/ui'
 import AppLayout from "./components/app-layout/AppLayout"
 import Settings from "./components/settings/Settings"
 import GenericInputPanel from "./components/side-panel-input/GenericInputPanel";
 import TransferPanel from "./components/side-panel-input/transfer/TransferPanel";
 import {useAppLogic} from "./hooks/app-logic";
 import Supply from "./components/supply/Supply";
+import CoinIcon from "./assets/coin.svg"
+import SupplyPanel from "./components/side-panel-input/supply/TransferPanel";
 
 function App({compactMode}) {
 
@@ -22,7 +24,8 @@ function App({compactMode}) {
     const selectedTabComponent = () => {
         switch (tabs.tabBarSelected.id) {
             case 'SUPPLY':
-                return <Supply compactMode={compactMode} supplyState={supplyState} handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
+                return <Supply compactMode={compactMode} supplyState={supplyState}
+                               handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
             case 'SETTINGS':
                 return <Settings settings={settings}
                                  handleNewAgent={() => sidePanel.openPanelActions.changeAgent()}/>
@@ -46,6 +49,10 @@ function App({compactMode}) {
                                       opened={sidePanel.opened}
                                       handleDeposit={actions.deposit}
                                       handleWithdraw={actions.withdraw}/>
+            case 'SUPPLY':
+                return <SupplyPanel handleSupply={actions.supply}
+                                    handleRedeem={actions.redeem}
+                                    opened={sidePanel.opened}/>
             default:
                 return <div/>
         }
@@ -53,31 +60,32 @@ function App({compactMode}) {
 
     return (
         <div css="min-width: 320px">
-                <SyncIndicator visible={isSyncing}/>
+            <SyncIndicator visible={isSyncing}/>
 
-                <AppLayout title='Compound'
-                           tabs={(<TabBar
-                               items={tabs.names}
-                               selected={tabs.selected}
-                               onChange={tabs.selectTab}/>)}
-                           smallViewPadding={tabs.tabBarSelected.smallViewPadding}>
+            <AppLayout title='Compound'
+                       tabs={(<TabBar
+                           items={tabs.names}
+                           selected={tabs.selected}
+                           onChange={tabs.selectTab}/>)}
+                       smallViewPadding={30}
+                       mainButton={tabs.tabBarSelected.id === 'SUPPLY' ? {
+                           label: "Supply",
+                           icon: <img src={CoinIcon} height="30px" alt="" />,
+                           onClick: () => {sidePanel.openPanelActions.supply()}} : undefined }
+            >
 
-                    {selectedTabComponent()}
+                {selectedTabComponent()}
 
-                    <Button css={`margin-top: 30px;`} onClick={() => actions.supply('50')}>SUPPLY</Button>
+            </AppLayout>
 
-                    <Button css={`margin-top: 30px;`} onClick={() => actions.redeem('50')}>REDEEM</Button>
-
-                </AppLayout>
-
-                <SidePanel
-                    title={sidePanel.currentSidePanel.title}
-                    opened={sidePanel.visible}
-                    onClose={sidePanel.requestClose}
-                    onTransitionEnd={sidePanel.endTransition}
-                >
-                    {currentSidePanel()}
-                </SidePanel>
+            <SidePanel
+                title={sidePanel.currentSidePanel.title}
+                opened={sidePanel.visible}
+                onClose={sidePanel.requestClose}
+                onTransitionEnd={sidePanel.endTransition}
+            >
+                {currentSidePanel()}
+            </SidePanel>
 
 
         </div>
@@ -85,7 +93,7 @@ function App({compactMode}) {
 }
 
 export default () => {
-    const { below } = useViewport()
+    const {below} = useViewport()
     const compactMode = below('medium')
 
     return <App compactMode={compactMode}/>

@@ -127,7 +127,8 @@ const onNewEvent = async (state, storeEvent) => {
             debugLog("SUPPLY/REDEEM")
             return {
                 ...state,
-                balances: await agentBalances$(api, activeTokens(state)).toPromise()
+                balances: await agentBalances$(api, activeTokens(state)).toPromise(),
+                compoundTokens: await compoundTokensDetails$(api).toPromise(),
             }
         default:
             return state

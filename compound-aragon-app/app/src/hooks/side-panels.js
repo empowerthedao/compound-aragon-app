@@ -11,6 +11,10 @@ export function useSidePanel() {
 
     const sidePanels = {
         DEFAULT: defaultSidePanel,
+        SUPPLY: {
+            id: 'SUPPLY',
+            title: 'Supply Tokens'
+        },
         TRANSFER: {
             id: 'TRANSFER',
             title: 'New Agent Transfer'
@@ -43,6 +47,7 @@ export function useSidePanel() {
     }, [setVisible])
 
     const openPanelActions = {
+        supply: () => requestOpen(sidePanels.SUPPLY),
         transfer: () => requestOpen(sidePanels.TRANSFER),
         changeAgent: () => requestOpen(sidePanels.CHANGE_AGENT)
     }

@@ -8,8 +8,10 @@ const Supply = ({supplyState, handleTransfer, compactMode}) => {
 
     const {balances, compoundTokens, network} = supplyState
 
-    const {compoundTokenAddress, name, symbol, supplyRatePerBlock, balanceOfUnderlying} =
+    const {tokenAddress, tokenName, tokenSymbol, supplyRatePerBlock, balanceOfUnderlying} =
         compoundTokens && compoundTokens.length > 0 ? compoundTokens[0] : {}
+
+    const yearlySupplyEstimate = () => supplyRatePerBlock * 60/15 * 60 * 24 * 365 // Blocks/minute * minutes in hour * hours in day * days in year
 
     return (
         <Container>
@@ -19,9 +21,13 @@ const Supply = ({supplyState, handleTransfer, compactMode}) => {
 
             <SupplyBox heading={"Supply tokens"}>
                 <ul>
-                    <InfoRow>
-                        <Text>Supply Rate</Text>
+                    <TopInfoRow>
+                        <Text>Supply Rate Per Block</Text>
                         <Text>{supplyRatePerBlock}</Text>
+                    </TopInfoRow>
+                    <InfoRow>
+                        <Text>Supply Rate Yearly</Text>
+                        <Text>{yearlySupplyEstimate().toString()}</Text>
                     </InfoRow>
                     <InfoRow>
                         <Text>Supply Balance</Text>
@@ -29,17 +35,16 @@ const Supply = ({supplyState, handleTransfer, compactMode}) => {
                     </InfoRow>
                     <InfoRow>
                         <Text>Token</Text>
-                        {network && symbol && <TokenBadge
-                            address={compoundTokenAddress}
-                            name={name}
-                            symbol={symbol}
+                        {network && tokenSymbol && <TokenBadge
+                            address={tokenAddress}
+                            name={tokenName}
+                            symbol={tokenSymbol}
                             networkType={network.type}
                         />}
                     </InfoRow>
                 </ul>
             </SupplyBox>
         </Container>
-
     )
 
 }
@@ -60,10 +65,21 @@ const SpacedBlock = styled.div`
   }
 `
 
+const TopInfoRow = styled.li`
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+
+  > span:nth-child(1) {
+    font-weight: 400;
+    color: ${theme.textSecondary};
+  }
+`
+
 const InfoRow = styled.li`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  margin-top: 15px;
   list-style: none;
 
   > span:nth-child(1) {

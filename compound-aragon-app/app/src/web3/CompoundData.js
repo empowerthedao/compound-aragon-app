@@ -13,10 +13,10 @@ const balanceOfUnderlyingTokens$ = (api, compoundTokenAddress) =>
 
 const compoundTokenDetails$ = (api, compoundTokenAddress) => {
 
-    const tokenObject = (compoundTokenAddress, name, symbol, supplyRatePerBlock, balanceOfUnderlying) => ({
-        compoundTokenAddress,
-        name,
-        symbol,
+    const tokenObject = (tokenAddress, tokenName, tokenSymbol, supplyRatePerBlock, balanceOfUnderlying) => ({
+        tokenAddress,
+        tokenName,
+        tokenSymbol,
         supplyRatePerBlock,
         balanceOfUnderlying
     })
