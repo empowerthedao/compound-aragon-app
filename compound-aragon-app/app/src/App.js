@@ -1,5 +1,5 @@
 import React from 'react'
-import {Main, TabBar, SidePanel, SyncIndicator, Button} from '@aragon/ui'
+import {Main, TabBar, SidePanel, SyncIndicator, Button, useViewport} from '@aragon/ui'
 import AppLayout from "./components/app-layout/AppLayout"
 import Settings from "./components/settings/Settings"
 import GenericInputPanel from "./components/side-panel-input/GenericInputPanel";
@@ -7,7 +7,7 @@ import TransferPanel from "./components/side-panel-input/transfer/TransferPanel"
 import {useAppLogic} from "./hooks/app-logic";
 import Supply from "./components/supply/Supply";
 
-function App() {
+function App({compactMode}) {
 
     const {
         isSyncing,
@@ -22,7 +22,7 @@ function App() {
     const selectedTabComponent = () => {
         switch (tabs.tabBarSelected.id) {
             case 'SUPPLY':
-                return <Supply supplyState={supplyState} handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
+                return <Supply compactMode={compactMode} supplyState={supplyState} handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
             case 'SETTINGS':
                 return <Settings settings={settings}
                                  handleNewAgent={() => sidePanel.openPanelActions.changeAgent()}/>
@@ -53,7 +53,6 @@ function App() {
 
     return (
         <div css="min-width: 320px">
-            <Main>
                 <SyncIndicator visible={isSyncing}/>
 
                 <AppLayout title='Compound'
@@ -81,9 +80,13 @@ function App() {
                 </SidePanel>
 
 
-            </Main>
         </div>
     )
 }
 
-export default App
+export default () => {
+    const { below } = useViewport()
+    const compactMode = below('medium')
+
+    return <App compactMode={compactMode}/>
+}

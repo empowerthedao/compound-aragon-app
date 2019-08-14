@@ -4,7 +4,7 @@ import styled from "styled-components";
 import {Text, TokenBadge, Box, theme} from '@aragon/ui'
 
 // TODO: Get network type.
-const Supply = ({supplyState, handleTransfer}) => {
+const Supply = ({supplyState, handleTransfer, compactMode}) => {
 
     const {balances, compoundTokens, network} = supplyState
 
@@ -14,7 +14,7 @@ const Supply = ({supplyState, handleTransfer}) => {
     return (
         <Container>
             <SpacedBlock>
-                <Balances balances={balances} handleTransfer={handleTransfer}/>
+                <Balances compactMode={compactMode} balances={balances} handleTransfer={handleTransfer}/>
             </SpacedBlock>
 
             <SupplyBox heading={"Supply tokens"}>

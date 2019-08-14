@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 const CUSTOM_TOKEN_DECIMALS = -1
 
+// TODO: Replace dropdown with TokenSelector (see new Finance app)
 const Deposit = ({tokens, handleDeposit}) => {
 
     const [tokenSelected, setTokenSelected] = useState(0)

@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import throttle from 'lodash.throttle'
-import {theme, breakpoint, Viewport, Button} from '@aragon/ui'
+import {theme, breakpoint, Button, Box} from '@aragon/ui'
 import BalanceToken from './BalanceToken'
 import {round} from '../../lib/math-utils'
 import AbortController from 'abort-controller'
@@ -49,7 +49,7 @@ class Balances extends React.Component {
     }
 
     render() {
-        const {balances, handleTransfer} = this.props
+        const {compactMode, balances, handleTransfer} = this.props
         const {convertRates} = this.state
         const balanceItems = balances.map(
             ({address, numData: {amount, decimals}, symbol, verified}) => {
@@ -68,42 +68,52 @@ class Balances extends React.Component {
             }
         )
         return (
-            <Viewport>
-                {({ below }) => (
-                <section>
-                    <Title>Agent Balances</Title>
-                    <ScrollView>
-                        <List>
-                            {balanceItems.length > 0 ? (
-                                balanceItems.map(
-                                    ({address, amount, convertedAmount, symbol, verified}) => (
-                                        <ListItem key={address}>
-                                            <BalanceToken
-                                                amount={amount}
-                                                convertedAmount={convertedAmount}
-                                                symbol={symbol}
-                                                verified={verified}
-                                            />
-                                        </ListItem>
-                                    )
+            <Box heading={"Agent Balances"} padding={0}>
+                <div css={`
+                    /*
+                    * translate3d() fixes an issue on recent Firefox versions where the
+                    * scrollbar would briefly appear on top of everything (including the
+                    * sidepanel overlay).
+                    */
+                    transform: translate3d(0, 0, 0);
+                    overflow-x: auto;
+                  `}>
+                    <ul css={`
+                      min-height: 132px;
+                      list-style: none;
+                      padding: 0;
+                      margin: 0;
+                      display: flex;
+                      ${compactMode && `flex-direction: column;`}
+                      ${!compactMode && `align-items: center;`}
+                    `}>
+                        {balanceItems.length > 0 ? (
+                            balanceItems.map(
+                                ({address, amount, convertedAmount, symbol, verified}) => (
+                                    <ListItem>
+                                        <BalanceToken
+                                            amount={amount}
+                                            convertedAmount={convertedAmount}
+                                            symbol={symbol}
+                                            verified={verified}
+                                            compactMode={compactMode}
+                                        />
+                                    </ListItem>
                                 )
-                            ) : (
-                                <EmptyListItem/>
-                            )}
-                            {!below('medium') &&
-                            AddTokenButton(false, 'outline', handleTransfer, 20)}
-                        </List>
-                    </ScrollView>
-                    {below('medium') && (
-                        <Wrapper>{AddTokenButton(true, 'strong', handleTransfer, 0)}</Wrapper>
-                    )}
-                </section>
+                            )
+                        ) : (
+                            <EmptyListItem/>
+                        )}
+                        <li css={`margin-left: 30px;`}>
+                            {!compactMode &&
+                            AddTokenButton(false, 'outline', handleTransfer)}
+                        </li>
+                    </ul>
+                </div>
+                {compactMode && (
+                    <Wrapper>{AddTokenButton(true, 'strong', handleTransfer)}</Wrapper>
                 )}
-            </Viewport>
-
-
-
-
+            </Box>
         )
     }
 }
@@ -114,59 +124,11 @@ const EmptyListItem = () => (
     </ListItem>
 )
 
-const AddTokenButton = (wide, mode, onClick, marginLeft) => (
-    <Button style={{marginLeft: marginLeft}} wide={wide} mode={mode} onClick={() => onClick()}>
+const AddTokenButton = (wide, mode, onClick) => (
+    <Button wide={wide} mode={mode} onClick={() => onClick()}>
         {"Transfer"}
     </Button>
 )
-
-
-const ScrollView = styled.div`
-  /*
-   * translate3d() fixes an issue on recent Firefox versions where the
-   * scrollbar would briefly appear on top of everything (including the
-   * sidepanel overlay).
-   */
-  transform: translate3d(0, 0, 0);
-  overflow-x: auto;
-  background: ${theme.contentBackground};
-  border-top: 1px solid ${theme.contentBorder};
-
-  ${breakpoint(
-    'medium',
-    `
-      border: 1px solid ${theme.contentBorder};
-      border-radius: 3px;
-    `
-)};
-`
-
-const Title = styled.h1`
-  margin: 20px 0 20px 20px;
-  font-weight: 600;
-
-  ${breakpoint(
-    'medium',
-    `
-      margin: 10px 30px 20px 0;
-    `
-)};
-`
-
-const List = styled.ul`
-  list-style: none;
-  width: 100%;
-  ${breakpoint(
-    'medium',
-    `
-    width: auto;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center
-    padding: 0 10px;
- `
-)};
-`
 
 const ListItem = styled.li`
   display: grid;
