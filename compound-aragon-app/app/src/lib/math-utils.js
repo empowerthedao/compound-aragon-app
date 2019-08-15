@@ -10,8 +10,8 @@
  * @returns {number} Rounded number
  */
 export function round(num, places = 2) {
-  const rounded = Number(Math.round(num + 'e+' + places) + 'e-' + places)
-  return Number.isNaN(rounded) ? Number(num.toFixed(places)) : rounded
+    const rounded = Number(Math.round(num + 'e+' + places) + 'e-' + places)
+    return Number.isNaN(rounded) ? Number(num.toFixed(places)) : rounded
 }
 
 /**
@@ -21,12 +21,12 @@ export function round(num, places = 2) {
  * @param {string} num the number
  * @returns {Array<string>} array with the [<whole>, <decimal>] parts of the number
  */
-function splitDecimalNumber(num) {
-  const [whole = '', dec = ''] = num.split('.')
-  return [
-    whole.replace(/^0*/, ''), // trim leading zeroes
-    dec.replace(/0*$/, ''), // trim trailing zeroes
-  ]
+export function splitDecimalNumber(num) {
+    const [whole = '', dec = ''] = num.split('.')
+    return [
+        whole.replace(/^0*/, ''), // trim leading zeroes
+        dec.replace(/0*$/, ''), // trim trailing zeroes
+    ]
 }
 
 /**
@@ -36,31 +36,35 @@ function splitDecimalNumber(num) {
  * @param {number} decimals number of decimal places
  * @param {Object} [options] options object
  * @param {bool} [options.truncate=true] Should the number be truncated to its decimal base
+ * @param {number} [options.truncateDecimals=true] The number of decimal places to truncate
  * @returns {string} formatted number
  */
-export function fromDecimals(num, decimals, { truncate = true } = {}) {
-  const [whole, dec] = splitDecimalNumber(num)
-  if (!whole && !dec) {
-    return '0'
-  }
+export function fromDecimals(num, decimals, {truncate = true, truncateDecimals = 0} = {}) {
+    const [whole, dec] = splitDecimalNumber(num)
+    if (!whole && !dec) {
+        return '0'
+    }
 
-  const paddedWhole = whole.padStart(decimals + 1, '0')
-  const decimalIndex = paddedWhole.length - decimals
-  const wholeWithoutBase = paddedWhole.slice(0, decimalIndex)
-  const decWithoutBase = paddedWhole.slice(decimalIndex)
+    const paddedWhole = whole.padStart(decimals + 1, '0')
+    const decimalIndex = paddedWhole.length - decimals
+    const wholeWithoutBase = paddedWhole.slice(0, decimalIndex)
+    const decWithoutBase = paddedWhole.slice(decimalIndex)
 
-  if (!truncate && dec) {
-    // We need to keep all the zeroes in this case
-    return `${wholeWithoutBase}.${decWithoutBase}${dec}`
-  }
+    if (!truncate && dec) {
+        // We need to keep all the zeroes in this case
+        return `${wholeWithoutBase}.${decWithoutBase}${dec}`
+    }
 
-  // Trim any trailing zeroes from the new decimals
-  const decWithoutBaseTrimmed = decWithoutBase.replace(/0*$/, '')
-  if (decWithoutBaseTrimmed) {
-    return `${wholeWithoutBase}.${decWithoutBaseTrimmed}`
-  }
+    const decTruncated = truncateDecimals > 0 && decWithoutBase.length > truncateDecimals ?
+        decWithoutBase.substring(0, truncateDecimals) : decWithoutBase
 
-  return wholeWithoutBase
+    // Trim any trailing zeroes from the new decimals
+    const decWithoutBaseTrimmed = decTruncated.replace(/0*$/, '')
+    if (decWithoutBaseTrimmed) {
+        return `${wholeWithoutBase}.${decWithoutBaseTrimmed}`
+    }
+
+    return wholeWithoutBase
 }
 
 /**
@@ -72,18 +76,18 @@ export function fromDecimals(num, decimals, { truncate = true } = {}) {
  * @param {bool} [options.truncate=true] Should the number be truncated to its decimal base
  * @returns {string} formatted number
  */
-export function toDecimals(num, decimals, { truncate = true } = {}) {
-  const [whole, dec] = splitDecimalNumber(num)
-  if (!whole && !dec) {
-    return '0'
-  }
+export function toDecimals(num, decimals, {truncate = true} = {}) {
+    const [whole, dec] = splitDecimalNumber(num)
+    if (!whole && !dec) {
+        return '0'
+    }
 
-  const wholeLengthWithBase = whole.length + decimals
-  const withoutDecimals = (whole + dec).padEnd(wholeLengthWithBase, '0')
-  const wholeWithBase = withoutDecimals.slice(0, wholeLengthWithBase)
+    const wholeLengthWithBase = whole.length + decimals
+    const withoutDecimals = (whole + dec).padEnd(wholeLengthWithBase, '0')
+    const wholeWithBase = withoutDecimals.slice(0, wholeLengthWithBase)
 
-  if (!truncate && wholeWithBase.length < withoutDecimals.length) {
-    return `${wholeWithBase}.${withoutDecimals.slice(wholeLengthWithBase)}`
-  }
-  return wholeWithBase
+    if (!truncate && wholeWithBase.length < withoutDecimals.length) {
+        return `${wholeWithBase}.${withoutDecimals.slice(wholeLengthWithBase)}`
+    }
+    return wholeWithBase
 }

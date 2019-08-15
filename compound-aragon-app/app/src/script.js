@@ -2,7 +2,7 @@ import '@babel/polyfill'
 import Aragon, {events} from '@aragon/api'
 import retryEvery from "./lib/retry-every"
 import {agentAddress$, agentApp$} from "./web3/ExternalContracts";
-import {agentInitializationBlock$, agentBalances$, network$} from "./web3/AgentData";
+import {agentInitializationBlock$, agentBalances$} from "./web3/AgentData";
 import {ETHER_TOKEN_FAKE_ADDRESS} from "./lib/shared-constants";
 import {compoundTokensDetails$} from "./web3/CompoundData";
 

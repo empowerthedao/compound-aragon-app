@@ -1,14 +1,13 @@
 import {zip, from} from 'rxjs'
-import {mergeMap, map, tap, merge, toArray, first} from "rxjs/operators";
-import {agentAddress$, agentApp$, tokenContract$} from "./ExternalContracts";
+import {mergeMap, map, tap, merge, toArray, first, distinct, concatMap} from "rxjs/operators";
+import {agentAddress$, agentApp$, compoundToken$, compoundTokenAddresses$, tokenContract$} from "./ExternalContracts";
 import {ETHER_TOKEN_FAKE_ADDRESS, ETH_DECIMALS} from "../lib/shared-constants";
 import {ETHER_TOKEN_VERIFIED_ADDRESSES} from "../lib/verified-tokens";
 import {onErrorReturnDefault} from "../lib/rx-error-operators";
 
 const agentInitializationBlock$ = (api) =>
     agentApp$(api).pipe(
-        mergeMap(agent => agent.getInitializationBlock())
-    )
+        mergeMap(agent => agent.getInitializationBlock()))
 
 const network$ = api =>
     api.network()
@@ -61,11 +60,21 @@ const agentTokenBalance$ = (api, tokenAddress) => {
     )
 }
 
+// Always fetch the token balances of the underlying tokens of each ctoken enabled in the app.
+const underlyingTokenAddresses$ = (api) =>
+    compoundTokenAddresses$(api).pipe(
+        concatMap(address => address),
+        mergeMap(compoundTokenAddress => compoundToken$(api, compoundTokenAddress)),
+        mergeMap(compoundToken => compoundToken.underlying()))
+
 const agentTokenBalances$ = (api, tokenAddresses) =>
     from(tokenAddresses).pipe(
+        merge(underlyingTokenAddresses$(api)),
+        distinct(),
         mergeMap(tokenAddress => agentTokenBalance$(api, tokenAddress)))
 
-const agentBalances$ = (api, tokenAddresses) => agentEthBalance$(api).pipe(
+const agentBalances$ = (api, tokenAddresses) =>
+    agentEthBalance$(api).pipe(
         merge(agentTokenBalances$(api, tokenAddresses)),
         toArray(),
         onErrorReturnDefault('agentBalances', []))

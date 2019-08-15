@@ -79,7 +79,6 @@ class Balances extends React.Component {
                     overflow-x: auto;
                   `}>
                     <ul css={`
-                      min-height: 132px;
                       list-style: none;
                       padding: 0;
                       margin: 0;
@@ -140,14 +139,14 @@ const ListItem = styled.li`
     'medium',
     `
       display: block;
-      padding: 25px;
+      padding: 20px;
       border: 0;
     `
 )};
 `
 
 const Wrapper = styled.div`
-  margin: 1rem 1.5rem;
+  margin: 15px 15px;
 `
 
 export default Balances

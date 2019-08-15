@@ -1,6 +1,13 @@
 import React from 'react'
-import {TabBar, SidePanel, SyncIndicator, useViewport, Layout} from '@aragon/ui'
-import AppLayout from "./components/app-layout/AppLayout"
+import {
+    SidePanel,
+    SyncIndicator,
+    useViewport,
+    Button,
+    Header,
+    Tabs
+} from '@aragon/ui'
+import {useAragonApi} from '@aragon/api-react'
 import Settings from "./components/settings/Settings"
 import GenericInputPanel from "./components/side-panel-input/GenericInputPanel";
 import TransferPanel from "./components/side-panel-input/transfer/TransferPanel";
@@ -8,6 +15,7 @@ import {useAppLogic} from "./hooks/app-logic";
 import Supply from "./components/supply/Supply";
 import SupplyIcon from "./assets/supply-icon.svg"
 import SupplyPanel from "./components/side-panel-input/supply/TransferPanel";
+import PropTypes from 'prop-types';
 
 function App({compactMode}) {
 
@@ -59,31 +67,33 @@ function App({compactMode}) {
     }
 
     return (
-        <>
+        <div css="min-width: 320px">
             <SyncIndicator visible={isSyncing}/>
 
-            <AppLayout title='Compound'
-                       tabs={(<TabBar
-                           items={tabs.names}
-                           selected={tabs.selected}
-                           onChange={tabs.selectTab}/>)}
-                       smallViewPadding={0}
-                       mainButton={tabs.tabBarSelected.id === 'SUPPLY' ? {
-                           label: "Supply",
-                           icon: <img src={SupplyIcon} height="30px" alt=""/>,
-                           onClick: () => {
-                               sidePanel.openPanelActions.supply()
-                           }
-                       } : undefined}
-            >
+            <Header
+                primary="Compound"
+                secondary={
+                    tabs.tabBarSelected.id === 'SUPPLY' &&
+                    <Button
+                        mode="strong"
+                        onClick={() => sidePanel.openPanelActions.supply()}
+                        css={`${compactMode && `
+                            min-width: 40px;
+                            padding: 0;
+                            `}
+                        `}
+                    >
+                        {compactMode ? <img src={SupplyIcon} height="30px" alt=""/> : 'Supply / Redeem'}
+                    </Button>
+                }
+            />
 
-                <Layout>
+            <Tabs
+                items={tabs.names}
+                selected={tabs.selected}
+                onChange={tabs.selectTab}/>
 
-                    {selectedTabComponent()}
-
-                </Layout>
-
-            </AppLayout>
+            {selectedTabComponent()}
 
             <SidePanel
                 title={sidePanel.currentSidePanel.title}
@@ -93,15 +103,19 @@ function App({compactMode}) {
             >
                 {currentSidePanel()}
             </SidePanel>
-
-
-        </>
+        </div>
     )
 }
 
 export default () => {
+    const {api} = useAragonApi()
     const {below} = useViewport()
     const compactMode = below('medium')
 
-    return <App compactMode={compactMode}/>
+    return <App compactMode={compactMode} api={api}/>
+}
+
+App.propTypes = {
+    api: PropTypes.object,
+    compactMode: PropTypes.bool
 }
