@@ -28,7 +28,7 @@ module.exports = async () => {
         await comptroller.enterMarkets([DeploymentInfo.Contracts.cDAI, DeploymentInfo.Contracts.cETH], {from: borrower})
 
 
-        // Lender Lend DAI
+        // Lender Lend DAI (need more than 1 lender otherwise some in-balance occurs)
         await dai.allocateTo(lender, lendDai)
 
         console.log(`Dai balance before minting: ${(await dai.balanceOf(lender)).toString()}`)
@@ -40,7 +40,7 @@ module.exports = async () => {
 
 
         // Borrower Lend ETH
-        await cEther.mint({value:tenEthInWei, from: borrower})
+        // await cEther.mint({value:tenEthInWei, from: borrower})
 
 
         // Borrower Borrow DAI

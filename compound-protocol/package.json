@@ -6,7 +6,7 @@
   "scripts": {
     "console": "./script/console",
     "coverage": "./script/coverage",
-    "deploy": "./scenario/script/repl -s ./scenario/scen/deploy.scen -e dai_price=0.001,dai_cf=0.5,eth_cf=0.5",
+    "deploy": "./scenario/script/repl -s ./scenario/scen/deploy.scen -e dai_price=0.0001,dai_cf=0.5,eth_cf=0.5",
     "lint": "./script/lint",
     "repl": "./scenario/script/repl",
     "scenario": "./script/scenario",

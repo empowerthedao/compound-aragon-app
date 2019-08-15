@@ -1,7 +1,7 @@
 import React from "react"
 import Balances from "./Balances";
 import styled from "styled-components";
-import SupplyDetails from "./SupplyDetails";
+import CompoundTokenDetails from "./CompoundTokenDetails";
 
 const Supply = ({supplyState, handleTransfer, compactMode}) => {
 
@@ -15,7 +15,7 @@ const Supply = ({supplyState, handleTransfer, compactMode}) => {
                 <Balances compactMode={compactMode} balances={balances} handleTransfer={handleTransfer}/>
             </SpacedBlock>
 
-            <SupplyDetails compoundToken={compoundToken} tokens={tokens} />
+            <CompoundTokenDetails compoundToken={compoundToken} tokens={tokens} />
         </Container>
     )
 }

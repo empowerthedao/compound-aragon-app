@@ -3,7 +3,7 @@ import ProxyDepositEvent from '../abi/proxy-deposit-event'
 import ERC20Abi from '../abi/erc20-abi'
 import CERC20Abi from '../abi/cerc20-abi'
 import {of} from 'rxjs'
-import {map} from 'rxjs/operators'
+import {concatMap, map, mergeMap, toArray} from 'rxjs/operators'
 import {makeAbiFunctionConstant} from "../lib/abi-utils";
 
 // Currently the AragonApi provides no option to "call" non-constant functions on external contracts so we modify
@@ -24,10 +24,18 @@ const tokenContract$ = (api, tokenAddress) => of(api.external(tokenAddress, ERC2
 
 const compoundToken$ = (api, compoundTokenAddress) => of(api.external(compoundTokenAddress, modifiedCERC20Abi))
 
+const allCompoundTokens$ = (api) =>
+    compoundTokenAddresses$(api).pipe(
+        concatMap(address => address),
+        mergeMap(compoundTokenAddress => compoundToken$(api, compoundTokenAddress)),
+        map(compoundToken => ({contract: compoundToken})),
+        toArray())
+
 export {
     agentAddress$,
     compoundTokenAddresses$,
     agentApp$,
     tokenContract$,
-    compoundToken$
+    compoundToken$,
+    allCompoundTokens$
 }

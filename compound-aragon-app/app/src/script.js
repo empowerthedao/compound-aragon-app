@@ -1,7 +1,7 @@
 import '@babel/polyfill'
 import Aragon, {events} from '@aragon/api'
 import retryEvery from "./lib/retry-every"
-import {agentAddress$, agentApp$} from "./web3/ExternalContracts";
+import {agentAddress$, agentApp$, allCompoundTokens$} from "./web3/ExternalContracts";
 import {agentInitializationBlock$, agentBalances$} from "./web3/AgentData";
 import {ETHER_TOKEN_FAKE_ADDRESS} from "./lib/shared-constants";
 import {compoundTokensDetails$} from "./web3/CompoundData";
@@ -38,7 +38,8 @@ async function initialize() {
             {
                 contract: await agentApp$(api).toPromise(),
                 initializationBlock: await agentInitializationBlock$(api).toPromise()
-            }
+            },
+            ...await allCompoundTokens$(api).toPromise()
         ]
     })
 }
@@ -127,6 +128,12 @@ const onNewEvent = async (state, storeEvent) => {
             return {
                 ...state,
                 balances: await agentBalances$(api, activeTokens(state)).toPromise(),
+                compoundTokens: await compoundTokensDetails$(api).toPromise(),
+            }
+        case 'AccrueInterest':
+            debugLog("ACCRUE INTEREST")
+            return {
+                ...state,
                 compoundTokens: await compoundTokensDetails$(api).toPromise(),
             }
         default:
