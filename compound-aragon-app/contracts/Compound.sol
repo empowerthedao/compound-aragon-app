@@ -40,7 +40,7 @@ contract Compound is AragonApp {
     * @notice Initialize the Compound App
     * @param _agent The Agent contract address
     */
-    function initialize(address _agent, address[] _cTokens) public {
+    function initialize(address _agent, address[] _cTokens) external onlyInit {
         initialized();
 
         agent = Agent(_agent);

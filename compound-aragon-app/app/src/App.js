@@ -33,7 +33,8 @@ function App({compactMode}) {
     const selectedTabComponent = () => {
         switch (tabs.tabBarSelected.id) {
             case 'SUPPLY':
-                return <Supply compactMode={compactMode} supplyState={supplyState}
+                return <Supply compactMode={compactMode}
+                               supplyState={supplyState}
                                handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
             case 'SETTINGS':
                 return <Settings settings={settings}

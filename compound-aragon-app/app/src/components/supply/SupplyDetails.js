@@ -3,7 +3,7 @@ import {fromDecimals, round} from "../../lib/math-utils";
 import {Text, TokenBadge, Box} from '@aragon/ui'
 
 
-const SUPPLY_RATE_DECIMALS = 18
+const SUPPLY_RATE_DECIMALS = 16
 
 const SupplyDetails = ({compoundToken, network}) => {
 
@@ -28,11 +28,11 @@ const SupplyDetails = ({compoundToken, network}) => {
                 <Text>{`${aprValue()}% APR`}</Text>
             </Box>
 
-            <Box css={'margin-top: 30px'} heading={"Block Rate"}>
+            <Box css={'margin-top: 30px'} heading={"Block Rate (Temp UI)"}>
                 <Text>{supplyRatePerBlock}</Text>
             </Box>
 
-            <Box css={'margin-top: 30px'} heading={"Supply Balance full"}>
+            <Box css={'margin-top: 30px'} heading={"Supply Balance full (Temp UI)"}>
                 <Text>{balanceOfUnderlying}</Text>
             </Box>
         </>)
