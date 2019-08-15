@@ -39,6 +39,7 @@ const SettingsContainer = styled.div`
     flex-direction: column;
     align-items: start;
     max-width: 400px;
+    margin: 30px 30px;
 
 `
 const ButtonContainer = styled.div`

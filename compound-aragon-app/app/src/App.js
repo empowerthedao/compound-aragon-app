@@ -17,6 +17,7 @@ import SupplyIcon from "./assets/supply-icon.svg"
 import SupplyPanel from "./components/side-panel-input/supply/TransferPanel";
 import PropTypes from 'prop-types';
 
+// TODO: Add link to Compound website?
 function App({compactMode}) {
 
     const {

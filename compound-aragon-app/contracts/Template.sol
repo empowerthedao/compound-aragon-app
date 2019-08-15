@@ -60,9 +60,10 @@ contract Template is TemplateBase {
     uint64 constant PCT = 10 ** 16;
     address constant ANY_ENTITY = address(-1);
 
-    constructor(ENS _ens, address _daiCToken) TemplateBase(DAOFactory(0), _ens) public {
+    constructor(ENS _ens, address _cTokensArray) TemplateBase(DAOFactory(0), _ens) public {
         tokenFactory = new MiniMeTokenFactory();
-        daiCToken = _daiCToken;
+//        cTokensArray = _cTokensArray;
+        cTokensArray.push(_cTokensArray);
     }
 
     function newInstance() public {
@@ -85,7 +86,6 @@ contract Template is TemplateBase {
         token.changeController(tokenManager);
 
         // Initialize apps
-        cTokensArray.push(address(daiCToken));
         app.initialize(address(agent), cTokensArray);
         tokenManager.initialize(token, true, 0);
         voting.initialize(token, 50 * PCT, 20 * PCT, 1 days);

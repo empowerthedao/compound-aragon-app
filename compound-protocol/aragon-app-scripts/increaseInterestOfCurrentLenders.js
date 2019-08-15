@@ -12,7 +12,7 @@ module.exports = async () => {
         let receipt
         const daiWithDecimals = (daiValue) => new BN(daiValue).mul(new BN(10).pow(new BN(18)))
         const tenEthInWei = web3.utils.toWei('10', 'ether')
-        const threeHundredDai = daiWithDecimals(300)
+        const lendDai = daiWithDecimals(10000)
 
         const accounts = await web3.eth.getAccounts()
         const lender = accounts[0]
@@ -29,14 +29,14 @@ module.exports = async () => {
 
 
         // Lender Lend DAI
-        await dai.allocateTo(lender, threeHundredDai)
+        await dai.allocateTo(lender, lendDai)
 
         console.log(`Dai balance before minting: ${(await dai.balanceOf(lender)).toString()}`)
 
-        await dai.approve(cDai.address, threeHundredDai)
-        await cDai.mint(threeHundredDai)
+        await dai.approve(cDai.address, lendDai)
+        await cDai.mint(lendDai)
 
-        console.log(`Dai balance after minting: ${(await dai.balanceOf(lender)).toString()}`)
+        console.log(`Dai balance after minting: ${(await dai.balanceOf(lender)).toString()}\n`)
 
 
         // Borrower Lend ETH
@@ -47,11 +47,11 @@ module.exports = async () => {
         console.log(`cDai cash available: ${(await cDai.getCash()).toString()}`)
 
         console.log(`Dai balance before borrowing: ${(await dai.balanceOf(borrower)).toString()}`)
-        receipt = await cDai.borrow(daiWithDecimals(10), {from: borrower})
+        receipt = await cDai.borrow(daiWithDecimals(1000), {from: borrower})
         // console.log(receipt.logs)
         console.log(`Dai balance after borrowing: ${(await dai.balanceOf(borrower)).toString()}`)
 
-        console.log(`cDai cash available after borrowing: ${(await cDai.getCash()).toString()}`)
+        console.log(`cDai cash available after borrowing: ${(await cDai.getCash()).toString()}\n`)
 
 
         // Borrower Repay DAI
@@ -68,7 +68,7 @@ module.exports = async () => {
         // console.log(receipt.logs)
 
         console.log(`Dai balance after repaying: ${(await dai.balanceOf(borrower)).toString()}`)
-        console.log(`cDai cash available after repaying: ${(await cDai.getCash()).toString()}`)
+        console.log(`cDai cash available after repaying: ${(await cDai.getCash()).toString()}\n`)
 
 
 
