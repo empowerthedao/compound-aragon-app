@@ -69,7 +69,13 @@ const onNewEventCatchError = async (state, event) => {
 
 const onNewEvent = async (state, storeEvent) => {
 
-    const {event: eventName, address: eventAddress} = storeEvent
+    const {
+        event: eventName,
+        address: eventAddress,
+        returnValues: eventParams,
+        blockNumber,
+        transactionHash
+    } = storeEvent
 
     // console.log("Store Event:")
     // console.log(storeEvent)
@@ -106,7 +112,7 @@ const onNewEvent = async (state, storeEvent) => {
         case 'VaultTransfer':
         case 'VaultDeposit':
             debugLog("AGENT TRANSFER")
-            let newActiveTokens = [...state.activeTokens ? state.activeTokens : []]
+            let newActiveTokens = [...state.activeTokens || []]
             if (storeEvent.returnValues.token !== ETHER_TOKEN_FAKE_ADDRESS) {
                 newActiveTokens.push(storeEvent.returnValues.token)
             }
@@ -122,8 +128,8 @@ const onNewEvent = async (state, storeEvent) => {
                 ...state,
                 balances: await agentBalances$(api, activeTokens(state)).toPromise()
             }
-        case 'Supply':
-        case 'Redeem':
+        case 'AgentSupply':
+        case 'AgentRedeem':
             debugLog("SUPPLY/REDEEM")
             return {
                 ...state,
@@ -136,7 +142,51 @@ const onNewEvent = async (state, storeEvent) => {
                 ...state,
                 compoundTokens: await compoundTokensDetails$(api).toPromise(),
             }
+        case 'Mint':
+            debugLog("MINT")
+            const {mintAmount} = eventParams
+            const compoundTransactionsWithMint =
+                await addToCompoundTransactions(state, blockNumber, transactionHash, mintAmount, "MINT", eventAddress)
+
+            console.log(compoundTransactionsWithMint)
+
+            return {
+                ...state,
+                compoundTransactions: compoundTransactionsWithMint
+            }
+        case 'Redeem':
+            debugLog("REDEEM")
+            const {redeemAmount} = eventParams
+            const compoundTransactionsWithRedeem =
+                await addToCompoundTransactions(state, blockNumber, transactionHash, redeemAmount, "REDEEM", eventAddress)
+
+            console.log(compoundTransactionsWithRedeem)
+
+            return {
+                ...state,
+                compoundTransactions: compoundTransactionsWithRedeem
+            }
         default:
             return state
     }
 }
+
+const addToCompoundTransactions = async (state, blockNumber, transactionHash, transactionAmount, type, compoundTokenAddress) => {
+    const block = await api.web3Eth('getBlock', blockNumber).toPromise()
+
+    const newCompoundTransactions = [...state.compoundTransactions || []]
+    if (!newCompoundTransactions.find(transactionObject => transactionObject.uniqueId === transactionHash)) {
+        newCompoundTransactions
+            .push(compoundTransactionObject(transactionHash, type, transactionAmount, block.timestamp, compoundTokenAddress))
+    }
+
+    return newCompoundTransactions
+}
+
+const compoundTransactionObject = (uniqueId, type, amount, time, compoundTokenAddress) => ({
+    uniqueId,
+    type,
+    amount,
+    time,
+    compoundTokenAddress
+})

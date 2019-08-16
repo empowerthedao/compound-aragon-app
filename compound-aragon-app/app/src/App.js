@@ -7,7 +7,6 @@ import {
     Header,
     Tabs
 } from '@aragon/ui'
-import {useAragonApi} from '@aragon/api-react'
 import Settings from "./components/settings/Settings"
 import GenericInputPanel from "./components/side-panel-input/GenericInputPanel";
 import TransferPanel from "./components/side-panel-input/transfer/TransferPanel";
@@ -38,7 +37,8 @@ function App({compactMode}) {
                                handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
             case 'SETTINGS':
                 return <Settings settings={settings}
-                                 handleNewAgent={() => sidePanel.openPanelActions.changeAgent()}/>
+                                 handleNewAgent={() => sidePanel.openPanelActions.changeAgent()}
+                                 compactMode={compactMode}/>
             default:
                 return <div/>
         }
@@ -110,11 +110,10 @@ function App({compactMode}) {
 }
 
 export default () => {
-    const {api} = useAragonApi()
     const {below} = useViewport()
     const compactMode = below('medium')
 
-    return <App compactMode={compactMode} api={api}/>
+    return <App compactMode={compactMode}/>
 }
 
 App.propTypes = {

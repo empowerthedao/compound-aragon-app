@@ -33,8 +33,8 @@ contract Compound is AragonApp {
     event NewAgentSet();
     event AddCToken();
     event RemoveCToken();
-    event Supply();
-    event Redeem();
+    event AgentSupply();
+    event AgentRedeem();
 
     /**
     * @notice Initialize the Compound App
@@ -130,7 +130,7 @@ contract Compound is AragonApp {
         _appendForwarderScript(byteBuffer, token, approveFunctionCall);
         _appendForwarderScript(byteBuffer, cToken, supplyFunctionCall);
 
-        emit Supply();
+        emit AgentSupply();
 
         agent.forward(byteBuffer.buf);
     }
@@ -144,7 +144,7 @@ contract Compound is AragonApp {
         require(cTokens.contains(_cToken), ERROR_INVALID_CTOKEN);
         bytes memory encodedFunctionCall = abi.encodeWithSignature("redeemUnderlying(uint256)", _amount);
 
-        emit Redeem();
+        emit AgentRedeem();
 
         agent.execute(_cToken, 0, encodedFunctionCall);
     }

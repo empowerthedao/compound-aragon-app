@@ -4,10 +4,12 @@ import {fromDecimals} from "../../lib/math-utils";
 import styled from "styled-components";
 
 const SUPPLY_BALANCE_DECIMALS = 6
+const PAGINATION = 10
 
-const SupplyActivity = ({compoundToken, tokens}) => {
+// TODO: Use RenderEntry on DataView to process some stuff.
+const SupplyActivity = ({compoundToken, tokens, compoundActivity}) => {
 
-    const {underlyingToken, balanceOfUnderlying, activity} = compoundToken || {}
+    const {underlyingToken, balanceOfUnderlying} = compoundToken || {}
 
     const underlyingTokenDetails = tokens.find(token => token.address === underlyingToken)
     const {symbol: underlyingTokenSymbol, decimals: underlyingTokenDecimals} = underlyingTokenDetails || {}
@@ -32,27 +34,24 @@ const SupplyActivity = ({compoundToken, tokens}) => {
                 </Wrap>
             </Box>
 
-            {/*{(activity || []).length > 0 ?*/}
-            {/*    <DataView*/}
-            {/*        fields={['Action', 'Time']}*/}
-            {/*        // entries={locked.map(l => [l.lockAmount, l.unlockTime])}*/}
-            {/*        // renderEntry={([amount, unlockTime]) => [*/}
-            {/*        //     <Text>*/}
-            {/*        //         {`${formatTokenAmount(*/}
-            {/*        //             amount,*/}
-            {/*        //             false,*/}
-            {/*        //             tokenDecimals*/}
-            {/*        //         )} ${tokenSymbol}`}*/}
-            {/*        //     </Text>,*/}
-            {/*        //     renderUnlockTime(unlockTime),*/}
-            {/*        // ]}*/}
-            {/*        // mode="table"*/}
-            {/*        // entriesPerPage={PAGINATION}*/}
-            {/*        // onSelectEntries={selected => console.log('selected', selected)}*/}
-            {/*    /> :*/}
-            {/*    <Box style={{textAlign: 'center'}}>*/}
-            {/*        <Text>No activity</Text>*/}
-            {/*    </Box>}*/}
+            {(compoundActivity || []).length > 0 ?
+                <DataView
+                    fields={['Transaction', 'Time']}
+                    entries={compoundActivity.map(transaction => [transaction.typeLabel, transaction.timeLabel])}
+                    renderEntry={([type, time]) => [
+                        <Text>
+                            {type}
+                        </Text>,
+                        <Text>
+                            {time}
+                        </Text>,
+                    ]}
+                    mode="table"
+                    entriesPerPage={PAGINATION}
+                /> :
+                <Box style={{textAlign: 'center'}}>
+                    <Text>No activity</Text>
+                </Box>}
 
         </>
     )

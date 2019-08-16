@@ -4,7 +4,7 @@ import {useNetwork} from "@aragon/api-react";
 import SupplyDetails from "./SupplyDetails";
 import SupplyActivity from "./SupplyActivity";
 
-const CompoundTokenDetails = ({compoundToken, network, tokens}) => {
+const CompoundTokenDetails = ({compoundToken, network, tokens, compoundActivity}) => {
 
     return (
         <div css={'margin-top: 16px'}>
@@ -13,6 +13,7 @@ const CompoundTokenDetails = ({compoundToken, network, tokens}) => {
                     <SupplyActivity
                         compoundToken={compoundToken}
                         tokens={tokens}
+                        compoundActivity={compoundActivity}
                     />}
                 secondary={
                     <SupplyDetails
