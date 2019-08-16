@@ -144,24 +144,18 @@ const onNewEvent = async (state, storeEvent) => {
             }
         case 'Mint':
             debugLog("MINT")
-            const {mintAmount} = eventParams
+            const {minter, mintAmount} = eventParams
             const compoundTransactionsWithMint =
-                await addToCompoundTransactions(state, blockNumber, transactionHash, mintAmount, "MINT", eventAddress)
-
-            console.log(compoundTransactionsWithMint)
-
+                await addToCompoundTransactions(state, blockNumber, transactionHash, mintAmount, "MINT", eventAddress, minter)
             return {
                 ...state,
                 compoundTransactions: compoundTransactionsWithMint
             }
         case 'Redeem':
             debugLog("REDEEM")
-            const {redeemAmount} = eventParams
+            const {redeemer, redeemAmount} = eventParams
             const compoundTransactionsWithRedeem =
-                await addToCompoundTransactions(state, blockNumber, transactionHash, redeemAmount, "REDEEM", eventAddress)
-
-            console.log(compoundTransactionsWithRedeem)
-
+                await addToCompoundTransactions(state, blockNumber, transactionHash, redeemAmount, "REDEEM", eventAddress, redeemer)
             return {
                 ...state,
                 compoundTransactions: compoundTransactionsWithRedeem
@@ -171,11 +165,15 @@ const onNewEvent = async (state, storeEvent) => {
     }
 }
 
-const addToCompoundTransactions = async (state, blockNumber, transactionHash, transactionAmount, type, compoundTokenAddress) => {
+const addToCompoundTransactions = async (state, blockNumber, transactionHash, transactionAmount, type, compoundTokenAddress, logCreator) => {
     const block = await api.web3Eth('getBlock', blockNumber).toPromise()
 
     const newCompoundTransactions = [...state.compoundTransactions || []]
-    if (!newCompoundTransactions.find(transactionObject => transactionObject.uniqueId === transactionHash)) {
+
+    if (!newCompoundTransactions
+            .find(transactionObject => transactionObject.uniqueId === transactionHash)
+        && logCreator === state.agentAddress) {
+
         newCompoundTransactions
             .push(compoundTransactionObject(transactionHash, type, transactionAmount, block.timestamp, compoundTokenAddress))
     }
