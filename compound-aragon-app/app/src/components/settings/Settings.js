@@ -9,7 +9,7 @@ const Settings = ({handleNewAgent, settings, compactMode}) => {
     return (
         <SettingsContainer>
             <Option name="Agent Address"
-                    text="The contract that represents an EOA and acts on behalf of the Compound app. Only send funds to this address via the transfer process provided.">
+                    text="The contract that represents an EOA (Externally Owned Account) and acts on behalf of the Compound app. Only send funds to this address via the transfer process provided.">
                 <IdentityBadge
                     entity={agentAddress || '0x0000000000000000000000000000000000000000'}
                     shorten={compactMode}
@@ -22,13 +22,13 @@ const Settings = ({handleNewAgent, settings, compactMode}) => {
                 </ButtonContainer>
             </Option>
 
-            <Option name="Compound App Address"
-                    text="The contract address of this app. Do not send funds to this address.">
-                <IdentityBadge
-                    entity={appAddress || '0x0000000000000000000000000000000000000000'}
-                    shorten={compactMode}
-                />
-            </Option>
+            {/*<Option name="Compound App Address"*/}
+            {/*        text="The contract address of this app. Do not send funds to this address.">*/}
+            {/*    <IdentityBadge*/}
+            {/*        entity={appAddress || '0x0000000000000000000000000000000000000000'}*/}
+            {/*        shorten={compactMode}*/}
+            {/*    />*/}
+            {/*</Option>*/}
 
         </SettingsContainer>
     )
@@ -43,7 +43,7 @@ const SettingsContainer = styled.div`
 
 `
 const ButtonContainer = styled.div`
-    margin-top: 20px;
+    margin-top: 25px;
     display: flex;
 `
 
