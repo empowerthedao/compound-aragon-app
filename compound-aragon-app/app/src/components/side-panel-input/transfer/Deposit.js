@@ -59,7 +59,7 @@ const Deposit = ({tokens, handleDeposit}) => {
                     Submit Deposit
                 </ButtonStyled>
 
-                <Info.Action title="Deposit action">
+                <Info.Action title="Transfer action">
                     This action will deposit the specified amount of Tokens or Ether to the Compound App's Agent.
                 </Info.Action>
             </DepositContainer>

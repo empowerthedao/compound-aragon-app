@@ -2,15 +2,16 @@ import React from 'react'
 import {fromDecimals, round} from "../../lib/math-utils";
 import {Text, TokenBadge, Box} from '@aragon/ui'
 
-
 const SUPPLY_RATE_DECIMALS = 16
+const ESTIMATED_BLOCK_TIME = 15
 
 const SupplyDetails = ({compoundToken, network}) => {
 
     const {tokenAddress, tokenName, tokenSymbol, supplyRatePerBlock, balanceOfUnderlying} = compoundToken || {}
 
     const aprValue = () => {
-        const supplyRatePerYear = supplyRatePerBlock ? supplyRatePerBlock * 60 / 15 * 60 * 24 * 365 : 0 // Blocks/minute * minutes in hour * hours in day * days in year
+        // Calculation for yearly rate is blocks/minute * minutes in hour * hours in day * days in year
+        const supplyRatePerYear = supplyRatePerBlock ? supplyRatePerBlock * 60 / ESTIMATED_BLOCK_TIME * 60 * 24 * 365 : 0
         return round(fromDecimals(supplyRatePerYear.toString(), SUPPLY_RATE_DECIMALS), 3)
     }
 

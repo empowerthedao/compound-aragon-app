@@ -4,9 +4,8 @@ import {fromDecimals} from "../../lib/math-utils";
 import styled from "styled-components";
 
 const SUPPLY_BALANCE_DECIMALS = 6
-const PAGINATION = 10
+const PAGINATION = 5
 
-// TODO: Use RenderEntry on DataView to process some stuff.
 const SupplyActivity = ({compoundToken, tokens, compoundActivity}) => {
 
     const {underlyingToken, balanceOfUnderlying} = compoundToken || {}
@@ -17,6 +16,8 @@ const SupplyActivity = ({compoundToken, tokens, compoundActivity}) => {
     const truncatedBalanceOfUnderlying =
         fromDecimals(balanceOfUnderlying ? balanceOfUnderlying : '', underlyingTokenDecimals,
             {truncate: true, truncateDecimals: SUPPLY_BALANCE_DECIMALS})
+
+    const dataViewEntries = compoundActivity.map(transaction => [transaction.typeLabel, transaction.timeLabel])
 
     return (
         <>
@@ -37,7 +38,7 @@ const SupplyActivity = ({compoundToken, tokens, compoundActivity}) => {
             {(compoundActivity || []).length > 0 ?
                 <DataView
                     fields={['Transaction', 'Time']}
-                    entries={compoundActivity.map(transaction => [transaction.typeLabel, transaction.timeLabel])}
+                    entries={dataViewEntries}
                     renderEntry={([type, time]) => [
                         <Text>
                             {type}
@@ -50,7 +51,7 @@ const SupplyActivity = ({compoundToken, tokens, compoundActivity}) => {
                     entriesPerPage={PAGINATION}
                 /> :
                 <Box style={{textAlign: 'center'}}>
-                    <Text>No activity</Text>
+                    <Text>No transactions</Text>
                 </Box>}
 
         </>

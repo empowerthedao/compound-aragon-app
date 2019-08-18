@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import {Info, Field, TextInput, Button} from '@aragon/ui'
 import styled from "styled-components";
 
+// TODO: Add slider for specifying amount
 const RedeemInput = ({handleRedeem}) => {
 
     const [amount, setAmount] = useState(0)

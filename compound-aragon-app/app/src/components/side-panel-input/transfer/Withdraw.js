@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {
-    Info, DropDown, Field, TextInput, Button, Text, theme, unselectable, useTheme
+    Info, DropDown, Field, TextInput, Button, unselectable, useTheme
 } from '@aragon/ui'
 import styled from "styled-components";
 
@@ -58,7 +58,7 @@ const Withdraw = ({tokens, handleWithdraw}) => {
                     Submit Withdrawal
                 </ButtonStyled>
 
-                <Info.Action title="Deposit action">
+                <Info.Action title="Transfer action">
                     This action will withdraw the specified amount of Tokens or Ether from the Compound App's Agent.
                 </Info.Action>
             </WithdrawContainer>

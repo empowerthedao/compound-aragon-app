@@ -6,6 +6,7 @@ import {agentInitializationBlock$, agentBalances$} from "./web3/AgentData";
 import {ETHER_TOKEN_FAKE_ADDRESS} from "./lib/shared-constants";
 import {compoundTokensDetails$} from "./web3/CompoundData";
 
+// TODO: Only fetch data for events triggered by the Agent address.
 const DEBUG_LOGS = true;
 const debugLog = message => {
     if (DEBUG_LOGS) {
@@ -72,9 +73,7 @@ const onNewEvent = async (state, storeEvent) => {
     const {
         event: eventName,
         address: eventAddress,
-        returnValues: eventParams,
-        blockNumber,
-        transactionHash
+        returnValues: eventParams
     } = storeEvent
 
     // console.log("Store Event:")
@@ -145,46 +144,52 @@ const onNewEvent = async (state, storeEvent) => {
         case 'Mint':
             debugLog("MINT")
             const {minter, mintAmount} = eventParams
-            const compoundTransactionsWithMint =
-                await addToCompoundTransactions(state, blockNumber, transactionHash, mintAmount, "MINT", eventAddress, minter)
-            return {
-                ...state,
-                compoundTransactions: compoundTransactionsWithMint
+            if (state.agentAddress === minter) {
+                return {
+                    ...state,
+                    compoundTokens: await addToCompoundTransactions(state, storeEvent, mintAmount, "MINT")
+                }
             }
+            return state
         case 'Redeem':
             debugLog("REDEEM")
             const {redeemer, redeemAmount} = eventParams
-            const compoundTransactionsWithRedeem =
-                await addToCompoundTransactions(state, blockNumber, transactionHash, redeemAmount, "REDEEM", eventAddress, redeemer)
-            return {
-                ...state,
-                compoundTransactions: compoundTransactionsWithRedeem
+            if (state.agentAddress === redeemer) {
+                return {
+                    ...state,
+                    compoundTokens: await addToCompoundTransactions(state, storeEvent, redeemAmount, "REDEEM")
+                }
             }
+            return state
         default:
             return state
     }
 }
 
-const addToCompoundTransactions = async (state, blockNumber, transactionHash, transactionAmount, type, compoundTokenAddress, logCreator) => {
-    const block = await api.web3Eth('getBlock', blockNumber).toPromise()
+const addToCompoundTransactions = async (state, storeEvent, transferAmount, type) => {
 
-    const newCompoundTransactions = [...state.compoundTransactions || []]
+    const { blockNumber, transactionHash, address: compoundTokenAddress } = storeEvent
 
-    if (!newCompoundTransactions
-            .find(transactionObject => transactionObject.uniqueId === transactionHash)
-        && logCreator === state.agentAddress) {
+    const compoundToken = state.compoundTokens.find(token => token.tokenAddress === compoundTokenAddress)
+    const newCompoundTransactions = [...compoundToken.compoundTransactions || []]
+
+    const transactionNotInState = !newCompoundTransactions.find(transactionObject => transactionObject.transactionHash === transactionHash)
+
+    if (transactionNotInState) {
+
+        const eventBlock = await api.web3Eth('getBlock', blockNumber).toPromise()
 
         newCompoundTransactions
-            .push(compoundTransactionObject(transactionHash, type, transactionAmount, block.timestamp, compoundTokenAddress))
+            .push({
+                transactionHash,
+                type,
+                transferAmount,
+                timestamp: eventBlock.timestamp,
+                compoundTokenAddress
+            })
     }
 
-    return newCompoundTransactions
-}
+    const newCompoundToken = {...compoundToken, compoundTransactions: newCompoundTransactions}
 
-const compoundTransactionObject = (uniqueId, type, amount, time, compoundTokenAddress) => ({
-    uniqueId,
-    type,
-    amount,
-    time,
-    compoundTokenAddress
-})
+    return [...state.compoundTokens.filter(token => token.tokenAddress !== compoundTokenAddress), newCompoundToken]
+}
