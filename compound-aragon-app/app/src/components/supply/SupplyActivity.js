@@ -6,9 +6,9 @@ import styled from "styled-components";
 const SUPPLY_BALANCE_DECIMALS = 6
 const PAGINATION = 5
 
-const SupplyActivity = ({compoundToken, tokens, compoundActivity}) => {
+const SupplyActivity = ({compoundToken, tokens}) => {
 
-    const {underlyingToken, balanceOfUnderlying} = compoundToken || {}
+    const {underlyingToken, balanceOfUnderlying, compoundTransactions} = compoundToken || {}
 
     const underlyingTokenDetails = tokens.find(token => token.address === underlyingToken)
     const {symbol: underlyingTokenSymbol, decimals: underlyingTokenDecimals} = underlyingTokenDetails || {}
@@ -17,7 +17,7 @@ const SupplyActivity = ({compoundToken, tokens, compoundActivity}) => {
         fromDecimals(balanceOfUnderlying ? balanceOfUnderlying : '', underlyingTokenDecimals,
             {truncate: true, truncateDecimals: SUPPLY_BALANCE_DECIMALS})
 
-    const dataViewEntries = compoundActivity.map(transaction => [transaction.typeLabel, transaction.timeLabel])
+    const dataViewEntries = (compoundTransactions || []).map(transaction => [transaction.typeLabel, transaction.timeLabel])
 
     return (
         <>
@@ -35,7 +35,7 @@ const SupplyActivity = ({compoundToken, tokens, compoundActivity}) => {
                 </Wrap>
             </Box>
 
-            {(compoundActivity || []).length > 0 ?
+            {(compoundTransactions || []).length > 0 ?
                 <DataView
                     fields={['Transaction', 'Time']}
                     entries={dataViewEntries}

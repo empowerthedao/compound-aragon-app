@@ -147,7 +147,7 @@ const onNewEvent = async (state, storeEvent) => {
             if (state.agentAddress === minter) {
                 return {
                     ...state,
-                    compoundTokens: await addToCompoundTransactions(state, storeEvent, mintAmount, "MINT")
+                    compoundTokens: await compoundTokensWithTransaction(state, storeEvent, mintAmount, "MINT")
                 }
             }
             return state
@@ -157,7 +157,7 @@ const onNewEvent = async (state, storeEvent) => {
             if (state.agentAddress === redeemer) {
                 return {
                     ...state,
-                    compoundTokens: await addToCompoundTransactions(state, storeEvent, redeemAmount, "REDEEM")
+                    compoundTokens: await compoundTokensWithTransaction(state, storeEvent, redeemAmount, "REDEEM")
                 }
             }
             return state
@@ -166,30 +166,29 @@ const onNewEvent = async (state, storeEvent) => {
     }
 }
 
-const addToCompoundTransactions = async (state, storeEvent, transferAmount, type) => {
+const compoundTokensWithTransaction = async (state, storeEvent, transferAmount, type) => {
 
-    const { blockNumber, transactionHash, address: compoundTokenAddress } = storeEvent
+    const {blockNumber, transactionHash, address: compoundTokenAddress} = storeEvent
+    const eventBlock = await api.web3Eth('getBlock', blockNumber).toPromise()
 
-    const compoundToken = state.compoundTokens.find(token => token.tokenAddress === compoundTokenAddress)
-    const newCompoundTransactions = [...compoundToken.compoundTransactions || []]
+    const newCompoundTokens = state.compoundTokens
+        .filter(token => token.tokenAddress === compoundTokenAddress)
+        .map(compoundToken => {
 
-    const transactionNotInState = !newCompoundTransactions.find(transactionObject => transactionObject.transactionHash === transactionHash)
+            const newCompoundTransactions = [...compoundToken.compoundTransactions || []]
+            const transactionNotInState = !newCompoundTransactions.find(transactionObject => transactionObject.transactionHash === transactionHash)
 
-    if (transactionNotInState) {
+            if (transactionNotInState) {
+                newCompoundTransactions.push({
+                        transactionHash,
+                        type,
+                        transferAmount,
+                        timestamp: eventBlock.timestamp,
+                    })
+            }
 
-        const eventBlock = await api.web3Eth('getBlock', blockNumber).toPromise()
+            return {...compoundToken, compoundTransactions: newCompoundTransactions}
+        })
 
-        newCompoundTransactions
-            .push({
-                transactionHash,
-                type,
-                transferAmount,
-                timestamp: eventBlock.timestamp,
-                compoundTokenAddress
-            })
-    }
-
-    const newCompoundToken = {...compoundToken, compoundTransactions: newCompoundTransactions}
-
-    return [...state.compoundTokens.filter(token => token.tokenAddress !== compoundTokenAddress), newCompoundToken]
+    return [...state.compoundTokens.filter(token => token.tokenAddress !== compoundTokenAddress), ...newCompoundTokens]
 }

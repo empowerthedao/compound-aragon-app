@@ -5,7 +5,7 @@ import CompoundTokenDetails from "./CompoundTokenDetails";
 
 const Supply = ({supplyState, handleTransfer, compactMode}) => {
 
-    const {balances, compoundTokens, tokens, compoundActivity} = supplyState
+    const {balances, compoundTokens, tokens} = supplyState
 
     const compoundToken = compoundTokens && compoundTokens.length > 0 ? compoundTokens[0] : {}
 
@@ -15,7 +15,7 @@ const Supply = ({supplyState, handleTransfer, compactMode}) => {
                 <Balances compactMode={compactMode} balances={balances} handleTransfer={handleTransfer} />
             </SpacedBlock>
 
-            <CompoundTokenDetails compoundToken={compoundToken} tokens={tokens} compoundActivity={compoundActivity} />
+            <CompoundTokenDetails compoundToken={compoundToken} tokens={tokens}/>
         </Container>
     )
 }
