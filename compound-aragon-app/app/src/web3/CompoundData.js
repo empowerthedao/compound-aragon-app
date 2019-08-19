@@ -7,29 +7,31 @@ const balanceOfUnderlyingTokens$ = (api, compoundTokenAddress) =>
     zip(agentAddress$(api), compoundToken$(api, compoundTokenAddress)).pipe(
         mergeMap(([agentAddress, compoundToken]) => compoundToken.balanceOfUnderlying(agentAddress)))
 
-const compoundTokenDetails$ = (api, compoundTokenAddress) => {
+const compoundTokenDetails$ = (api, compoundTokenAddress, state) => {
 
-    const tokenObject = (tokenAddress, tokenName, tokenSymbol, underlyingToken, supplyRatePerBlock, balanceOfUnderlying) => ({
+    const tokenObject = (tokenAddress, tokenName, tokenSymbol, underlyingToken, supplyRatePerBlock, balanceOfUnderlying, exchangeRateStored) => ({
+        ...(state.compoundTokens || []).find(compoundToken => compoundToken.tokenAddress === compoundTokenAddress) || {},
         tokenAddress,
         tokenName,
         tokenSymbol,
         underlyingToken,
         supplyRatePerBlock,
-        balanceOfUnderlying
+        balanceOfUnderlying,
+        exchangeRateStored
     })
 
     return compoundToken$(api, compoundTokenAddress).pipe(
         mergeMap(token => zip(token.name(), token.symbol(), token.supplyRatePerBlock(),
-            balanceOfUnderlyingTokens$(api, compoundTokenAddress), token.underlying())),
-        map(([name, symbol, supplyRatePerBlock, balanceOfUnderlying, underlyingToken]) =>
-            tokenObject(compoundTokenAddress, name, symbol, underlyingToken, supplyRatePerBlock, balanceOfUnderlying)))
+            balanceOfUnderlyingTokens$(api, compoundTokenAddress), token.underlying(), token.exchangeRateStored())),
+        map(([name, symbol, supplyRatePerBlock, balanceOfUnderlying, underlyingToken, exchangeRateStored]) =>
+            tokenObject(compoundTokenAddress, name, symbol, underlyingToken, supplyRatePerBlock, balanceOfUnderlying, exchangeRateStored)))
 }
 
 // TODO: Consider splitting this up so we don't fetch everything for every cToken every time an update occurs.
-const compoundTokensDetails$ = (api) =>
+const compoundTokensDetails$ = (api, state) =>
     compoundTokenAddresses$(api).pipe(
         concatMap(address => address),
-        mergeMap(compoundTokenAddress => compoundTokenDetails$(api, compoundTokenAddress)),
+        mergeMap(compoundTokenAddress => compoundTokenDetails$(api, compoundTokenAddress, state)),
         toArray(),
         onErrorReturnDefault('compoundTokensDetails', []))
 

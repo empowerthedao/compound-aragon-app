@@ -133,13 +133,13 @@ const onNewEvent = async (state, storeEvent) => {
             return {
                 ...state,
                 balances: await agentBalances$(api, activeTokens(state)).toPromise(),
-                compoundTokens: await compoundTokensDetails$(api).toPromise(),
+                compoundTokens: await compoundTokensDetails$(api, state).toPromise(),
             }
         case 'AccrueInterest':
             debugLog("ACCRUE INTEREST")
             return {
                 ...state,
-                compoundTokens: await compoundTokensDetails$(api).toPromise(),
+                compoundTokens: await compoundTokensDetails$(api, state).toPromise(),
             }
         case 'Mint':
             debugLog("MINT")
@@ -161,34 +161,77 @@ const onNewEvent = async (state, storeEvent) => {
                 }
             }
             return state
+        case 'Transfer':
+            debugLog("TRANSFER")
+            const {from, to, amount} = eventParams
+
+            if (state.agentAddress === to) {
+                return {
+                    ...state,
+                    compoundTokens: await compoundTokensWithTransferredTo(state, eventAddress, amount)
+                }
+            } else if (state.agentAddress === from) {
+                return {
+                    ...state,
+                    compoundTokens: await compoundTokensWithTransferredFrom(state, eventAddress, amount)
+                }
+            }
+            return state
         default:
             return state
     }
 }
 
+const mapCompoundTokenInCompoundTokensTo = (state, compoundTokenAddress, mapCompoundTokenFunction) =>
+    state.compoundTokens
+        .filter(compoundToken => compoundToken.tokenAddress === compoundTokenAddress)
+        .map(mapCompoundTokenFunction)
+        .reduce((newCompoundTokens, compoundToken) => [...newCompoundTokens, compoundToken],
+            state.compoundTokens.filter(compoundToken => compoundToken.tokenAddress !== compoundTokenAddress))
+
 const compoundTokensWithTransaction = async (state, storeEvent, transferAmount, type) => {
 
-    const {blockNumber, transactionHash, address: compoundTokenAddress} = storeEvent
+    const {blockNumber, transactionHash, address: eventContractAddress} = storeEvent
     const eventBlock = await api.web3Eth('getBlock', blockNumber).toPromise()
 
-    const newCompoundTokens = state.compoundTokens
-        .filter(token => token.tokenAddress === compoundTokenAddress)
-        .map(compoundToken => {
+    return mapCompoundTokenInCompoundTokensTo(state, eventContractAddress, compoundToken => {
 
-            const newCompoundTransactions = [...compoundToken.compoundTransactions || []]
-            const transactionNotInState = !newCompoundTransactions.find(transactionObject => transactionObject.transactionHash === transactionHash)
+        const newCompoundTransactions = [...compoundToken.compoundTransactions || []]
 
-            if (transactionNotInState) {
-                newCompoundTransactions.push({
-                        transactionHash,
-                        type,
-                        transferAmount,
-                        timestamp: eventBlock.timestamp,
-                    })
-            }
+        const transactionNotInState = !newCompoundTransactions.find(transactionObject => transactionObject.transactionHash === transactionHash)
 
-            return {...compoundToken, compoundTransactions: newCompoundTransactions}
-        })
+        if (transactionNotInState) {
+            newCompoundTransactions.push({
+                transactionHash,
+                type,
+                transferAmount,
+                timestamp: eventBlock.timestamp,
+            })
+        }
 
-    return [...state.compoundTokens.filter(token => token.tokenAddress !== compoundTokenAddress), ...newCompoundTokens]
+        return {...compoundToken, compoundTransactions: newCompoundTransactions}
+    })
+}
+
+const initialLifetimeInterestEarned = {
+    totalTransferredToAgent: 0,
+    totalTransferredFromAgent: 0
+}
+
+const compoundTokensWithTransferredTo = (state, eventAddress, amount) => {
+    return mapCompoundTokenInCompoundTokensTo(state, eventAddress, compoundToken => {
+        const newLifetimeInterestEarned = (compoundToken.lifetimeInterestEarned || initialLifetimeInterestEarned)
+        newLifetimeInterestEarned.totalTransferredToAgent += parseInt(amount)
+
+        return {...compoundToken, lifetimeInterestEarned: newLifetimeInterestEarned}
+    })
+}
+
+const compoundTokensWithTransferredFrom = (state, eventAddress, amount) => {
+    return mapCompoundTokenInCompoundTokensTo(state, eventAddress, compoundToken => {
+        const newLifetimeInterestEarned = (compoundToken.lifetimeInterestEarned || initialLifetimeInterestEarned)
+        newLifetimeInterestEarned.totalTransferredFromAgent += parseInt(amount)
+
+        return {...compoundToken, lifetimeInterestEarned: newLifetimeInterestEarned}
+    })
 }
