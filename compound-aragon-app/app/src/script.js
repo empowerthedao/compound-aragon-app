@@ -7,7 +7,9 @@ import {ETHER_TOKEN_FAKE_ADDRESS} from "./lib/shared-constants";
 import {compoundTokensDetails$} from "./web3/CompoundData";
 import BN from 'bn.js'
 
-// TODO: Only fetch data for events triggered by the Agent address.
+// TODO: To determine cToken transactions submitted and lifetime interest earned the script currently only monitors Mint/Redeem events.
+//       I'm pretty sure the Transfer event also needs to be considered but execution of cToken transfers isn't currently available
+//       through the UI so is considered unneeded for now.
 const DEBUG_LOGS = true;
 const debugLog = message => {
     if (DEBUG_LOGS) {
@@ -145,44 +147,46 @@ const onNewEvent = async (state, storeEvent) => {
         case 'Mint':
             debugLog("MINT")
             const {minter, mintAmount} = eventParams
-            if (state.agentAddress === minter) {
-
-                const compoundTokensWithMintTransaction =
-                    await compoundTokensWithTransaction(state.compoundTokens, storeEvent, mintAmount, "MINT")
-
-                const compoundTokensWithMintInterest =
-                    await compoundTokensWithInterest(compoundTokensWithMintTransaction, storeEvent,
-                    (lifetimeInterestEarned) => lifetimeInterestEarned.totalTransferredToAgent =
-                        new BN(lifetimeInterestEarned.totalTransferredToAgent).add(new BN(mintAmount)).toString())
-
-                return {
-                    ...state,
-                    compoundTokens: compoundTokensWithMintInterest
-                }
-            }
-            return state
+            return await stateAfterMint(state, eventParams, minter, mintAmount)
         case 'Redeem':
             debugLog("REDEEM")
             const {redeemer, redeemAmount} = eventParams
-            if (state.agentAddress === redeemer) {
-
-                const compoundTokensWithRedeemTransaction =
-                    await compoundTokensWithTransaction(state.compoundTokens, storeEvent, redeemAmount, "REDEEM")
-
-                const compoundTokensWithRedeemInterest =
-                    await compoundTokensWithInterest(compoundTokensWithRedeemTransaction, storeEvent,
-                        (lifetimeInterestEarned) => lifetimeInterestEarned.totalTransferredFromAgent =
-                            new BN(lifetimeInterestEarned.totalTransferredFromAgent).add(new BN(redeemAmount)).toString())
-
-                return {
-                    ...state,
-                    compoundTokens: compoundTokensWithRedeemInterest
-                }
-            }
-            return state
+            return await stateAfterRedeem(state, eventParams, redeemer, redeemAmount)
         default:
             return state
     }
+}
+
+const stateAfterMint = async (state, storeEvent, minter, mintAmount) => {
+    if (state.agentAddress === minter) {
+        const compoundTokensWithMintTransaction =
+            await compoundTokensWithTransaction(state.compoundTokens, storeEvent, mintAmount, "MINT")
+        const compoundTokensWithMintInterest =
+            await compoundTokensWithInterest(compoundTokensWithMintTransaction, storeEvent,
+                (lifetimeInterestEarned) => lifetimeInterestEarned.totalTransferredToAgent =
+                    new BN(lifetimeInterestEarned.totalTransferredToAgent).add(new BN(mintAmount)).toString())
+        return {
+            ...state,
+            compoundTokens: compoundTokensWithMintInterest
+        }
+    }
+    return state
+}
+
+const stateAfterRedeem = async (state, storeEvent, redeemer, redeemAmount) => {
+    if (state.agentAddress === redeemer) {
+        const compoundTokensWithRedeemTransaction =
+            await compoundTokensWithTransaction(state.compoundTokens, storeEvent, redeemAmount, "REDEEM")
+        const compoundTokensWithRedeemInterest =
+            await compoundTokensWithInterest(compoundTokensWithRedeemTransaction, storeEvent,
+                (lifetimeInterestEarned) => lifetimeInterestEarned.totalTransferredFromAgent =
+                    new BN(lifetimeInterestEarned.totalTransferredFromAgent).add(new BN(redeemAmount)).toString())
+        return {
+            ...state,
+            compoundTokens: compoundTokensWithRedeemInterest
+        }
+    }
+    return state
 }
 
 const mapCompoundTokenInCompoundTokensTo = (compoundTokens, compoundTokenAddress, mapCompoundTokenFunction) =>
@@ -193,14 +197,12 @@ const mapCompoundTokenInCompoundTokensTo = (compoundTokens, compoundTokenAddress
             compoundTokens.filter(compoundToken => compoundToken.tokenAddress !== compoundTokenAddress))
 
 const compoundTokensWithTransaction = async (compoundTokens, storeEvent, transferAmount, type) => {
-
     const {blockNumber, transactionHash, address: eventContractAddress} = storeEvent
     const eventBlock = await api.web3Eth('getBlock', blockNumber).toPromise()
 
     return mapCompoundTokenInCompoundTokensTo(compoundTokens, eventContractAddress, compoundToken => {
 
         const newCompoundTransactions = [...compoundToken.compoundTransactions || []]
-
         const transactionNotInState = !newCompoundTransactions.find(transactionObject => transactionObject.transactionHash === transactionHash)
 
         if (transactionNotInState) {
@@ -223,7 +225,6 @@ const initialLifetimeInterestEarned = {
 }
 
 const compoundTokensWithInterest = (compoundTokens, storeEvent, modifyInterestEarnedFunction) => {
-
     const {transactionHash, address: eventAddress} = storeEvent
 
     return mapCompoundTokenInCompoundTokensTo(compoundTokens, eventAddress, compoundToken => {

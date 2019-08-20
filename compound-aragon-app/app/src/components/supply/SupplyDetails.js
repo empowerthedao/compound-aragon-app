@@ -5,7 +5,7 @@ import {formatTokenAmount} from "../../lib/format-utils";
 
 const SUPPLY_RATE_DECIMALS = 16
 const ESTIMATED_BLOCK_TIME = 15
-const LIFETIME_INTEREST_ROUNDING = 10
+const LIFETIME_INTEREST_ROUNDING = 6
 
 const SupplyDetails = ({compoundToken, network, tokens}) => {
 
@@ -55,13 +55,13 @@ const SupplyDetails = ({compoundToken, network, tokens}) => {
                 <Text>{`${formattedTokenAmount()} ${underlyingTokenSymbol || ""}`}</Text>
             </Box>
 
-            <Box css={'margin-top: 30px'} heading={"Block Rate (Temp UI)"}>
-                <Text>{supplyRatePerBlock}</Text>
-            </Box>
+            {/*<Box css={'margin-top: 30px'} heading={"Block Rate (Temp UI)"}>*/}
+            {/*    <Text>{supplyRatePerBlock}</Text>*/}
+            {/*</Box>*/}
 
-            <Box css={'margin-top: 30px'} heading={"Supply Balance full (Temp UI)"}>
-                <Text>{balanceOfUnderlying}</Text>
-            </Box>
+            {/*<Box css={'margin-top: 30px'} heading={"Supply Balance full (Temp UI)"}>*/}
+            {/*    <Text>{balanceOfUnderlying}</Text>*/}
+            {/*</Box>*/}
         </>)
 }
 
