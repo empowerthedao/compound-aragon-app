@@ -18,6 +18,7 @@ const CompoundTokenDetails = ({compoundToken, network, tokens}) => {
                     <SupplyDetails
                         network={network}
                         compoundToken={compoundToken}
+                        tokens={tokens}
                     />}
             />
         </div>

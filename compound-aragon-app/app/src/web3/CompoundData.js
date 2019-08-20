@@ -10,7 +10,8 @@ const balanceOfUnderlyingTokens$ = (api, compoundTokenAddress) =>
 const compoundTokenDetails$ = (api, compoundTokenAddress, state) => {
 
     const tokenObject = (tokenAddress, tokenName, tokenSymbol, underlyingToken, supplyRatePerBlock, balanceOfUnderlying, exchangeRateStored) => ({
-        ...(state.compoundTokens || []).find(compoundToken => compoundToken.tokenAddress === compoundTokenAddress) || {},
+        ...(state.compoundTokens || [])
+            .find(compoundToken => compoundToken.tokenAddress === compoundTokenAddress) || {},
         tokenAddress,
         tokenName,
         tokenSymbol,

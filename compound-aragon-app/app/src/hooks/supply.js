@@ -1,6 +1,7 @@
 import {useAppState} from "@aragon/api-react";
 import {formatTokenAmount} from "../lib/format-utils";
 import {format} from 'date-fns'
+import BN from 'bn.js'
 
 // TODO: Move more supply logic to here.
 // TODO: useMemo/useCallback
@@ -25,17 +26,36 @@ export function useSupplyState() {
             })
     }
 
-    const mappedCompoundTokens = (compoundTokens || []).map(compoundToken => {
+    const mapCompoundTransactions = (compoundToken) => {
         const {compoundTransactions, tokenAddress: compoundTokenAddress} = compoundToken
 
-        const mappedMintTransactions = mappedCompoundActions(compoundTransactions, compoundTokenAddress,"MINT", "Supply")
+        const mappedMintTransactions = mappedCompoundActions(compoundTransactions, compoundTokenAddress, "MINT", "Supply")
         const mappedRedeemTransactions = mappedCompoundActions(compoundTransactions, compoundTokenAddress, "REDEEM", "Redeem")
 
-        const mappedCompoundTransactions = [...mappedMintTransactions, ...mappedRedeemTransactions]
+        return [...mappedMintTransactions, ...mappedRedeemTransactions]
             .sort((x, y) => y.timestamp - x.timestamp)
             .map(transaction => ({...transaction, timeLabel: format(transaction.timestamp * 1000, 'MMMM do, h:mma')}))
+    }
 
-        return {...compoundToken, compoundTransactions: mappedCompoundTransactions}
+    const mapLifetimeInterestEarned = (compoundToken) => {
+        const {balanceOfUnderlying, lifetimeInterestEarned} = compoundToken
+
+        if (lifetimeInterestEarned) {
+            const {totalTransferredToAgent, totalTransferredFromAgent} = lifetimeInterestEarned
+            // Lifetime interest = Balance of underlying + Total transferred from Agent to Compound - Total transferred to Agent from Compound
+            const totalInterestOfUnderlying = new BN(balanceOfUnderlying).add(new BN(totalTransferredFromAgent)).sub(new BN(totalTransferredToAgent))
+            lifetimeInterestEarned.totalInterestOfUnderlying = totalInterestOfUnderlying.toString()
+        }
+
+        return lifetimeInterestEarned
+    }
+
+    const mappedCompoundTokens = (compoundTokens || []).map(compoundToken => {
+        return {
+            ...compoundToken,
+            compoundTransactions: mapCompoundTransactions(compoundToken),
+            lifetimeInterestEarned: mapLifetimeInterestEarned(compoundToken)
+        }
     })
 
     return {

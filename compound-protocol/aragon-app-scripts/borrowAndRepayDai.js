@@ -40,7 +40,7 @@ module.exports = async () => {
 
 
         // Borrower Lend ETH
-        // await cEther.mint({value:tenEthInWei, from: borrower})
+        await cEther.mint({value:tenEthInWei, from: borrower})
 
 
         // Borrower Borrow DAI

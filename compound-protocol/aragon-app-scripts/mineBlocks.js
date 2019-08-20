@@ -1,6 +1,6 @@
 const Promise = require('bluebird')
 
-const MINE_BLOCK_COUNT = 10
+const MINE_BLOCK_COUNT = 100
 
 const mineBlock = Promise.promisify(function(done) {
         web3.currentProvider.send({
