@@ -46,7 +46,7 @@ contract('Compound', ([rootAccount, ...accounts]) => {
     describe('initialize(address _agent)', () => {
 
         beforeEach(async () => {
-            await compound.initialize(agent.address)
+            await compound.initialize(agent.address, [accounts[0]])
         })
 
         it('sets correct agent address', async () => {

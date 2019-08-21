@@ -18,7 +18,7 @@ const InputField = ({id, inputFieldLabel, inputFieldType, onChange}) => {
     }
 
     return (
-        <Field label={inputFieldLabel}>
+        <Field css={`margin-top: 28px;`} label={inputFieldLabel} required>
             <TextInput type={inputFieldType} wide
                        onChange={handleChange}/>
         </Field>

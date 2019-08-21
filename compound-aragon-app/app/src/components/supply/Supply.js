@@ -1,5 +1,5 @@
 import React from "react"
-import Balances from "./Balances";
+import Balances from "../balances/Balances";
 import styled from "styled-components";
 import CompoundTokenDetails from "./CompoundTokenDetails";
 

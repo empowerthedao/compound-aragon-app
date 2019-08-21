@@ -8,12 +8,12 @@ import {
     Tabs
 } from '@aragon/ui'
 import Settings from "./components/settings/Settings"
-import GenericInputPanel from "./components/side-panel-input/GenericInputPanel";
-import TransferPanel from "./components/side-panel-input/transfer/TransferPanel";
+import GenericInputPanel from "./components/GenericInputPanel";
+import TransferPanel from "./components/balances/side-panel-input/TransferPanel";
 import {useAppLogic} from "./hooks/app-logic";
 import Supply from "./components/supply/Supply";
 import SupplyIcon from "./assets/supply-icon.svg"
-import SupplyPanel from "./components/side-panel-input/supply/TransferPanel";
+import SupplyPanel from "./components/supply/side-panel-input/TransferPanel";
 import PropTypes from 'prop-types';
 
 // TODO: Add link to Compound website?

@@ -3,7 +3,7 @@ import {formatTokenAmount} from "../lib/format-utils";
 import {format} from 'date-fns'
 import BN from 'bn.js'
 
-// TODO: Move more supply logic to here.
+// TODO: Move more supply logic to here and refactor...
 // TODO: useMemo/useCallback
 export function useSupplyState() {
     const {balances, compoundTokens, tokens} = useAppState()

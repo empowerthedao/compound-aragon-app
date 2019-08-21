@@ -147,11 +147,11 @@ const onNewEvent = async (state, storeEvent) => {
         case 'Mint':
             debugLog("MINT")
             const {minter, mintAmount} = eventParams
-            return await stateAfterMint(state, eventParams, minter, mintAmount)
+            return await stateAfterMint(state, storeEvent, minter, mintAmount)
         case 'Redeem':
             debugLog("REDEEM")
             const {redeemer, redeemAmount} = eventParams
-            return await stateAfterRedeem(state, eventParams, redeemer, redeemAmount)
+            return await stateAfterRedeem(state, storeEvent, redeemer, redeemAmount)
         default:
             return state
     }

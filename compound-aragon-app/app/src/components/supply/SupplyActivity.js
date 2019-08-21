@@ -21,7 +21,7 @@ const SupplyActivity = ({compoundToken, tokens}) => {
 
     return (
         <>
-            <Box>
+            <Box padding={false}>
                 <Wrap>
                     <Text>Supply Balance:</Text>
                     <Text
@@ -61,6 +61,7 @@ const SupplyActivity = ({compoundToken, tokens}) => {
 const Wrap = styled.div`
   display: flex;
   justify-content: space-between;
+  padding: 20px;
 `
 
 export default SupplyActivity
