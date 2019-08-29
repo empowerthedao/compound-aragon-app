@@ -6,6 +6,7 @@ import {formatTokenAmount} from "../../lib/format-utils";
 const SUPPLY_RATE_DECIMALS = 16
 const ESTIMATED_BLOCK_TIME = 15
 const LIFETIME_INTEREST_ROUNDING = 6
+const LIFETIME_INTEREST_DECIMALS = 6
 
 const SupplyDetails = ({compoundToken, network, tokens}) => {
 
@@ -30,9 +31,11 @@ const SupplyDetails = ({compoundToken, network, tokens}) => {
 
     const formattedTokenAmount = () => {
         const formattedAmount =
-            formatTokenAmount(totalInterestOfUnderlying, false, underlyingTokenDecimals, false,
-                {rounding: LIFETIME_INTEREST_ROUNDING})
-        return totalInterestOfUnderlying < 0 || !totalInterestOfUnderlying ? "0" : formattedAmount
+            fromDecimals(totalInterestOfUnderlying ? totalInterestOfUnderlying : '', underlyingTokenDecimals,
+                {truncate: true, truncateDecimals: LIFETIME_INTEREST_DECIMALS})
+            // formatTokenAmount(totalInterestOfUnderlying, false, underlyingTokenDecimals, false,
+            //     {rounding: LIFETIME_INTEREST_ROUNDING})
+        return !totalInterestOfUnderlying || totalInterestOfUnderlying < 0 ? "0" : formattedAmount
     }
 
     return (
