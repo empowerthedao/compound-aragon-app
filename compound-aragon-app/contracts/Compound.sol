@@ -4,14 +4,12 @@ import "@aragon/os/contracts/apps/AragonApp.sol";
 import "@aragon/apps-agent/contracts/Agent.sol";
 import "@aragon/os/contracts/common/SafeERC20.sol";
 import "@aragon/os/contracts/lib/token/ERC20.sol";
-import "@ensdomains/buffer/contracts/Buffer.sol";
 import "./CTokenInterface.sol";
 import "./lib/AddressArrayUtils.sol";
 
 contract Compound is AragonApp {
 
     using SafeERC20 for ERC20;
-    using Buffer for Buffer.buffer;
     using AddressArrayUtils for address[];
 
     bytes32 public constant SET_AGENT_ROLE = keccak256("SET_AGENT_ROLE");
@@ -25,6 +23,9 @@ contract Compound is AragonApp {
     string private constant ERROR_TOKEN_TRANSFER_FROM_REVERTED = "COMPOUND_TOKEN_TRANSFER_FROM_REVERTED";
     string private constant ERROR_TOKEN_APPROVE_REVERTED = "COMPOUND_TOKEN_APPROVE_REVERTED";
     string private constant ERROR_INVALID_CTOKEN = "COMPOUND_INVALID_CTOKEN";
+    string private constant ERROR_REDEEM_REVERTED = "COMPOUND_REDEEM_REVERTED";
+    string private constant ERROR_MINT_FAILED = "COMPOUND_MINT_FAILED";
+    string private constant ERROR_REDEEM_FAILED = "COMPOUND_REDEEM_FAILED";
 
     Agent public agent;
     address[] public cTokens;
@@ -84,7 +85,7 @@ contract Compound is AragonApp {
     }
 
     /**
-    * @notice Deposit `@tokenAmount(_token, _value, true, 18)` tokens to the Compound App's Agent
+    * @notice Deposit `@tokenAmount(_token, _value, true, 18)` to the Compound App's Agent
     * @param _token Address of the token being transferred
     * @param _value Amount of tokens being transferred
     */
@@ -117,22 +118,16 @@ contract Compound is AragonApp {
     function supplyToken(uint256 _amount, address _cToken) external auth(SUPPLY_ROLE) {
         require(cTokens.contains(_cToken), ERROR_INVALID_CTOKEN);
 
-        bytes memory spec1 = hex"00000001";
-        Buffer.buffer memory byteBuffer;
         CTokenInterface cToken = CTokenInterface(_cToken);
         address token = cToken.underlying();
 
         bytes memory approveFunctionCall = abi.encodeWithSignature("approve(address,uint256)", address(cToken), _amount);
-        bytes memory supplyFunctionCall = abi.encodeWithSignature("mint(uint256)", _amount);
+        agent.execute(token, 0, approveFunctionCall);
 
-        byteBuffer.init(182);
-        byteBuffer.append(spec1);
-        _appendForwarderScript(byteBuffer, token, approveFunctionCall);
-        _appendForwarderScript(byteBuffer, cToken, supplyFunctionCall);
+        bytes memory supplyFunctionCall = abi.encodeWithSignature("mint(uint256)", _amount);
+        executeNoError(_cToken, 0, supplyFunctionCall, ERROR_MINT_FAILED);
 
         emit AgentSupply();
-
-        agent.forward(byteBuffer.buf);
     }
 
     /**
@@ -142,11 +137,39 @@ contract Compound is AragonApp {
     */
     function redeemToken(uint256 _amount, address _cToken) external auth(REDEEM_ROLE) {
         require(cTokens.contains(_cToken), ERROR_INVALID_CTOKEN);
+
         bytes memory encodedFunctionCall = abi.encodeWithSignature("redeemUnderlying(uint256)", _amount);
+        executeNoError(_cToken, 0, encodedFunctionCall, ERROR_REDEEM_FAILED);
 
         emit AgentRedeem();
+    }
 
-        agent.execute(_cToken, 0, encodedFunctionCall);
+    /**
+    * @notice Ensure the returned uint256 from the _data call is 0, representing a successful call
+    * @param _target Address where the action is being executed
+    * @param _ethValue Amount of ETH from the contract that is sent with the action
+    * @param _data Calldata for the action
+    */
+    function executeNoError(address _target, uint256 _ethValue, bytes _data, string memory _error) internal {
+
+        agent.execute(_target, _ethValue, _data);
+
+        uint256 callReturnValue;
+
+        assembly {
+            switch returndatasize                 // get return data size from the previous call
+            case 0x20 {                           // if the return data size is 32 bytes (1 word/uint256)
+                let output := mload(0x40)         // get a free memory pointer
+                mstore(0x40, add(output, 0x20))   // set the free memory pointer 32 bytes
+                returndatacopy(output, 0, 0x20)   // copy the first 32 bytes of data into output
+                callReturnValue := mload(output)  // read the data from output
+            }
+            default {
+                revert(0, 0) // revert on unexpected return data size
+            }
+        }
+
+        require(callReturnValue == 0, _error);
     }
 
     /**
@@ -156,17 +179,5 @@ contract Compound is AragonApp {
     */
     function getUnderlyingToken(address _cToken) public view returns (address) {
         return CTokenInterface(_cToken).underlying();
-    }
-
-    function _appendForwarderScript(Buffer.buffer memory _byteBuffer, address _toAddress, bytes memory _functionCall)
-    internal
-    pure
-    {
-        bytes memory toAddressBytes = abi.encodePacked(_toAddress);
-        bytes memory functionCallLength = abi.encodePacked(bytes4(_functionCall.length));
-
-        _byteBuffer.append(toAddressBytes);
-        _byteBuffer.append(functionCallLength);
-        _byteBuffer.append(_functionCall);
     }
 }

@@ -121,11 +121,8 @@ module.exports = async () => {
         // console.log(receipt)
 
         console.log(`Lender 1 Dai balance after redeeming underlying asset: ${(await dai.balanceOf(lender)).toString()}`)
-
-
-        process.exit()
     } catch (error) {
         console.log(error)
-        process.exit()
     }
+    process.exit()
 }

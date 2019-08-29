@@ -14,7 +14,6 @@ const SupplyDetails = ({compoundToken, network, tokens}) => {
         tokenName,
         tokenSymbol,
         supplyRatePerBlock,
-        balanceOfUnderlying,
         lifetimeInterestEarned,
         underlyingToken
     } = compoundToken || {}
@@ -54,14 +53,6 @@ const SupplyDetails = ({compoundToken, network, tokens}) => {
             <Box css={'margin-top: 30px'} heading={"Lifetime Interest Earned"}>
                 <Text>{`${formattedTokenAmount()} ${underlyingTokenSymbol || ""}`}</Text>
             </Box>
-
-            {/*<Box css={'margin-top: 30px'} heading={"Block Rate (Temp UI)"}>*/}
-            {/*    <Text>{supplyRatePerBlock}</Text>*/}
-            {/*</Box>*/}
-
-            {/*<Box css={'margin-top: 30px'} heading={"Supply Balance full (Temp UI)"}>*/}
-            {/*    <Text>{balanceOfUnderlying}</Text>*/}
-            {/*</Box>*/}
         </>)
 }
 
