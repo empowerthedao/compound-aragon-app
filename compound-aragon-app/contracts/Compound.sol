@@ -18,34 +18,45 @@ contract Compound is AragonApp {
     bytes32 public constant SUPPLY_ROLE = keccak256("SUPPLY_ROLE");
     bytes32 public constant REDEEM_ROLE = keccak256("REDEEM_ROLE");
 
+    string private constant ERROR_TOO_MANY_CTOKENS = "COMPOUND_TOO_MANY_CTOKENS";
+    string private constant ERROR_TOKEN_ALREADY_ADDED = "COMPOUND_ERROR_TOKEN_ALREADY_ADDED";
+    string private constant ERROR_CAN_NOT_DELETE_TOKEN = "COMPOUND_CAN_NOT_DELETE_TOKEN";
     string private constant ERROR_VALUE_MISMATCH = "COMPOUND_VALUE_MISMATCH";
     string private constant ERROR_SEND_REVERTED = "COMPOUND_SEND_REVERTED";
     string private constant ERROR_TOKEN_TRANSFER_FROM_REVERTED = "COMPOUND_TOKEN_TRANSFER_FROM_REVERTED";
     string private constant ERROR_TOKEN_APPROVE_REVERTED = "COMPOUND_TOKEN_APPROVE_REVERTED";
-    string private constant ERROR_INVALID_CTOKEN = "COMPOUND_INVALID_CTOKEN";
-    string private constant ERROR_REDEEM_REVERTED = "COMPOUND_REDEEM_REVERTED";
+    string private constant ERROR_TOKEN_NOT_ENABLED = "COMPOUND_TOKEN_NOT_ENABLED";
     string private constant ERROR_MINT_FAILED = "COMPOUND_MINT_FAILED";
     string private constant ERROR_REDEEM_FAILED = "COMPOUND_REDEEM_FAILED";
 
+    uint256 private constant MAX_ENABLED_CTOKENS = 100;
+
     Agent public agent;
-    address[] public cTokens;
+    address[] public enabledCTokens;
 
     event AppInitialized();
-    event NewAgentSet();
-    event AddCToken();
-    event RemoveCToken();
+    event NewAgentSet(address agent);
+    event CTokenEnabled(address token);
+    event CTokenDisabled(address token);
     event AgentSupply();
     event AgentRedeem();
+
+    modifier cTokenIsEnabled(address _cToken) {
+        require(enabledCTokens.contains(_cToken), ERROR_TOKEN_NOT_ENABLED);
+        _;
+    }
 
     /**
     * @notice Initialize the Compound App
     * @param _agent The Agent contract address
     */
-    function initialize(address _agent, address[] _cTokens) external onlyInit {
-        initialized();
+    function initialize(address _agent, address[] _enabledCTokens) external onlyInit {
+        require(_enabledCTokens.length < MAX_ENABLED_CTOKENS, ERROR_TOO_MANY_CTOKENS);
 
         agent = Agent(_agent);
-        cTokens = _cTokens;
+        enabledCTokens = _enabledCTokens;
+
+        initialized();
 
         emit AppInitialized();
     }
@@ -56,32 +67,35 @@ contract Compound is AragonApp {
     */
     function setAgent(address _agent) external auth(SET_AGENT_ROLE) {
         agent = Agent(_agent);
-        emit NewAgentSet();
+        emit NewAgentSet(_agent);
     }
 
     /**
     * @notice Add `_cToken' to available Compound Tokens
     * @param _cToken cToken to add
     */
-    function addCToken(address _cToken) external auth(MODIFY_CTOKENS) {
-        cTokens.push(_cToken);
-        emit AddCToken();
+    function enableCToken(address _cToken) external auth(MODIFY_CTOKENS) {
+        require(enabledCTokens.length < MAX_ENABLED_CTOKENS, ERROR_TOO_MANY_CTOKENS);
+        require(!enabledCTokens.contains(_cToken), ERROR_TOKEN_ALREADY_ADDED);
+
+        enabledCTokens.push(_cToken);
+        emit CTokenEnabled(_cToken);
     }
 
     /**
     * @notice Remove `_cToken' from available Compound Tokens
     * @param _cToken cToken to remove
     */
-    function removeCToken(address _cToken) external auth(MODIFY_CTOKENS) {
-        cTokens.deleteItem(_cToken);
-        emit RemoveCToken();
+    function disableCToken(address _cToken) external auth(MODIFY_CTOKENS) {
+        require(enabledCTokens.deleteItem(_cToken), ERROR_CAN_NOT_DELETE_TOKEN);
+        emit CTokenDisabled(_cToken);
     }
 
     /**
-    * @notice Get all currently available cTokens
+    * @notice Get all currently enabled cTokens
     */
-    function getCTokens() external view returns (address[]) {
-        return cTokens;
+    function getEnabledCTokens() external view returns (address[]) {
+        return enabledCTokens;
     }
 
     /**
@@ -115,17 +129,15 @@ contract Compound is AragonApp {
     * @param _amount Amount to supply
     * @param _cToken cToken to supply to
     */
-    function supplyToken(uint256 _amount, address _cToken) external auth(SUPPLY_ROLE) {
-        require(cTokens.contains(_cToken), ERROR_INVALID_CTOKEN);
-
+    function supplyToken(uint256 _amount, address _cToken) external cTokenIsEnabled(_cToken) auth(SUPPLY_ROLE) {
         CTokenInterface cToken = CTokenInterface(_cToken);
         address token = cToken.underlying();
 
         bytes memory approveFunctionCall = abi.encodeWithSignature("approve(address,uint256)", address(cToken), _amount);
-        agent.execute(token, 0, approveFunctionCall);
+        agent.safeExecute(token, approveFunctionCall);
 
         bytes memory supplyFunctionCall = abi.encodeWithSignature("mint(uint256)", _amount);
-        executeNoError(_cToken, 0, supplyFunctionCall, ERROR_MINT_FAILED);
+        safeExecuteNoError(_cToken, supplyFunctionCall, ERROR_MINT_FAILED);
 
         emit AgentSupply();
     }
@@ -135,11 +147,9 @@ contract Compound is AragonApp {
     * @param _amount Amount to redeem
     * @param _cToken cToken to redeem from
     */
-    function redeemToken(uint256 _amount, address _cToken) external auth(REDEEM_ROLE) {
-        require(cTokens.contains(_cToken), ERROR_INVALID_CTOKEN);
-
+    function redeemToken(uint256 _amount, address _cToken) external cTokenIsEnabled(_cToken) auth(REDEEM_ROLE) {
         bytes memory encodedFunctionCall = abi.encodeWithSignature("redeemUnderlying(uint256)", _amount);
-        executeNoError(_cToken, 0, encodedFunctionCall, ERROR_REDEEM_FAILED);
+        safeExecuteNoError(_cToken, encodedFunctionCall, ERROR_REDEEM_FAILED);
 
         emit AgentRedeem();
     }
@@ -147,12 +157,11 @@ contract Compound is AragonApp {
     /**
     * @notice Ensure the returned uint256 from the _data call is 0, representing a successful call
     * @param _target Address where the action is being executed
-    * @param _ethValue Amount of ETH from the contract that is sent with the action
     * @param _data Calldata for the action
     */
-    function executeNoError(address _target, uint256 _ethValue, bytes _data, string memory _error) internal {
+    function safeExecuteNoError(address _target, bytes _data, string memory _error) internal {
 
-        agent.execute(_target, _ethValue, _data);
+        agent.safeExecute(_target, _data);
 
         uint256 callReturnValue;
 

@@ -105,6 +105,7 @@ contract Template is TemplateBase {
         acl.createPermission(ANY_ENTITY, voting, voting.CREATE_VOTES_ROLE(), root);
 
         acl.createPermission(address(app), agent, agent.EXECUTE_ROLE(), root);
+        acl.createPermission(address(app), agent, agent.SAFE_EXECUTE_ROLE(), root);
         acl.createPermission(address(app), agent, agent.RUN_SCRIPT_ROLE(), root);
         acl.createPermission(address(app), agent, agent.TRANSFER_ROLE(), root);
 

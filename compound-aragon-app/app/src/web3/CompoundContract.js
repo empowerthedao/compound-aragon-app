@@ -41,7 +41,7 @@ const withdraw = (api, token, recipient, amount, decimals) => {
 const supplyToken = (api, amount) => {
     const adjustedAmount = toDecimals(amount, 18)
 
-    api.call('cTokens', 0).pipe(
+    api.call('enabledCTokens', 0).pipe(
         mergeMap(cToken => api.supplyToken(adjustedAmount, cToken)))
         .subscribe()
 }
@@ -49,7 +49,7 @@ const supplyToken = (api, amount) => {
 const redeemToken = (api, amount) => {
     const adjustedAmount = toDecimals(amount, 18)
 
-    api.call('cTokens', 0).pipe(
+    api.call('enabledCTokens', 0).pipe(
         mergeMap(cToken => api.redeemToken(adjustedAmount, cToken)))
         .subscribe()
 }
