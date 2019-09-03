@@ -160,7 +160,6 @@ contract Compound is AragonApp {
     * @param _data Calldata for the action
     */
     function safeExecuteNoError(address _target, bytes _data, string memory _error) internal {
-
         agent.safeExecute(_target, _data);
 
         uint256 callReturnValue;

@@ -1,11 +1,9 @@
 import React from 'react'
 import {fromDecimals, round} from "../../lib/math-utils";
-import {Text, TokenBadge, Box} from '@aragon/ui'
-import {formatTokenAmount} from "../../lib/format-utils";
+import {Text, TokenBadge, Box, theme} from '@aragon/ui'
 
 const SUPPLY_RATE_DECIMALS = 16
 const ESTIMATED_BLOCK_TIME = 15
-const LIFETIME_INTEREST_ROUNDING = 6
 const LIFETIME_INTEREST_DECIMALS = 6
 
 const SupplyDetails = ({compoundToken, network, tokens}) => {
@@ -33,8 +31,6 @@ const SupplyDetails = ({compoundToken, network, tokens}) => {
         const formattedAmount =
             fromDecimals(totalInterestOfUnderlying ? totalInterestOfUnderlying : '', underlyingTokenDecimals,
                 {truncate: true, truncateDecimals: LIFETIME_INTEREST_DECIMALS})
-            // formatTokenAmount(totalInterestOfUnderlying, false, underlyingTokenDecimals, false,
-            //     {rounding: LIFETIME_INTEREST_ROUNDING})
         return !totalInterestOfUnderlying || totalInterestOfUnderlying < 0 ? "0" : formattedAmount
     }
 
@@ -54,7 +50,10 @@ const SupplyDetails = ({compoundToken, network, tokens}) => {
             </Box>
 
             <Box css={'margin-top: 30px'} heading={"Lifetime Interest Earned"}>
-                <Text>{`${formattedTokenAmount()} ${underlyingTokenSymbol || ""}`}</Text>
+                <Text color={totalInterestOfUnderlying > 0 ? String(theme.positive) : ''}
+                      weight="bold">
+                    {`${formattedTokenAmount()} ${underlyingTokenSymbol || ""}`}
+                </Text>
             </Box>
         </>)
 }
