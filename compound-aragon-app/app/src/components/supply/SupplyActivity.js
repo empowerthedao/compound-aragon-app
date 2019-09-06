@@ -21,7 +21,7 @@ const SupplyActivity = ({compoundToken, tokens}) => {
 
     return (
         <>
-            <Box padding={false}>
+            <Box padding={0}>
                 <Wrap>
                     <Text>Supply Balance:</Text>
                     <Text

@@ -5,7 +5,7 @@ import styled from "styled-components";
 // TODO: Add slider for specifying amount
 const SupplyInput = ({handleSupply}) => {
 
-    const [amount, setAmount] = useState(0)
+    const [amount, setAmount] = useState("")
 
     const handleSubmit = (event) => {
         event.preventDefault()
@@ -41,6 +41,7 @@ const SupplyInput = ({handleSupply}) => {
 const DepositContainer = styled.div`
     display:flex;
     flex-direction: column;
+    padding-top: 1px;
 `
 const FieldStyled = styled(Field)`
     margin-bottom: 20px;

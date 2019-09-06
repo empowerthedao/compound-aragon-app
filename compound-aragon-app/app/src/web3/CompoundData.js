@@ -10,7 +10,7 @@ const balanceOfUnderlyingTokens$ = (api, compoundTokenAddress) =>
 const compoundTokenDetails$ = (api, compoundTokenAddress, state) => {
 
     const tokenObject = (tokenAddress, tokenName, tokenSymbol, underlyingToken, supplyRatePerBlock, balanceOfUnderlying, exchangeRateStored) => ({
-        ...(state.compoundTokens || [])
+        ...((state || {}).compoundTokens || [])
             .find(compoundToken => compoundToken.tokenAddress === compoundTokenAddress) || {},
         tokenAddress,
         tokenName,
@@ -28,7 +28,6 @@ const compoundTokenDetails$ = (api, compoundTokenAddress, state) => {
             tokenObject(compoundTokenAddress, name, symbol, underlyingToken, supplyRatePerBlock, balanceOfUnderlying, exchangeRateStored)))
 }
 
-// TODO: Consider splitting this up so we don't fetch everything for every cToken every time an update occurs.
 const compoundTokensDetails$ = (api, state) =>
     compoundTokenAddresses$(api).pipe(
         concatMap(address => address),
@@ -38,4 +37,5 @@ const compoundTokensDetails$ = (api, state) =>
 
 export {
     compoundTokensDetails$,
+    balanceOfUnderlyingTokens$
 }

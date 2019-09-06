@@ -4,6 +4,7 @@ import {useCallback} from 'react'
 import {useSidePanel} from "./side-panels";
 import {useTabs} from "./tabs";
 import {useSupplyState} from "./supply";
+import {useRedeemState} from "./redeem-panel";
 
 const useSetAgentAddress = (onDone) => {
     const api = useApi()
@@ -59,6 +60,7 @@ export function useAppLogic() {
     } = useAppState()
 
     const supplyState = useSupplyState()
+    const redeemPanelState = useRedeemState()
     const settings = {appAddress, agentAddress}
 
     const sidePanel = useSidePanel()
@@ -74,11 +76,12 @@ export function useAppLogic() {
 
     return {
         isSyncing,
+        actions,
+        sidePanel,
+        tabs,
         supplyState,
         tokens,
         settings,
-        actions,
-        sidePanel,
-        tabs
+        redeemPanelState
     }
 }

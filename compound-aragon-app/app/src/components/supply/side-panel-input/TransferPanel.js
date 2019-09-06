@@ -1,10 +1,10 @@
 import React, {useMemo, useState} from 'react'
 import styled from 'styled-components'
-import {TabBar} from '@aragon/ui'
+import {Tabs} from '@aragon/ui'
 import SupplyInput from "./SupplyInput";
 import RedeemInput from "./RedeemInput";
 
-const SupplyPanel = ({handleSupply, handleRedeem, opened}) => {
+const SupplyPanel = ({handleSupply, handleRedeem, opened, redeemPanelState}) => {
 
     const [screenIndex, setScreenIndex] = useState(0)
 
@@ -17,7 +17,7 @@ const SupplyPanel = ({handleSupply, handleRedeem, opened}) => {
     return (
         <div>
             <TabBarWrapper>
-                <TabBar
+                <Tabs
                     items={['Supply', 'Redeem']}
                     selected={screenIndex}
                     onChange={setScreenIndex}
@@ -31,6 +31,7 @@ const SupplyPanel = ({handleSupply, handleRedeem, opened}) => {
             )}
             {screenIndex === 1 && (
                 <RedeemInput
+                    redeemPanelState={redeemPanelState}
                     handleRedeem={handleRedeem}
                 />
             )}

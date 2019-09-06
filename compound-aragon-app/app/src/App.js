@@ -26,7 +26,8 @@ function App({compactMode}) {
         settings,
         actions,
         sidePanel,
-        tabs
+        tabs,
+        redeemPanelState
     } = useAppLogic()
 
     const selectedTabComponent = () => {
@@ -62,6 +63,7 @@ function App({compactMode}) {
             case 'SUPPLY':
                 return <SupplyPanel handleSupply={actions.supply}
                                     handleRedeem={actions.redeem}
+                                    redeemPanelState={redeemPanelState}
                                     opened={sidePanel.opened}/>
             default:
                 return <div/>
