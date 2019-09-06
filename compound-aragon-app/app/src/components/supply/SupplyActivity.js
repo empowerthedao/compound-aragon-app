@@ -1,4 +1,4 @@
-import {Box, DataView, Text, theme, useTheme} from "@aragon/ui";
+import {Box, DataView, Text, theme} from "@aragon/ui";
 import React from "react";
 import {fromDecimals} from "../../lib/math-utils";
 import styled from "styled-components";
@@ -17,7 +17,8 @@ const SupplyActivity = ({compoundToken, tokens}) => {
         fromDecimals(balanceOfUnderlying ? balanceOfUnderlying : '', underlyingTokenDecimals,
             {truncate: true, truncateDecimals: SUPPLY_BALANCE_DECIMALS})
 
-    const dataViewEntries = (compoundTransactions || []).map(transaction => [transaction.typeLabel, transaction.timeLabel])
+    const dataViewEntries = (compoundTransactions || []).map(transaction =>
+        [transaction.typeLabelPrefix, transaction.typeLabelSuffix, transaction.timeLabel])
 
     return (
         <>
@@ -37,12 +38,17 @@ const SupplyActivity = ({compoundToken, tokens}) => {
 
             {(compoundTransactions || []).length > 0 ?
                 <DataView
-                    fields={['Transaction', 'Time']}
+                    fields={['Amount', 'Time']}
                     entries={dataViewEntries}
-                    renderEntry={([type, time]) => [
-                        <Text>
-                            {type}
-                        </Text>,
+                    renderEntry={([prefix, suffix, time]) => [
+                        <div>
+                            <Text>
+                                {prefix}{' '}
+                            </Text>
+                            <Text>
+                                {suffix}
+                            </Text>
+                        </div>,
                         <Text>
                             {time}
                         </Text>,

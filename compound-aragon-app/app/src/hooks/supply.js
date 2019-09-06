@@ -22,7 +22,7 @@ export function useSupplyState() {
                 const tokenDetails = underlyingTokenDetails(compoundTokenAddress)
                 const formattedTokenAmount =
                     formatTokenAmount(transaction.transferAmount, true, tokenDetails.decimals)
-                return {...transaction, typeLabel: `${typeLabel} ${formattedTokenAmount} ${tokenDetails.symbol}`}
+                return {...transaction, typeLabelPrefix: `${typeLabel}`, typeLabelSuffix: `${formattedTokenAmount} ${tokenDetails.symbol}`}
             })
     }
 
