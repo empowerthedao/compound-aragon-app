@@ -101,7 +101,6 @@ In order for the Compound Aragon App to transact via the Agent, the following co
 ```
 dao acl create <DAO-Address> <Agent-App-Proxy-Address> EXECUTE_ROLE <Compound-App-Proxy-Address> <Voting-App-Proxy-Address> --environment aragon:rinkeby
 dao acl create <DAO-Address> <Agent-App-Proxy-Address> SAFE_EXECUTE_ROLE <Compound-App-Proxy-Address> <Voting-App-Proxy-Address> --environment aragon:rinkeby
-dao acl create <DAO-Address> <Agent-App-Proxy-Address> RUN_SCRIPT_ROLE <Compound-App-Proxy-Address> <Voting-App-Proxy-Address> --environment aragon:rinkeby
 dao acl create <DAO-Address> <Agent-App-Proxy-Address> TRANSFER_ROLE <Compound-App-Proxy-Address> <Voting-App-Proxy-Address> --environment aragon:rinkeby
 ```
 
