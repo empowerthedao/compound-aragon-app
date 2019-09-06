@@ -84,7 +84,7 @@ You have now created a new Aragon DAO on Rinkeby with voting token and base apps
 
 ### Install the Compound Aragon App
 
-Run the following command to **install the Compund app in the DAO**:
+Run the following command to **install the Compound app in the DAO**:
 
 ```
 dao install <DAO-Address> compound.open.aragonpm.eth --app-init-args <Agent-App-Proxy-Address> ["'<Supply-cToken-Address>'"] --environment aragon:rinkeby
