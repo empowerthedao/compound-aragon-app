@@ -47,7 +47,7 @@ const Settings = ({handleNewAgent, settings, compactMode}) => {
                         </MarginTopContainer>
 
                         <ButtonContainer>
-                            <Button mode="outline" onClick={() => handleNewAgent()}>
+                            <Button onClick={() => handleNewAgent()}>
                                 Change Agent
                             </Button>
                         </ButtonContainer>

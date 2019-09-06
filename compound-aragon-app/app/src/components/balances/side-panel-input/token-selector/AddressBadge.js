@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import {useNetwork} from '@aragon/api-react'
 import {IdentityBadge} from '@aragon/ui'
 
-const AddressBadge = ({entity, badgeOnly, compact}) => {
+const AddressBadge = ({entity}) => {
     const network = useNetwork()
 
     return (

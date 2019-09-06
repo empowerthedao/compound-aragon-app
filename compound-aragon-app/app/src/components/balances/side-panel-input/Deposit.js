@@ -5,12 +5,13 @@ import TokenSelector from "./token-selector/TokenSelector";
 
 const CUSTOM_TOKEN_DECIMALS = -1
 
-// TODO: Replace dropdown with TokenSelector (see new Finance app)
 const Deposit = ({tokens, handleDeposit}) => {
 
     const [tokenSelected, setTokenSelected] = useState(0)
     const [otherToken, setOtherToken] = useState("")
     const [amount, setAmount] = useState(0)
+
+    const showOtherTokenInput = tokenSelected === tokens.length
 
     const getSelectedTokenAddress = () => showOtherTokenInput ? otherToken : tokens[tokenSelected].address
     const getSelectedTokenDecimals = () => showOtherTokenInput ? CUSTOM_TOKEN_DECIMALS : tokens[tokenSelected].decimals
@@ -19,8 +20,6 @@ const Deposit = ({tokens, handleDeposit}) => {
         event.preventDefault()
         handleDeposit(getSelectedTokenAddress(), amount, getSelectedTokenDecimals())
     }
-
-    const showOtherTokenInput = tokenSelected === tokens.length
 
     return (
         <form onSubmit={handleSubmit}>
