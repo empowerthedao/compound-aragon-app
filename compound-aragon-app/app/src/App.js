@@ -27,7 +27,8 @@ function App({compactMode}) {
         actions,
         sidePanel,
         tabs,
-        redeemPanelState
+        redeemPanelState,
+        depositPanelState
     } = useAppLogic()
 
     const selectedTabComponent = () => {
@@ -59,7 +60,8 @@ function App({compactMode}) {
                 return <TransferPanel tokens={tokens}
                                       opened={sidePanel.opened}
                                       handleDeposit={actions.deposit}
-                                      handleWithdraw={actions.withdraw}/>
+                                      handleWithdraw={actions.withdraw}
+                                      depositPanelState={depositPanelState}/>
             case 'SUPPLY':
                 return <SupplyPanel handleSupply={actions.supply}
                                     handleRedeem={actions.redeem}

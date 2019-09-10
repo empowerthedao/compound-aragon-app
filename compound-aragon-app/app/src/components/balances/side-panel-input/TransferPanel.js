@@ -5,7 +5,7 @@ import {Tabs} from '@aragon/ui'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 
-const TransferPanel = ({tokens, handleDeposit, handleWithdraw, opened}) => {
+const TransferPanel = ({tokens, handleDeposit, handleWithdraw, opened, depositPanelState}) => {
 
     const [screenIndex, setScreenIndex] = useState(0)
 
@@ -27,7 +27,9 @@ const TransferPanel = ({tokens, handleDeposit, handleWithdraw, opened}) => {
 
             {screenIndex === 0 && (
                 <Deposit
-                    tokens={tokens} handleDeposit={handleDeposit}
+                    tokens={tokens}
+                    handleDeposit={handleDeposit}
+                    depositPanelState={depositPanelState}
                 />
             )}
             {screenIndex === 1 && (
