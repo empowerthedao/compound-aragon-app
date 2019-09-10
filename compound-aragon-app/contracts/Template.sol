@@ -60,10 +60,9 @@ contract Template is TemplateBase {
     uint64 constant PCT = 10 ** 16;
     address constant ANY_ENTITY = address(-1);
 
-    constructor(ENS _ens, address _cTokensArray) TemplateBase(DAOFactory(0), _ens) public {
+    constructor(ENS _ens, address _initialCToken) TemplateBase(DAOFactory(0), _ens) public {
         tokenFactory = new MiniMeTokenFactory();
-//        cTokensArray = _cTokensArray;
-        cTokensArray.push(_cTokensArray);
+        cTokensArray.push(_initialCToken);
     }
 
     function newInstance() public {

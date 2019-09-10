@@ -19,6 +19,7 @@ contract Compound is AragonApp {
     bytes32 public constant REDEEM_ROLE = keccak256("REDEEM_ROLE");
 
     string private constant ERROR_TOO_MANY_CTOKENS = "COMPOUND_TOO_MANY_CTOKENS";
+    string private constant ERROR_NOT_CONTRACT = "COMPOUND_NOT_CONTRACT";
     string private constant ERROR_TOKEN_ALREADY_ADDED = "COMPOUND_ERROR_TOKEN_ALREADY_ADDED";
     string private constant ERROR_CAN_NOT_DELETE_TOKEN = "COMPOUND_CAN_NOT_DELETE_TOKEN";
     string private constant ERROR_VALUE_MISMATCH = "COMPOUND_VALUE_MISMATCH";
@@ -52,12 +53,16 @@ contract Compound is AragonApp {
     */
     function initialize(address _agent, address[] _enabledCTokens) external onlyInit {
         require(_enabledCTokens.length < MAX_ENABLED_CTOKENS, ERROR_TOO_MANY_CTOKENS);
+        require(isContract(_agent), ERROR_NOT_CONTRACT);
+
+        for (uint256 enabledTokenIndex = 0; enabledTokenIndex < _enabledCTokens.length; enabledTokenIndex++) {
+            require(isContract(_enabledCTokens[enabledTokenIndex]), ERROR_NOT_CONTRACT);
+        }
 
         agent = Agent(_agent);
         enabledCTokens = _enabledCTokens;
 
         initialized();
-
         emit AppInitialized();
     }
 
@@ -66,6 +71,8 @@ contract Compound is AragonApp {
     * @param _agent New Agent address
     */
     function setAgent(address _agent) external auth(SET_AGENT_ROLE) {
+        require(isContract(agent), ERROR_NOT_CONTRACT);
+
         agent = Agent(_agent);
         emit NewAgentSet(_agent);
     }
@@ -76,6 +83,7 @@ contract Compound is AragonApp {
     */
     function enableCToken(address _cToken) external auth(MODIFY_CTOKENS) {
         require(enabledCTokens.length < MAX_ENABLED_CTOKENS, ERROR_TOO_MANY_CTOKENS);
+        require(isContract(_cToken), ERROR_NOT_CONTRACT);
         require(!enabledCTokens.contains(_cToken), ERROR_TOKEN_ALREADY_ADDED);
 
         enabledCTokens.push(_cToken);
