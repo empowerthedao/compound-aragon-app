@@ -50,9 +50,10 @@ contract Compound is AragonApp {
     /**
     * @notice Initialize the Compound App
     * @param _agent The Agent contract address
+    * @param _enabledCTokens An array of enabled tokens
     */
     function initialize(address _agent, address[] _enabledCTokens) external onlyInit {
-        require(_enabledCTokens.length < MAX_ENABLED_CTOKENS, ERROR_TOO_MANY_CTOKENS);
+        require(_enabledCTokens.length <= MAX_ENABLED_CTOKENS, ERROR_TOO_MANY_CTOKENS);
         require(isContract(_agent), ERROR_NOT_CONTRACT);
 
         for (uint256 enabledTokenIndex = 0; enabledTokenIndex < _enabledCTokens.length; enabledTokenIndex++) {
@@ -71,7 +72,7 @@ contract Compound is AragonApp {
     * @param _agent New Agent address
     */
     function setAgent(address _agent) external auth(SET_AGENT_ROLE) {
-        require(isContract(agent), ERROR_NOT_CONTRACT);
+        require(isContract(_agent), ERROR_NOT_CONTRACT);
 
         agent = Agent(_agent);
         emit NewAgentSet(_agent);
@@ -127,7 +128,6 @@ contract Compound is AragonApp {
     * @param _to Address of the recipient of tokens
     * @param _value Amount of tokens being transferred
     */
-    /* solium-disable-next-line function-order */
     function transfer(address _token, address _to, uint256 _value) external auth(TRANSFER_ROLE) {
         agent.transfer(_token, _to, _value);
     }
