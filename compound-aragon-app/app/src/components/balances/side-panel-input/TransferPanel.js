@@ -11,6 +11,8 @@ const TransferPanel = ({handleDeposit, handleWithdraw, opened, transferPanelsSta
 
     const {tokens, balances, checkConnectedAccountBalance} = transferPanelsState
 
+    const oneOrMoreTokensWithBalance = tokens.filter(token => token.amount > 0).length > 0
+
     useMemo(() => {
         if (!opened) {
             setScreenIndex(0)
@@ -23,7 +25,7 @@ const TransferPanel = ({handleDeposit, handleWithdraw, opened, transferPanelsSta
                 <Tabs
                     items={['Deposit', 'Withdraw']}
                     selected={screenIndex}
-                    onChange={setScreenIndex}
+                    onChange={id => oneOrMoreTokensWithBalance ? setScreenIndex(id) : setScreenIndex(0)}
                 />
             </TabBarWrapper>
 
