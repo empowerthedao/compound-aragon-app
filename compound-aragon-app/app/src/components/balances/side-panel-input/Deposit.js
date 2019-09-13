@@ -7,17 +7,15 @@ import {
     useTheme,
     IconCross,
     textStyle,
-    GU,
-    isAddress
+    GU
 } from '@aragon/ui'
+import {isAddress} from "../../../lib/web3-utils"
 import styled from "styled-components";
 import TokenSelector from "./token-selector/TokenSelector";
 
 const CUSTOM_TOKEN_DECIMALS = -1
 
-const Deposit = ({tokens, handleDeposit, depositPanelState}) => {
-
-    const {checkBalance} = depositPanelState
+const Deposit = ({tokens, handleDeposit, checkConnectedAccountBalance}) => {
 
     const [tokenSelected, setTokenSelected] = useState(0)
     const [otherToken, setOtherToken] = useState("")
@@ -36,7 +34,7 @@ const Deposit = ({tokens, handleDeposit, depositPanelState}) => {
     let errorMessage
     if (showBalanceError) {
         errorMessage = 'Amount is greater than balance held'
-    } else if (showInvalidTokenError){
+    } else if (showInvalidTokenError) {
         errorMessage = 'Invalid token address'
     }
 
@@ -46,7 +44,7 @@ const Deposit = ({tokens, handleDeposit, depositPanelState}) => {
     }
 
     useEffect(() => {
-        checkBalance(getSelectedTokenAddress(), amount, setBalanceAvailable)
+        checkConnectedAccountBalance(getSelectedTokenAddress(), amount, setBalanceAvailable)
     }, [tokenSelected, amount, otherToken])
 
     return (
@@ -79,7 +77,6 @@ const Deposit = ({tokens, handleDeposit, depositPanelState}) => {
                 </Button>
 
                 {displayError && <ValidationError message={errorMessage}/>}
-
 
                 <Info.Action title="Transfer action">
                     This action will deposit the specified amount of Tokens or Ether to the Compound App's Agent.

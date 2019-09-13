@@ -5,9 +5,11 @@ import {Tabs} from '@aragon/ui'
 import Deposit from './Deposit'
 import Withdraw from './Withdraw'
 
-const TransferPanel = ({tokens, handleDeposit, handleWithdraw, opened, depositPanelState}) => {
+const TransferPanel = ({handleDeposit, handleWithdraw, opened, transferPanelsState}) => {
 
     const [screenIndex, setScreenIndex] = useState(0)
+
+    const {tokens, balances, checkConnectedAccountBalance} = transferPanelsState
 
     useMemo(() => {
         if (!opened) {
@@ -29,12 +31,14 @@ const TransferPanel = ({tokens, handleDeposit, handleWithdraw, opened, depositPa
                 <Deposit
                     tokens={tokens}
                     handleDeposit={handleDeposit}
-                    depositPanelState={depositPanelState}
+                    checkConnectedAccountBalance={checkConnectedAccountBalance}
                 />
             )}
             {screenIndex === 1 && (
                 <Withdraw
-                    tokens={tokens} handleWithdraw={handleWithdraw}
+                    tokens={tokens}
+                    balances={balances}
+                    handleWithdraw={handleWithdraw}
                 />
             )}
         </div>

@@ -5,7 +5,7 @@ import {useSidePanel} from "./side-panels";
 import {useTabs} from "./tabs";
 import {useSupplyState} from "./supply";
 import {useRedeemState} from "./redeem-panel";
-import {useDepositState} from "./deposit-panel";
+import {useTransferState} from "./transfer-panels";
 
 const useSetAgentAddress = (onDone) => {
     const api = useApi()
@@ -55,14 +55,13 @@ const useRedeem = (onDone) => {
 export function useAppLogic() {
     const {
         isSyncing,
-        tokens,
         appAddress,
         agentAddress,
     } = useAppState()
 
     const supplyState = useSupplyState()
     const redeemPanelState = useRedeemState()
-    const depositPanelState = useDepositState()
+    const transferPanelsState = useTransferState()
     const settings = {appAddress, agentAddress}
 
     const sidePanel = useSidePanel()
@@ -82,9 +81,8 @@ export function useAppLogic() {
         sidePanel,
         tabs,
         supplyState,
-        tokens,
         settings,
         redeemPanelState,
-        depositPanelState
+        transferPanelsState
     }
 }

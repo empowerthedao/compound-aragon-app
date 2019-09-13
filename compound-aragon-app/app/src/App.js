@@ -22,13 +22,12 @@ function App({compactMode}) {
     const {
         isSyncing,
         supplyState,
-        tokens,
         settings,
         actions,
         sidePanel,
         tabs,
         redeemPanelState,
-        depositPanelState
+        transferPanelsState
     } = useAppLogic()
 
     const selectedTabComponent = () => {
@@ -57,11 +56,10 @@ function App({compactMode}) {
                                           submitLabel={'Change agent'}
                                           handleSubmit={actions.setAgentAddress}/>
             case 'TRANSFER':
-                return <TransferPanel tokens={tokens}
-                                      opened={sidePanel.opened}
+                return <TransferPanel opened={sidePanel.opened}
                                       handleDeposit={actions.deposit}
                                       handleWithdraw={actions.withdraw}
-                                      depositPanelState={depositPanelState}/>
+                                      transferPanelsState={transferPanelsState}/>
             case 'SUPPLY':
                 return <SupplyPanel handleSupply={actions.supply}
                                     handleRedeem={actions.redeem}
