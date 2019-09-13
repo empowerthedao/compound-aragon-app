@@ -38,7 +38,7 @@ const SupplyActivity = ({compoundToken, tokens}) => {
 
             {(compoundTransactions || []).length > 0 ?
                 <DataView
-                    fields={['Amount', 'Time']}
+                    fields={['Transaction', 'Time']}
                     entries={dataViewEntries}
                     renderEntry={([prefix, suffix, time]) => [
                         <div>
