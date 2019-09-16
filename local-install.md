@@ -3,16 +3,17 @@
 To deploy the Compound Aragon app locally first requires installing the Compound protocol locally, then copying key 
 addresses from the deployment process into the Aragon app deployment script for the app to use. 
 
+Pre-requisite dependencies:
+- [NPM from Node v10](https://nodejs.org/en/download/) (errors may occur when using a version later than v10)
+- [Aragon CLI](https://github.com/aragon/aragon-cli)
+- [Truffle](https://github.com/trufflesuite/truffle)
+- [MetaMask](https://metamask.io/)
+
 ## Compound Protocol Deployment 
 
 This process deploys the Compound Protocol to a local test chain with a cDai token for testing. 
 
 Instructions are for OSX, other OS's may require additional steps.
-
-Pre-requisite dependencies:
-- [NPM from Node v10](https://nodejs.org/en/download/) (errors may occur when using a version later than v10)
-- [Aragon CLI](https://github.com/aragon/aragon-cli)
-- [Truffle](https://github.com/trufflesuite/truffle)
 
 Execute the following within the `compound-aragon-app/compound-protocol` directory:
 
