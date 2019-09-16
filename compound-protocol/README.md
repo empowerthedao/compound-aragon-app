@@ -2,15 +2,15 @@
 
 This process deploys the Compound Protocol to a local test chain with a cDai token for testing. 
 
-### Local Deployment 
+## Compound Deployment 
 Instructions are for OSX, other OS's may require additional steps.
 
 Pre-requisite dependencies:
-- [NPM from Node v10](https://nodejs.org/en/download/)
+- [NPM from Node v10](https://nodejs.org/en/download/) (errors may occur when using a newer version)
 - [Aragon CLI](https://github.com/aragon/aragon-cli)
 - [Truffle](https://github.com/trufflesuite/truffle)
 
-To locally deploy the Compound protocol requires Node v10 (errors may occur when using a newer version). Execute the following within the `compound-aragon-app/compound-protocol` directory:
+Execute the following within the `compound-aragon-app/compound-protocol` directory:
 
 Install dependencies:
 ```
@@ -22,16 +22,16 @@ Run `aragon devchain` in a separate terminal:
 $ aragon devchain
 ```
 
-Deploy Compound protocol (if previously deployed run `rm networks/development*` first)
+Deploy Compound protocol (if previously deployed run `$ rm networks/development*` first)
 ```
 $ npm run deploy
 ```  
 
 
-### Compound Interaction Truffle Scripts
+## Compound Setup
 Scripts to emulate activity on the Compound protocol. 
 
-:warning: Note that one of `basicUsage.js` or `borrowAndRepayDai.js` must be
+> :warning: Note that one of `basicUsage.js` or `borrowAndRepayDai.js` must be
 executed after deployment of the Compound protocol for the Aragon app to function as expected.
 
 It is also suggested that the `giveAcc0Dai.js` script be run for easier experimentation.
@@ -41,7 +41,7 @@ To execute the scripts requires the contracts first be compiled with:
 $ truffle compile
 ```
 
-#### Truffle Scripts
+#### Interaction Scripts
 
 Walk through basic functionality required by the Compound Aragon app:
 ```
