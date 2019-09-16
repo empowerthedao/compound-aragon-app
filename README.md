@@ -9,7 +9,7 @@ to with the corresponding ERC20 token from the DAO to accrue interest.
 #### :rotating_light: Security review status: pre-audit  
 The code in this repo has not been audited.
 
-[Instructions for local deployment](https://github.com/empowerthedao/compound-aragon-app/tree/master/compound-aragon-app)
+[Instructions for local deployment](https://github.com/empowerthedao/compound-aragon-app/blob/master/local-install.md)
 for development purposes.
 
 [Instructions for live net installation](https://github.com/empowerthedao/compound-aragon-app/blob/master/compound-aragon-app/fresh-install.md)
