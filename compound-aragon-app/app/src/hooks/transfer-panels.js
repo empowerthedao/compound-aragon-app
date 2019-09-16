@@ -1,12 +1,12 @@
-import {useCallback} from 'react'
-import {useApi, useAragonApi, useAppState} from "@aragon/api-react";
-import {tokenContract$} from "../web3/ExternalContracts";
-import {mergeMap, map} from "rxjs/operators";
-import {toDecimals} from "../lib/math-utils";
-import {zip} from "rxjs";
-import BN from 'bn.js'
-import {isAddress} from "../lib/web3-utils"
-import {ETH_DECIMALS, ETHER_TOKEN_FAKE_ADDRESS} from "../lib/shared-constants";
+import { useCallback } from "react"
+import { useApi, useAragonApi, useAppState } from "@aragon/api-react"
+import { tokenContract$ } from "../web3/ExternalContracts"
+import { mergeMap, map } from "rxjs/operators"
+import { toDecimals } from "../lib/math-utils"
+import { zip } from "rxjs"
+import BN from "bn.js"
+import { isAddress } from "../lib/web3-utils"
+import { ETH_DECIMALS, ETHER_TOKEN_FAKE_ADDRESS } from "../lib/shared-constants"
 
 const checkBalanceAvailable = (api, account, token, amount, setBalanceAvailable) => {
 
@@ -16,7 +16,7 @@ const checkBalanceAvailable = (api, account, token, amount, setBalanceAvailable)
     }
 
     if (token === ETHER_TOKEN_FAKE_ADDRESS) {
-        api.web3Eth('getBalance', account).pipe(
+        api.web3Eth("getBalance", account).pipe(
             map(userBalance => {
                 const adjustedAmount = toDecimals(amount.toString(), ETH_DECIMALS)
                 const adjustedAmountBn = new BN(adjustedAmount)
