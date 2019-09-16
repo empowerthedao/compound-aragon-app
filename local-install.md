@@ -1,7 +1,8 @@
 # Local deployment
 
 To deploy the Compound Aragon app locally first requires installing the Compound protocol locally, then copying key 
-addresses from the deployment process into the Aragon app deployment script for the app to use. 
+addresses from the deployment process into the Aragon app deployment script for the app to use. It is also advised that
+all global dependencies be the most recent versions available, except for Node.
 
 Pre-requisite dependencies:
 - [NPM from Node v10](https://nodejs.org/en/download/) (errors may occur when using a version later than v10)
@@ -56,7 +57,7 @@ $ truffle exec aragon-app-scripts/giveAcc0Dai.js
 
 ## Compound Aragon App Deployment
 
-Execute the following within the `compound-aragon-app` directory.
+Execute the following within the `compound-aragon-app/compound-aragon-app` directory.
 
 Install dependencies:
 ```
