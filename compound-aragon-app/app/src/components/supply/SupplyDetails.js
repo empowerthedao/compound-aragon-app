@@ -6,7 +6,7 @@ const SUPPLY_RATE_DECIMALS = 16
 const ESTIMATED_BLOCK_TIME = 15
 const LIFETIME_INTEREST_DECIMALS = 6
 
-const SupplyDetails = ({compoundToken, network, tokens}) => {
+const SupplyDetails = ({compoundToken, network, tokens, isSyncing}) => {
 
     const {
         tokenAddress,
@@ -31,7 +31,7 @@ const SupplyDetails = ({compoundToken, network, tokens}) => {
         const formattedAmount =
             fromDecimals(totalInterestOfUnderlying ? totalInterestOfUnderlying : '', underlyingTokenDecimals,
                 {truncate: true, truncateDecimals: LIFETIME_INTEREST_DECIMALS})
-        return !totalInterestOfUnderlying || totalInterestOfUnderlying < 0 ? "0" : formattedAmount
+        return !totalInterestOfUnderlying || totalInterestOfUnderlying < 0 || isSyncing ? "0" : formattedAmount
     }
 
     return (
@@ -50,7 +50,7 @@ const SupplyDetails = ({compoundToken, network, tokens}) => {
             </Box>
 
             <Box css={'margin-top: 30px'} heading={"Lifetime Interest Earned"}>
-                <Text color={totalInterestOfUnderlying > 0 ? String(theme.positive) : ''}
+                <Text color={formattedTokenAmount() !== "0" ? String(theme.positive) : ''}
                       weight="bold">
                     {`${formattedTokenAmount()} ${underlyingTokenSymbol || ""}`}
                 </Text>

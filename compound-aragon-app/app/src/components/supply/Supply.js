@@ -3,7 +3,7 @@ import styled from "styled-components";
 import CompoundTokenDetails from "./CompoundTokenDetails";
 import Balances from "../balances/Balances";
 
-const Supply = ({supplyState, handleTransfer, compactMode}) => {
+const Supply = ({supplyState, handleTransfer, compactMode, isSyncing}) => {
 
     const {balances, compoundTokens, tokens} = supplyState
 
@@ -15,7 +15,7 @@ const Supply = ({supplyState, handleTransfer, compactMode}) => {
                 <Balances compactMode={compactMode} balances={balances} handleTransfer={handleTransfer} />
             </SpacedBlock>
 
-            <CompoundTokenDetails compoundToken={compoundToken} tokens={tokens}/>
+            <CompoundTokenDetails compoundToken={compoundToken} tokens={tokens} isSyncing={isSyncing}/>
         </Container>
     )
 }

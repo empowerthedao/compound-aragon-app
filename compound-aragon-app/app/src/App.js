@@ -35,6 +35,7 @@ function App({compactMode}) {
             case 'SUPPLY':
                 return <Supply compactMode={compactMode}
                                supplyState={supplyState}
+                               isSyncing={isSyncing}
                                handleTransfer={() => sidePanel.openPanelActions.transfer()}/>
             case 'SETTINGS':
                 return <Settings settings={settings}

@@ -21,7 +21,7 @@ export function useSupplyState() {
             .map(transaction => {
                 const tokenDetails = underlyingTokenDetails(compoundTokenAddress)
                 const formattedTokenAmount =
-                    formatTokenAmount(transaction.transferAmount, true, tokenDetails.decimals)
+                    formatTokenAmount(transaction.transferAmount, true, tokenDetails.decimals, false, {rounding: tokenDetails.decimals})
                 return {...transaction, typeLabelPrefix: `${typeLabel}`, typeLabelSuffix: `${formattedTokenAmount} ${tokenDetails.symbol}`}
             })
     }
