@@ -28,8 +28,6 @@ class TokenSelectorInstance extends React.PureComponent {
 const Main = styled.div`
     display: flex;
     align-items: center;
-    border-style: solid;
-    border-width: small;
 `
 
 const Icon = styled.img.attrs({ alt: "", width: "16", height: "16" })`
