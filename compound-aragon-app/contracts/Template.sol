@@ -85,7 +85,7 @@ contract Template is TemplateBase {
         token.changeController(tokenManager);
 
         // Initialize apps
-        app.initialize(address(agent), cTokensArray);
+        app.initialize(agent, cTokensArray);
         tokenManager.initialize(token, true, 0);
         voting.initialize(token, 50 * PCT, 20 * PCT, 1 days);
         agent.initialize();
@@ -95,7 +95,7 @@ contract Template is TemplateBase {
         acl.createPermission(ANY_ENTITY, app, app.TRANSFER_ROLE(), root);
         acl.createPermission(ANY_ENTITY, app, app.SUPPLY_ROLE(), root);
         acl.createPermission(ANY_ENTITY, app, app.REDEEM_ROLE(), root);
-        acl.createPermission(ANY_ENTITY, app, app.MODIFY_CTOKENS(), root);
+        acl.createPermission(ANY_ENTITY, app, app.MODIFY_CTOKENS_ROLE(), root);
 
         acl.createPermission(this, tokenManager, tokenManager.MINT_ROLE(), this);
         acl.grantPermission(voting, tokenManager, tokenManager.MINT_ROLE());

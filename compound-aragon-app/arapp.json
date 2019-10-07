@@ -12,7 +12,7 @@
     },
     {
       "name": "Change Compound Tokens",
-      "id": "MODIFY_CTOKENS",
+      "id": "MODIFY_CTOKENS_ROLE",
       "params": []
     },
     {

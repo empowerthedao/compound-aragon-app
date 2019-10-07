@@ -1,6 +1,6 @@
 pragma solidity ^0.4.24;
 
-contract CTokenInterface {
+contract CErc20Interface {
 
     address public underlying;
 

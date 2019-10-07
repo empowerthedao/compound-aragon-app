@@ -1,11 +1,24 @@
-const getLog = (receipt, logName, argName) => {
-  const log = receipt.logs.find(({ event }) => event === logName)
-  return log ? log.args[argName] : null
+const assertRevert = async (receiptPromise, reason) => {
+    try {
+        await receiptPromise
+    } catch (error) {
+        if (reason) {
+            assert.include(error.message, reason, "Incorrect revert reason")
+        }
+        return
+    }
+    assert.fail(`Expected a revert for reason: ${reason}`)
 }
 
-const deployedContract = receipt => getLog(receipt, 'NewAppProxy', 'proxy')
+const getLog = (receipt, logName, argName) => {
+    const log = receipt.logs.find(({ event }) => event === logName)
+    return log ? log.args[argName] : null
+}
+
+const deployedContract = receipt => getLog(receipt, "NewAppProxy", "proxy")
 
 module.exports = {
-  getLog,
-  deployedContract,
+    assertRevert,
+    getLog,
+    deployedContract
 }

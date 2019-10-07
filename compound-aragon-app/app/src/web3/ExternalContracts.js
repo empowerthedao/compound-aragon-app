@@ -12,7 +12,7 @@ const modifiedCERC20Abi = makeAbiFunctionConstant('balanceOfUnderlying', CERC20A
 
 const agentAddress$ = api => api.call('agent')
 
-const compoundTokenAddresses$ = api => api.call('getEnabledCTokens')
+const compoundTokenAddresses$ = api => api.call('getEnabledCErc20s')
 
 const agentApp$ = (api) => {
     const agentProxyDepositAbi = AgentAbi.concat([ProxyDepositEvent])
