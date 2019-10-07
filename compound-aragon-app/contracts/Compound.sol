@@ -152,11 +152,7 @@ contract Compound is AragonApp {
     * @param _amount Amount to supply
     * @param _cErc20 CErc20 to supply to
     */
-    function supplyToken(uint256 _amount, address _cErc20)
-        external
-        isInitialized
-        cErc20IsEnabled(_cErc20)
-        auth(SUPPLY_ROLE)
+    function supplyToken(uint256 _amount, address _cErc20) external cErc20IsEnabled(_cErc20) auth(SUPPLY_ROLE)
     {
         CErc20Interface cErc20 = CErc20Interface(_cErc20);
         address token = cErc20.underlying();
@@ -175,11 +171,7 @@ contract Compound is AragonApp {
     * @param _amount Amount to redeem
     * @param _cErc20 CErc20 to redeem from
     */
-    function redeemToken(uint256 _amount, address _cErc20)
-        external
-        isInitialized
-        cErc20IsEnabled(_cErc20)
-        auth(REDEEM_ROLE)
+    function redeemToken(uint256 _amount, address _cErc20) external cErc20IsEnabled(_cErc20) auth(REDEEM_ROLE)
     {
         bytes memory encodedFunctionCall = abi.encodeWithSignature("redeemUnderlying(uint256)", _amount);
         safeExecuteNoError(_cErc20, encodedFunctionCall, ERROR_REDEEM_FAILED);
