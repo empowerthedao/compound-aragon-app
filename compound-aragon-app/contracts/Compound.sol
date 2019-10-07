@@ -57,7 +57,7 @@ contract Compound is AragonApp {
     /**
     * @notice Initialize the Compound App
     * @param _agent The Agent contract address
-    * @param _enabledCErc20s An array of enabled tokens
+    * @param _enabledCErc20s An array of enabled tokens, should not contain duplicates.
     */
     function initialize(Agent _agent, address[] _enabledCErc20s) external onlyInit {
         require(_enabledCErc20s.length <= MAX_ENABLED_CERC20S, ERROR_TOO_MANY_CERC20S);
