@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import {Info, Field, TextInput, Button, DropDown, useTheme, unselectable} from '@aragon/ui'
+import {Info, TextInput, Button, useTheme, unselectable} from '@aragon/ui'
 import styled from "styled-components";
 
 const RedeemInput = ({handleRedeem, redeemPanelState}) => {
@@ -7,14 +7,21 @@ const RedeemInput = ({handleRedeem, redeemPanelState}) => {
     const {getMaxRedeemable} = redeemPanelState
 
     const [amount, setAmount] = useState("")
+    const [redeemAll, setRedeemAll] = useState(false)
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        handleRedeem(amount)
+        handleRedeem(amount, redeemAll)
     }
 
     const handleSetMax = () => {
+        setRedeemAll(true)
         getMaxRedeemable(setAmount)
+    }
+
+    const handleChangeAmount = (event) => {
+        setRedeemAll(false)
+        setAmount(event.target.value)
     }
 
     return (
@@ -30,7 +37,7 @@ const RedeemInput = ({handleRedeem, redeemPanelState}) => {
                 <CombinedInput>
                     <TextInput
                         type="number"
-                        onChange={event => setAmount(event.target.value)}
+                        onChange={event => handleChangeAmount(event)}
                         min={0}
                         step="any"
                         required

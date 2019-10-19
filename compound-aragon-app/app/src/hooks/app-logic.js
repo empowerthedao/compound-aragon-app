@@ -46,8 +46,8 @@ const useSupply = (onDone) => {
 const useRedeem = (onDone) => {
     const api = useApi()
 
-    return useCallback((amount) => {
-        redeemToken(api, amount)
+    return useCallback((amount, redeemAll) => {
+        redeemToken(api, amount, redeemAll)
         onDone()
     }, [api])
 }

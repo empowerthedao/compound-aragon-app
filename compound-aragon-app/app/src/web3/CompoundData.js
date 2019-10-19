@@ -1,4 +1,4 @@
-import {agentAddress$, compoundToken$, compoundTokenAddresses$} from "./ExternalContracts";
+import { agentAddress$, compoundToken$, compoundTokenAddresses$, tokenContract$ } from "./ExternalContracts"
 import {zip} from "rxjs"
 import {concatMap, mergeMap, toArray, map} from "rxjs/operators";
 import {onErrorReturnDefault} from "../lib/rx-error-operators";
@@ -6,6 +6,10 @@ import {onErrorReturnDefault} from "../lib/rx-error-operators";
 const balanceOfUnderlyingTokens$ = (api, compoundTokenAddress) =>
     zip(agentAddress$(api), compoundToken$(api, compoundTokenAddress)).pipe(
         mergeMap(([agentAddress, compoundToken]) => compoundToken.balanceOfUnderlying(agentAddress)))
+
+const balanceOfToken$ = (api, tokenAddress) =>
+    zip(agentAddress$(api), tokenContract$(api, tokenAddress)).pipe(
+        mergeMap(([agentAddress, token]) => token.balanceOf(agentAddress)))
 
 const compoundTokenDetails$ = (api, compoundTokenAddress, state) => {
 
@@ -37,5 +41,6 @@ const compoundTokensDetails$ = (api, state) =>
 
 export {
     compoundTokensDetails$,
-    balanceOfUnderlyingTokens$
+    balanceOfUnderlyingTokens$,
+    balanceOfToken$
 }

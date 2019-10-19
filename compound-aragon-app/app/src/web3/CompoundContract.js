@@ -1,7 +1,9 @@
 import {toDecimals} from "../lib/math-utils";
 import {ETHER_TOKEN_FAKE_ADDRESS} from "../lib/shared-constants";
 import {tokenContract$} from "./ExternalContracts";
+import {zip} from "rxjs"
 import {mergeMap, tap} from 'rxjs/operators'
+import { balanceOfToken$ } from "./CompoundData"
 
 const setAgent = (api, address) => {
     api.setAgent(address)
@@ -45,16 +47,23 @@ const supplyToken = (api, amount) => {
     const adjustedAmount = toDecimals(amount, 18)
 
     api.call('enabledCErc20s', 0).pipe(
-        mergeMap(cToken => api.supplyToken(adjustedAmount, cToken)))
+        mergeMap(cToken => api.supplyUnderlyingToken(adjustedAmount, cToken)))
         .subscribe()
 }
 
-const redeemToken = (api, amount) => {
-    const adjustedAmount = toDecimals(amount, 18)
+const redeemToken = (api, amount, redeemAll) => {
+    if (redeemAll) {
+        api.call('enabledCErc20s', 0).pipe(
+            mergeMap(cToken => balanceOfToken$(api, cToken).pipe(
+                mergeMap(cTokenBalance => api.redeemCToken(cTokenBalance, cToken)))))
+            .subscribe()
+    } else {
+        const adjustedAmount = toDecimals(amount, 18)
 
-    api.call('enabledCErc20s', 0).pipe(
-        mergeMap(cToken => api.redeemToken(adjustedAmount, cToken)))
-        .subscribe()
+        api.call('enabledCErc20s', 0).pipe(
+            mergeMap(cToken => api.redeemUnderlyingToken(adjustedAmount, cToken)))
+            .subscribe()
+    }
 }
 
 export {

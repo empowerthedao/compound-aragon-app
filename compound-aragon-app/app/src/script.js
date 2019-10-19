@@ -131,8 +131,9 @@ const onNewEvent = async (state, storeEvent) => {
                 ...state,
                 balances: await agentBalances$(api, activeTokens(state)).toPromise()
             }
-        case 'AgentSupply':
-        case 'AgentRedeem':
+        case 'AgentSupplyUnderlying':
+        case 'AgentRedeemUnderlying':
+        case 'AgentRedeemCToken':
             debugLog("SUPPLY/REDEEM")
             return {
                 ...state,
