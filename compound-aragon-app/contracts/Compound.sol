@@ -26,7 +26,8 @@ contract Compound is AragonApp {
     bytes32 public constant REDEEM_ROLE = 0x23ab158aaf38f3699bf4266a91ca312794fa7ad6ee01e00dd03738daa058501e;
 
     string private constant ERROR_TOO_MANY_CERC20S = "COMPOUND_TOO_MANY_CERC20S";
-    string private constant ERROR_NOT_CONTRACT = "COMPOUND_NOT_CONTRACT";
+    string private constant ERROR_AGENT_NOT_CONTRACT = "COMPOUND_AGENT_NOT_CONTRACT";
+    string private constant ERROR_CERC20_NOT_CONTRACT = "COMPOUND_CERC20_NOT_CONTRACT";
     string private constant ERROR_TOKEN_ALREADY_ADDED = "COMPOUND_ERROR_TOKEN_ALREADY_ADDED";
     string private constant ERROR_CAN_NOT_DELETE_TOKEN = "COMPOUND_CAN_NOT_DELETE_TOKEN";
     string private constant ERROR_VALUE_MISMATCH = "COMPOUND_VALUE_MISMATCH";
@@ -38,6 +39,7 @@ contract Compound is AragonApp {
     string private constant ERROR_REDEEM_FAILED = "COMPOUND_REDEEM_FAILED";
 
     uint256 public constant MAX_ENABLED_CERC20S = 100;
+//    uint256 public constant MAX_INACCESSIBLE_CTOKENS = 99999;
 
     Agent public agent;
     address[] public enabledCErc20s;
@@ -46,8 +48,8 @@ contract Compound is AragonApp {
     event NewAgentSet(address agent);
     event CErc20Enabled(address cErc20);
     event CErc20Disabled(address cErc20);
-    event AgentSupply();
-    event AgentRedeem();
+    event AgentSupply(uint256 amount, address cErc20, address agent);
+    event AgentRedeem(uint256 amount, address cErc20, address agent);
 
     modifier cErc20IsEnabled(address _cErc20) {
         require(enabledCErc20s.contains(_cErc20), ERROR_TOKEN_NOT_ENABLED);
@@ -60,14 +62,12 @@ contract Compound is AragonApp {
     * @param _enabledCErc20s An array of enabled tokens, should not contain duplicates.
     */
     function initialize(Agent _agent, address[] _enabledCErc20s) external onlyInit {
+        require(isContract(address(_agent)), ERROR_AGENT_NOT_CONTRACT);
         require(_enabledCErc20s.length <= MAX_ENABLED_CERC20S, ERROR_TOO_MANY_CERC20S);
-        require(isContract(address(_agent)), ERROR_NOT_CONTRACT);
 
         for (uint256 enabledTokenIndex = 0; enabledTokenIndex < _enabledCErc20s.length; enabledTokenIndex++) {
             address enabledCErc20 = _enabledCErc20s[enabledTokenIndex];
-            require(isContract(enabledCErc20), ERROR_NOT_CONTRACT);
-            // Sanity check that _cErc20 includes the 'underlying()' function
-            CErc20Interface(enabledCErc20).underlying();
+            _verifyEnablingCErc20(enabledCErc20);
         }
 
         agent = _agent;
@@ -82,7 +82,7 @@ contract Compound is AragonApp {
     * @param _agent New Agent address
     */
     function setAgent(Agent _agent) external auth(SET_AGENT_ROLE) {
-        require(isContract(address(_agent)), ERROR_NOT_CONTRACT);
+        require(isContract(address(_agent)), ERROR_AGENT_NOT_CONTRACT);
 
         agent = _agent;
         emit NewAgentSet(address(_agent));
@@ -94,11 +94,7 @@ contract Compound is AragonApp {
     */
     function enableCErc20(address _cErc20) external auth(MODIFY_CTOKENS_ROLE) {
         require(enabledCErc20s.length < MAX_ENABLED_CERC20S, ERROR_TOO_MANY_CERC20S);
-        require(isContract(_cErc20), ERROR_NOT_CONTRACT);
-        require(!enabledCErc20s.contains(_cErc20), ERROR_TOKEN_ALREADY_ADDED);
-
-        // Sanity check that _cErc20 includes the 'underlying()' function
-        CErc20Interface(_cErc20).underlying();
+        _verifyEnablingCErc20(_cErc20);
 
         enabledCErc20s.push(_cErc20);
         emit CErc20Enabled(_cErc20);
@@ -110,13 +106,17 @@ contract Compound is AragonApp {
     */
     function disableCErc20(address _cErc20) external auth(MODIFY_CTOKENS_ROLE) {
         require(enabledCErc20s.deleteItem(_cErc20), ERROR_CAN_NOT_DELETE_TOKEN);
+
+//        CErc20Interface cErc20 = CErc20Interface(_cErc20);
+//        require(cErc20.balanceOfUnderlying() < , )
+
         emit CErc20Disabled(_cErc20);
     }
 
     /**
     * @notice Get all currently enabled CErc20s
     */
-    function getEnabledCErc20s() external view returns (address[]) {
+    function getEnabledCErc20s() external view isInitialized returns (address[]) {
         return enabledCErc20s;
     }
 
@@ -127,6 +127,7 @@ contract Compound is AragonApp {
     */
     function deposit(address _token, uint256 _value) external payable isInitialized nonReentrant {
         if (_token == ETH) {
+            require(msg.value == _value, ERROR_VALUE_MISMATCH);
             // Can no longer use 'send()' due to EIP-1884 so we use 'call.value()' with a reentrancy guard instead
             (bool success, ) = address(agent).call.value(_value)();
             require(success, ERROR_SEND_REVERTED);
@@ -163,7 +164,7 @@ contract Compound is AragonApp {
         bytes memory supplyFunctionCall = abi.encodeWithSignature("mint(uint256)", _amount);
         safeExecuteNoError(_cErc20, supplyFunctionCall, ERROR_MINT_FAILED);
 
-        emit AgentSupply();
+        emit AgentSupply(_amount, _cErc20, address(agent));
     }
 
     /**
@@ -176,7 +177,7 @@ contract Compound is AragonApp {
         bytes memory encodedFunctionCall = abi.encodeWithSignature("redeemUnderlying(uint256)", _amount);
         safeExecuteNoError(_cErc20, encodedFunctionCall, ERROR_REDEEM_FAILED);
 
-        emit AgentRedeem();
+        emit AgentRedeem(_amount, _cErc20, address(agent));
     }
 
     /**
@@ -210,7 +211,15 @@ contract Compound is AragonApp {
     * @notice Get underlying token from CErc20.
     * @param _cErc20 cErc20 to find underlying from
     */
-    function getUnderlyingToken(CErc20Interface _cErc20) public view returns (address) {
+    function getUnderlyingToken(CErc20Interface _cErc20) public view isInitialized returns (address) {
         return _cErc20.underlying();
+    }
+
+    function _verifyEnablingCErc20(address _cErc20) internal {
+        require(isContract(_cErc20), ERROR_CERC20_NOT_CONTRACT);
+        require(!enabledCErc20s.contains(_cErc20), ERROR_TOKEN_ALREADY_ADDED);
+
+        // Sanity check that _cErc20 includes the 'underlying()' function
+        CErc20Interface(_cErc20).underlying();
     }
 }

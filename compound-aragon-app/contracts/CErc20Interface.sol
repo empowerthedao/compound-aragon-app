@@ -4,4 +4,6 @@ contract CErc20Interface {
 
     address public underlying;
 
+    function balanceOfUnderlying(address owner) external returns (uint);
+
 }
