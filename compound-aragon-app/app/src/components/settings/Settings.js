@@ -46,6 +46,14 @@ const Settings = ({handleNewAgent, settings, compactMode}) => {
                             </Info>
                         </MarginTopContainer>
 
+                        <MarginTopContainer>
+                            <Info>
+                                <strong>
+                                    All Compound supplied tokens must be withdrawn before changing.
+                                </strong>
+                            </Info>
+                        </MarginTopContainer>
+
                         <ButtonContainer>
                             <Button onClick={() => handleNewAgent()}>
                                 Change Agent

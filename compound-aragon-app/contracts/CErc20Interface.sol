@@ -4,7 +4,7 @@ contract CErc20Interface {
 
     address public underlying;
 
-    function balance(address owner) external returns (uint256);
+    function balanceOf(address owner) external returns (uint256);
 
     function exchangeRateStored() public view returns (uint256);
 

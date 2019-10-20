@@ -32,7 +32,7 @@ contract Compound is AragonApp {
     string private constant ERROR_CERC20_NOT_CONTRACT = "COMPOUND_CERC20_NOT_CONTRACT";
     string private constant ERROR_TOKEN_ALREADY_ADDED = "COMPOUND_TOKEN_ALREADY_ADDED";
     string private constant ERROR_CAN_NOT_DELETE_TOKEN = "COMPOUND_CAN_NOT_DELETE_TOKEN";
-    string private constant ERROR_CTOKEN_BALANCE_NOT_0 = "COMPOUND_CTOKEN_BALANCE_NOT_0";
+    string private constant ERROR_CERC20_BALANCE_NOT_0 = "COMPOUND_CERC20_BALANCE_NOT_0";
     string private constant ERROR_VALUE_MISMATCH = "COMPOUND_VALUE_MISMATCH";
     string private constant ERROR_SEND_REVERTED = "COMPOUND_SEND_REVERTED";
     string private constant ERROR_TOKEN_TRANSFER_FROM_REVERTED = "COMPOUND_TOKEN_TRANSFER_FROM_REVERTED";
@@ -87,6 +87,11 @@ contract Compound is AragonApp {
     function setAgent(Agent _agent) external auth(SET_AGENT_ROLE) {
         require(isContract(address(_agent)), ERROR_AGENT_NOT_CONTRACT);
 
+        for (uint256 enabledTokenIndex = 0; enabledTokenIndex < enabledCErc20s.length; enabledTokenIndex++) {
+            address enabledCErc20 = enabledCErc20s[enabledTokenIndex];
+            _verifyCErc20BalanceZero(enabledCErc20);
+        }
+
         agent = _agent;
         emit NewAgentSet(address(_agent));
     }
@@ -96,8 +101,8 @@ contract Compound is AragonApp {
     * @param _cErc20 CErc20 to add
     */
     function enableCErc20(address _cErc20) external auth(MODIFY_CTOKENS_ROLE) {
-        require(enabledCErc20s.length < MAX_ENABLED_CERC20S, ERROR_TOO_MANY_CERC20S);
         _verifyEnablingCErc20(_cErc20);
+        require(enabledCErc20s.length < MAX_ENABLED_CERC20S, ERROR_TOO_MANY_CERC20S);
 
         enabledCErc20s.push(_cErc20);
         emit CErc20Enabled(_cErc20);
@@ -108,10 +113,8 @@ contract Compound is AragonApp {
     * @param _cErc20 CErc20 to remove
     */
     function disableCErc20(address _cErc20) external auth(MODIFY_CTOKENS_ROLE) {
+        _verifyCErc20BalanceZero(_cErc20);
         require(enabledCErc20s.deleteItem(_cErc20), ERROR_CAN_NOT_DELETE_TOKEN);
-
-        CErc20Interface cErc20 = CErc20Interface(_cErc20);
-        require(cErc20.balance(address(agent)) == 0, ERROR_CTOKEN_BALANCE_NOT_0);
 
         emit CErc20Disabled(_cErc20);
     }
@@ -152,7 +155,7 @@ contract Compound is AragonApp {
     }
 
     /**
-    * @notice Supply `@tokenAmount(self.getUnderlyingToken(_cErc20): address, _underlyingTokenAmount, true, 18)` to Compound
+    * @notice Supply `@tokenAmount(_cErc20.underlying(): address, _underlyingTokenAmount, true, 18)` to Compound
     * @param _underlyingTokenAmount Amount to supply
     * @param _cErc20 CErc20 to supply to
     */
@@ -165,33 +168,33 @@ contract Compound is AragonApp {
         agent.safeExecute(token, approveFunctionCall);
 
         bytes memory supplyFunctionCall = abi.encodeWithSignature("mint(uint256)", _underlyingTokenAmount);
-        safeExecuteNoError(_cErc20, supplyFunctionCall, ERROR_MINT_FAILED);
+        _safeExecuteNoError(_cErc20, supplyFunctionCall, ERROR_MINT_FAILED);
 
         emit AgentSupplyUnderlying(_underlyingTokenAmount, _cErc20, address(agent));
     }
 
     /**
-    * @notice Redeem `@tokenAmount(self.getUnderlyingToken(_cErc20): address, _underlyingTokenAmount, true, 18)` from Compound
+    * @notice Redeem `@tokenAmount(_cErc20.underlying(): address, _underlyingTokenAmount, true, 18)` from Compound
     * @param _underlyingTokenAmount Amount of underlying token to redeem
     * @param _cErc20 CErc20 to redeem from
     */
     function redeemUnderlyingToken(uint256 _underlyingTokenAmount, address _cErc20) external cErc20IsEnabled(_cErc20) auth(REDEEM_ROLE)
     {
         bytes memory encodedFunctionCall = abi.encodeWithSignature("redeemUnderlying(uint256)", _underlyingTokenAmount);
-        safeExecuteNoError(_cErc20, encodedFunctionCall, ERROR_REDEEM_FAILED);
+        _safeExecuteNoError(_cErc20, encodedFunctionCall, ERROR_REDEEM_FAILED);
 
         emit AgentRedeemUnderlying(_underlyingTokenAmount, _cErc20, address(agent));
     }
 
     /**
-    * @notice Redeem `@tokenAmount(self.getUnderlyingToken(_cErc20): address, self.getExchangeRate(_cErc20): uint256 * _cTokenAmount / 1000000000000000000, true, 18)` from Compound
+    * @notice Redeem `@tokenAmount(_cErc20.underlying(): address, _cErc20.exchangeRateStored(): uint256 * _cTokenAmount / 1000000000000000000, true, 18)` from Compound
     * @param _cTokenAmount Amount of cTokens to redeem
     * @param _cErc20 CErc20 to redeem from
     */
     function redeemCToken(uint256 _cTokenAmount, address _cErc20) external cErc20IsEnabled(_cErc20) auth(REDEEM_ROLE)
     {
         bytes memory encodedFunctionCall = abi.encodeWithSignature("redeem(uint256)", _cTokenAmount);
-        safeExecuteNoError(_cErc20, encodedFunctionCall, ERROR_REDEEM_FAILED);
+        _safeExecuteNoError(_cErc20, encodedFunctionCall, ERROR_REDEEM_FAILED);
 
         emit AgentRedeemCToken(_cTokenAmount, _cErc20, address(agent));
     }
@@ -201,7 +204,7 @@ contract Compound is AragonApp {
     * @param _target Address where the action is being executed
     * @param _data Calldata for the action
     */
-    function safeExecuteNoError(address _target, bytes _data, string memory _error) internal {
+    function _safeExecuteNoError(address _target, bytes _data, string memory _error) internal {
         agent.safeExecute(_target, _data);
 
         uint256 callReturnValue;
@@ -222,29 +225,16 @@ contract Compound is AragonApp {
         require(callReturnValue == 0, _error);
     }
 
-    /**
-    * @dev Convenience function for getting token addresses in radspec strings
-    * @notice Get underlying token from CErc20.
-    * @param _cErc20 cErc20 to find underlying from
-    */
-    function getUnderlyingToken(CErc20Interface _cErc20) public view isInitialized returns (address) {
-        return _cErc20.underlying();
-    }
-
-    /**
-    * @dev Convenience function for getting the cErc20 exchange rate in radspec strings
-    * @notice Get current exchange rate for the specified cErc20.
-    * @param _cErc20 cErc20 to find exchange rate for
-    */
-    function getExchangeRate(CErc20Interface _cErc20) public view isInitialized returns (uint256) {
-        return _cErc20.exchangeRateStored();
-    }
-
     function _verifyEnablingCErc20(address _cErc20) internal {
         require(isContract(_cErc20), ERROR_CERC20_NOT_CONTRACT);
         require(!enabledCErc20s.contains(_cErc20), ERROR_TOKEN_ALREADY_ADDED);
 
         // Sanity check that _cErc20 includes the 'underlying()' function
         CErc20Interface(_cErc20).underlying();
+    }
+
+    function _verifyCErc20BalanceZero(address _cErc20) internal {
+        CErc20Interface cErc20 = CErc20Interface(_cErc20);
+        require(cErc20.balanceOf(address(agent)) == 0, ERROR_CERC20_BALANCE_NOT_0);
     }
 }
