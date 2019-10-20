@@ -3,7 +3,6 @@ pragma solidity ^0.4.24;
 import "@aragon/os/contracts/apps/AragonApp.sol";
 import "@aragon/os/contracts/common/SafeERC20.sol";
 import "@aragon/os/contracts/lib/token/ERC20.sol";
-import "@aragon/os/contracts/lib/math/SafeMath.sol";
 import "@aragon/apps-agent/contracts/Agent.sol";
 import "./CErc20Interface.sol";
 import "./lib/AddressArrayUtils.sol";
@@ -11,7 +10,6 @@ import "./lib/AddressArrayUtils.sol";
 contract Compound is AragonApp {
 
     using SafeERC20 for ERC20;
-    using SafeMath for uint256;
     using AddressArrayUtils for address[];
 
     /* Hardcoded constants to save gas
@@ -69,8 +67,7 @@ contract Compound is AragonApp {
         require(_enabledCErc20s.length <= MAX_ENABLED_CERC20S, ERROR_TOO_MANY_CERC20S);
 
         for (uint256 enabledTokenIndex = 0; enabledTokenIndex < _enabledCErc20s.length; enabledTokenIndex++) {
-            address enabledCErc20 = _enabledCErc20s[enabledTokenIndex];
-            _verifyEnablingCErc20(enabledCErc20);
+            _verifyEnablingCErc20(_enabledCErc20s[enabledTokenIndex]);
         }
 
         agent = _agent;
@@ -88,8 +85,7 @@ contract Compound is AragonApp {
         require(isContract(address(_agent)), ERROR_AGENT_NOT_CONTRACT);
 
         for (uint256 enabledTokenIndex = 0; enabledTokenIndex < enabledCErc20s.length; enabledTokenIndex++) {
-            address enabledCErc20 = enabledCErc20s[enabledTokenIndex];
-            _verifyCErc20BalanceZero(enabledCErc20);
+            _verifyCErc20BalanceZero(enabledCErc20s[enabledTokenIndex]);
         }
 
         agent = _agent;
@@ -101,8 +97,8 @@ contract Compound is AragonApp {
     * @param _cErc20 CErc20 to add
     */
     function enableCErc20(address _cErc20) external auth(MODIFY_CTOKENS_ROLE) {
-        _verifyEnablingCErc20(_cErc20);
         require(enabledCErc20s.length < MAX_ENABLED_CERC20S, ERROR_TOO_MANY_CERC20S);
+        _verifyEnablingCErc20(_cErc20);
 
         enabledCErc20s.push(_cErc20);
         emit CErc20Enabled(_cErc20);
