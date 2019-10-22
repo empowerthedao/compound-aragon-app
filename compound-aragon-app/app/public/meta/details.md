@@ -5,5 +5,4 @@ app's settings tab. The ERC20 token that is lendable to Compound can be changed 
 ## Features
 - Supply the specified ERC20 token to Compound.
 - Redeem the specified ERC20 token from Compound.
-- Transfer ETH and ERC20 tokens to the Agent used.
-- Change the Agent used.
+- Transfer ETH and ERC20 tokens to the Agent.

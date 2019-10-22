@@ -10,7 +10,7 @@ import BN from 'bn.js'
 // TODO: To determine cToken transactions submitted and lifetime interest earned the script currently only monitors Mint/Redeem events.
 //       I'm pretty sure the Transfer event also needs to be considered but execution of cToken transfers isn't currently available
 //       through the UI so is considered unneeded for now.
-const DEBUG_LOGS = true;
+const DEBUG_LOGS = false;
 const debugLog = message => {
     if (DEBUG_LOGS) {
         console.debug(message)
