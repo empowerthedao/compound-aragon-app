@@ -1,86 +1,91 @@
-import React from 'react'
-import { GU, textStyle, useTheme } from '@aragon/ui'
-import {formatTokenAmount} from "../../lib/format-utils";
+import React from "react"
+import { GU, textStyle, useTheme } from "@aragon/ui"
+import { formatTokenAmount } from "../../lib/format-utils"
+import { useNetwork } from "@aragon/api-react"
+import { iconSourceUrl } from "../../lib/token-utils"
 
 const splitAmount = amount => {
-  const [integer, fractional] = formatTokenAmount(amount).split('.')
-  return (
-    <span>
+    const [integer, fractional] = formatTokenAmount(amount).split(".")
+    return (
+        <span>
       <span>{integer}</span>
-      {fractional && (
-        <span
-          css={`
-            ${textStyle('body3')}
+            {fractional && (
+                <span
+                    css={`
+            ${textStyle("body3")}
           `}
-        >
+                >
           .{fractional}
         </span>
-      )}
+            )}
     </span>
-  )
+    )
 }
 
 const BalanceToken = ({
-  amount,
-  compact,
-  symbol,
-  verified,
-  convertedAmount = -1,
-}) => {
-  const theme = useTheme()
+                          amount,
+                          compact,
+                          symbol,
+                          verified,
+                          convertedAmount = -1,
+                          address
+                      }) => {
+    const theme = useTheme()
+    const network = useNetwork()
+    const iconSource = iconSourceUrl(network, address, symbol)
 
-  return (
-    <React.Fragment>
-      <div
-        title={symbol || 'Unknown symbol'}
-        css={`
+    return (
+        <React.Fragment>
+            <div
+                title={symbol || "Unknown symbol"}
+                css={`
           display: flex;
           align-items: center;
           color: ${theme.surfaceContentSecondary};
-          ${textStyle('body2')}
+          ${textStyle("body2")}
           text-transform: uppercase;
           font-size: 28px;
           ${!compact && `font-size: 14px;`}
         `}
-      >
-        {verified && symbol && (
-          <img
-            alt=""
-            width="20"
-            height="20"
-            src={`https://chasing-coins.com/coin/logo/${symbol}`}
-            css={`
+            >
+                {verified && symbol && (
+                    <img
+                        alt=""
+                        width="20"
+                        height="20"
+                        src={iconSource}
+                        css={`
               margin-right: ${0.75 * GU}px;
             `}
-          />
-        )}
-        {symbol || '?'}
-      </div>
-        <div css={`
+                    />
+                )}
+                {symbol || "?"}
+            </div>
+            <div css={`
       text-align: right;
       ${!compact && `text-align: left;`}
     `}>
-        <div
-          css={`
-            ${textStyle('title2')}
+                <div
+                    css={`
+            ${textStyle("title2")}
             margin: ${(compact ? 0 : 1.5) * GU}px 0;
           `}
-        >
-          {splitAmount(amount.toFixed(3))}
-        </div>
-        <div
-          css={`
+                >
+                    {splitAmount(amount.toFixed(3))}
+                </div>
+                <div
+                    css={`
             color: ${theme.surfaceContentSecondary};
-            ${textStyle('body2')}
+            ${textStyle("body2")}
           `}
-        >
-          {convertedAmount >= 0
-            ? `$${formatTokenAmount(convertedAmount.toFixed(2))}`
-            : '−'}
-        </div>
-      </div>
-    </React.Fragment>
-  )
+                >
+                    {convertedAmount >= 0
+                        ? `$${formatTokenAmount(convertedAmount.toFixed(2))}`
+                        : "−"}
+                </div>
+            </div>
+        </React.Fragment>
+    )
 }
 
 export default BalanceToken
