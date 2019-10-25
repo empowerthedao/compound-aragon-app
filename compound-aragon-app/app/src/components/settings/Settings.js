@@ -44,7 +44,7 @@ const Settings = ({handleNewAgent, settings, compactMode}) => {
                                     Only send ERC20 tokens to this address via the transfer process provided.
                                     <br/>
                                     <br/>
-                                    All Compound supplied tokens must be withdrawn before changing.
+                                    All Compound supplied tokens must be withdrawn before changing the Agent.
                                 </strong>
                             </Info>
                         </MarginTopContainer>

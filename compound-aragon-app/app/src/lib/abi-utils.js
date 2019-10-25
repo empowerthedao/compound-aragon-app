@@ -1,10 +1,10 @@
 
 const makeAbiFunctionConstant = (functionName, originalAbi) => {
-    const balanceOfUnderlyingAbi = originalAbi.filter(abiFunction => abiFunction.name === functionName)[0]
-    balanceOfUnderlyingAbi.constant = "true"
+    const abiFunction = originalAbi.filter(abiFunction => abiFunction.name === functionName)[0]
+    abiFunction.constant = "true"
 
     const modifiedAbi = originalAbi.filter(abiFunction => abiFunction.name !== functionName).slice(0)
-    modifiedAbi.push(balanceOfUnderlyingAbi)
+    modifiedAbi.push(abiFunction)
 
     return modifiedAbi
 }

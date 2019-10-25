@@ -1,5 +1,7 @@
-import BN from 'bn.js'
-import {ETHER_TOKEN_FAKE_ADDRESS} from "./lib/shared-constants";
+import BN from "bn.js"
+import { ETHER_TOKEN_FAKE_ADDRESS } from "./lib/shared-constants"
+import { utils } from "ethers"
+import { ETHER_TOKEN_VERIFIED_BY_SYMBOL } from "./lib/verified-tokens"
 
 const compareBalancesByEthAndSymbol = (tokenA, tokenB) => {
     if (tokenA.address === ETHER_TOKEN_FAKE_ADDRESS) {
@@ -13,11 +15,21 @@ const compareBalancesByEthAndSymbol = (tokenA, tokenB) => {
 
 const reducer = state => {
 
-    const {balances} = state || {}
+    const { balances } = state || {}
 
-    const convertedBalances = balances
-        ? balances
-            .map(balance => ({
+    if (balances) {
+        balances
+            .filter(balance => balance.address === ETHER_TOKEN_VERIFIED_BY_SYMBOL.get("DAI"))
+            .map(balance => {
+                balance.symbol = utils.parseBytes32String(balance.symbol)
+                balance.name = utils.parseBytes32String(balance.name)
+                return balance
+            })
+    }
+
+    const convertedBalances = balances ? balances
+        .map(balance => {
+            return ({
                 ...balance,
                 amount: new BN(balance.amount),
                 decimals: new BN(balance.decimals),
@@ -26,20 +38,21 @@ const reducer = state => {
                 // computations (but are useful for making divisions easier).
                 numData: {
                     amount: parseInt(balance.amount, 10),
-                    decimals: parseInt(balance.decimals, 10),
-                },
-            }))
-            .sort(compareBalancesByEthAndSymbol)
+                    decimals: parseInt(balance.decimals, 10)
+                }
+            })
+        })
+        .sort(compareBalancesByEthAndSymbol)
         : []
 
     const tokens = convertedBalances.map(
-        ({address, name, symbol, numData: {amount, decimals}, verified}) => ({
+        ({ address, name, symbol, numData: { amount, decimals }, verified }) => ({
             address,
             amount,
             decimals,
             name,
             symbol,
-            verified,
+            verified
         })
     )
 
@@ -48,7 +61,7 @@ const reducer = state => {
     return {
         ...state,
         // balances: convertedBalances,
-        balances: convertedBalances.filter(balance => !balance.amount.isZero() || (balance.symbol === 'ETH' && tokensWithValue.length === 0)),
+        balances: convertedBalances.filter(balance => !balance.amount.isZero() || (balance.symbol === "ETH" && tokensWithValue.length === 0)),
         tokens
     }
 }

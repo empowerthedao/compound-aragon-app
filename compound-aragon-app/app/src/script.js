@@ -100,7 +100,7 @@ const onNewEvent = async (state, storeEvent) => {
             }
         case 'AppInitialized':
             debugLog("APP CONSTRUCTOR EVENT")
-            api.identify(eventAddress)
+            // api.identify(eventAddress)
             return {
                 ...state,
                 appAddress: eventAddress
