@@ -7,7 +7,7 @@ The current functionality allows a single cERC20 compound token to be enabled wi
 to with the corresponding ERC20 token from the DAO to accrue interest.
 
 #### :white_check_mark: Security review status: Audited
-The code in this repo has been audited, see [the report](https://github.com/empowerthedao/compound-aragon-app/tree/master/audit).
+The Solidity code in this repo has been audited, see [the report](https://github.com/empowerthedao/compound-aragon-app/tree/master/audit).
 
 ## Deployment Instructions
 
