@@ -6,8 +6,8 @@ interact with the [Compound protocol](https://compound.finance/).
 The current functionality allows a single cERC20 compound token to be enabled within the app. This token can then be supplied/lent 
 to with the corresponding ERC20 token from the DAO to accrue interest.
 
-#### :rotating_light: Security review status: pre-audit  
-The code in this repo has not been audited.
+#### :white_check_mark: Security review status: Audited
+The code in this repo has been audited, see [the report](https://github.com/empowerthedao/compound-aragon-app/tree/master/audit).
 
 ## Deployment Instructions
 
