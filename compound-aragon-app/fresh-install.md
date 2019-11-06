@@ -123,3 +123,9 @@ You can now visit the DAO's Home page at `https://rinkeby.aragon.org/#/<DAO-Addr
 You can also view the Compound App at `https://rinkeby.aragon.org/#/<DAO-Address>/<Compound-App-Proxy-Address>`
 
 ![Screenshot from 2019-09-06 21-11-10](https://user-images.githubusercontent.com/2212651/64454295-e9814a80-d0ea-11e9-89db-5ab62bacc8ac.png)
+
+### Installing on Mainnet
+
+To run this script on Ethereum Mainnet, you will need to replace all instances of `aragon:rinkeby` with `aragon:mainnet`. This will also require your copy of the `aragoncli` to be configured to operate on mainnet.
+
+In addition, you will need to use `0xf5dce57282a584d2746faf1593d3121fcac444dc` as the `<Supply-cToken-Address>`, which is [the Token Contract Address for cDAI](https://etherscan.io/token/0xf5dce57282a584d2746faf1593d3121fcac444dc) on Ethereum mainnet.
