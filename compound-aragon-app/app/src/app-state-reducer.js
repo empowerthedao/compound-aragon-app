@@ -19,7 +19,7 @@ const reducer = state => {
 
     if (balances) {
         balances
-            .filter(balance => balance.address === ETHER_TOKEN_VERIFIED_BY_SYMBOL.get("DAI"))
+            .filter(balance => balance.address.toLowerCase() === ETHER_TOKEN_VERIFIED_BY_SYMBOL.get("DAI"))
             .map(balance => {
                 balance.symbol = utils.parseBytes32String(balance.symbol)
                 balance.name = utils.parseBytes32String(balance.name)

@@ -27,8 +27,8 @@ const Settings = ({handleNewAgent, settings, compactMode}) => {
 
                     <div css={`display: flex; flex-direction: column;`}>
                         <Text>
-                            The contract that represents an EOA (Externally Owned Account) and acts on behalf of the
-                            Compound app.
+                            The Aragon Agent contract instance that the Compound app uses to interact with
+                            Compound Finance. All funds are stored in the Agent address.
                         </Text>
 
                         <MarginTopContainer>
