@@ -96,13 +96,23 @@ dao install <DAO-Address> compound.open.aragonpm.eth --app-init-args <Agent-App-
 
 ### Configure the Agent app
 
-In order for the Compound Aragon App to transact via the Agent, the following commands need to be run, to set the permissions on the Agent app:
+In order for the Compound Aragon App to transact via the Agent, the following commands need to be run, to create the permissions on the Agent app:
 
 ```
 dao acl create <DAO-Address> <Agent-App-Proxy-Address> EXECUTE_ROLE <Compound-App-Proxy-Address> <Voting-App-Proxy-Address> --environment aragon:rinkeby
 dao acl create <DAO-Address> <Agent-App-Proxy-Address> SAFE_EXECUTE_ROLE <Compound-App-Proxy-Address> <Voting-App-Proxy-Address> --environment aragon:rinkeby
 dao acl create <DAO-Address> <Agent-App-Proxy-Address> TRANSFER_ROLE <Compound-App-Proxy-Address> <Voting-App-Proxy-Address> --environment aragon:rinkeby
 ```
+
+In the case that these permissions for the Agent have already been created, you need to run the following commands:
+
+```
+dao acl grant <DAO-Address> <Agent-App-Proxy-Address> EXECUTE_ROLE <Compound-App-Proxy-Address> --environment aragon:rinkeby
+dao acl grant <DAO-Address> <Agent-App-Proxy-Address> SAFE_EXECUTE_ROLE <Compound-App-Proxy-Address> --environment aragon:rinkeby
+dao acl grant <DAO-Address> <Agent-App-Proxy-Address> TRANSFER_ROLE <Compound-App-Proxy-Address> --environment aragon:rinkeby
+```
+
+These may create votes which need to be passed in order for permissions to be created.
 
 ### Configure the Compound Aragon App
 
